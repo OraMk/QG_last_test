@@ -4,6 +4,7 @@ import com.Dao.UserData;
 import com.Dao.impl.UserDataImpl;
 import com.servlet.BaseServlet;
 import com.servlet.LoginServlet;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -106,6 +107,29 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else{
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void judgment(HttpServletRequest req, HttpServletResponse resp) {
+        String username = req.getParameter("username");
+        resultSet = userData.selectUsername(req,resp);
+        try {
+            if (resultSet.next())
+            {
+                String isAdministrator = resultSet.getString("isAdministrator");
+                //是网站管理员
+                if ("yes".equals(isAdministrator))
+                {
+                    resp.setStatus(HttpServletResponse.SC_OK);
+
+                }else{
+                    //不是网站管理员
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

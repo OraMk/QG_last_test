@@ -14,6 +14,20 @@
                 data:{"method":"loginUser","username":$("#username").val()},
                 success :function (res){
                     alert("已登录，账户为 ：" + res);
+                //     判断是不是网站管理
+                    $.ajax({
+                        url:"operationServlet",
+                        type:"GET",
+                        async:true,
+                        dataType:'text',
+                        data:{"method":"loginUser","username":$("#username").val()},
+                        success :function (){
+                        //     网站管理员
+                        },
+                        error :function (){
+                        //     普通用户
+                        }
+                    })
                 },
                 error : function (err){
                     alert("未登录");

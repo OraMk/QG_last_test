@@ -5,11 +5,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 public interface LoginServlet {
     //    查找是否存在该用户
-    void selectUser(HttpServletRequest req, HttpServletResponse resp);
+    public void selectUser(HttpServletRequest req, HttpServletResponse resp);
 
     //    添加用户数据
-    void  add(HttpServletRequest req, HttpServletResponse resp);
+    public void  add(HttpServletRequest req, HttpServletResponse resp);
     //查找用户名字是否存在
-    void selectUsername(HttpServletRequest req, HttpServletResponse resp);
+    public void selectUsername(HttpServletRequest req, HttpServletResponse resp);
+//    判断是否为网站管理员
+    public void judgment(HttpServletRequest req, HttpServletResponse resp);
+
+
 }
 

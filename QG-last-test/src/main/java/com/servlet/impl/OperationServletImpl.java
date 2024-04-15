@@ -36,8 +36,14 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
                 {
                     if ("username".equals(c.getName())){
                         String username = c.getValue();
-                        resp.setStatus(HttpServletResponse.SC_OK);
-                        resp.getWriter().write(username);
+                        if ("".equals(c.getValue())){
+                            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        }
+                        else {
+                            resp.setStatus(HttpServletResponse.SC_OK);
+                            resp.getWriter().write(username);
+                        }
+
                     }
                 }
             }else {
