@@ -13,7 +13,6 @@
                 dataType:'json',
                 data:{"method":"selectByUsername"},
                 success:function (res){
-                    alert(res);
                     $("#body").html("<td>"+ res.uid +"</td>\n" +
                         "            <td>"+ res.username+"</td>\n" +
                         "            <td>"+ res.name +"</td>\n" +
@@ -23,15 +22,23 @@
                     $("#img").html("<img src = "+ res.avatar +" width=\"250px\" />");
 
                     //更改头像
-                    $("#change_img").change(function (){
-                        let fileInput = $("#change_img").get(0);
-                        const file = fileInput.files[0];
-                        const filePath = URL.createObjectURL(file);
+                    $("#check_img").click(function (){
+                        // let fileInput = $("#change_img").get(0);
+                        // const file = fileInput.files[0];
+                        // const filePath = URL.createObjectURL(file);
+                        filePath = $("#change_img").val();
                         $("#img").html("<img src = "+ filePath +" width=\"250px\" />")
                         $.ajax({
                             url:"loginServlet",
                             type:"GET",
-                            data:{"method":"avatarChange"}
+                            data:{"method":"avatarChange","avatar":filePath},
+                            async:true,
+                            success:function (){
+
+                            },
+                            error:function (){
+
+                            }
                         })
                     });
                 },
@@ -39,7 +46,7 @@
 
                 }
             })
-            $("#body").click(function (){
+            $("#back").click(function (){
                 // 返回主界面
                 let url = "operation.html";
                 location.assign(url);
@@ -59,7 +66,9 @@
     <img src="https://img.zcool.cn/community/01a3865ab91314a8012062e3c38ff6.png@1280w_1l_2o_100sh.png" width="250px"></img>
 </div>
 <div style="position: absolute;top:480px;left: 210px">
-    <input type="file" id="change_img" value="更改头像" style="width: 170px; height: 40px">
+    请输入头像的url:<br>
+    <input type="text" id="change_img" value="" style="width: 170px; height: 40px">
+    <input type="button" id="check_img" value="更改">
 </div>
 <div style="width :800px;
      position: absolute;

@@ -110,28 +110,48 @@ public class UserDataImpl implements UserData {
         }
         String username = req.getParameter("username");
         String password = req.getParameter("password");
-        String pNumber = req.getParameter("pnumber");
+        String pNumber = req.getParameter("phone_number");
         String name = req.getParameter("name");
 
         int n = 0;
         if (username != null || password != null || pNumber != null || name != null){
             StringBuffer sql = new StringBuffer("update user set username = '" + formerly +"'");
-            if (username != null){
+            if (!(username == null || username == "")){
                 sql.append(", username= '" + username + "'");
             }
-            if (password != null)
+            if (!(password ==null || password =="" ))
             {
                 sql.append(", password= '"+ password + "'");
             }
-            if (name != null){
+            if (!(name == null || name =="")){
                 sql.append(", name= '"+ name + "'");
             }
-            if (pNumber != null){
+            if (!(pNumber == null || pNumber == "")){
                 sql.append(", pnumber = '"+ pNumber +"'");
             }
-            sql.append("where username = '" + username +"'");
+            sql.append("where username = '" + formerly +"'");
             n = jdbc.Edit(String.valueOf(sql));
         }
         return n;
+    }
+
+    @Override
+    public int changeAvatar(HttpServletRequest req, HttpServletResponse resp) {
+        Connection connection=jdbc.getConnection();
+        Cookie[] cookies = req.getCookies();
+        String formerly = null;
+        int n = 0;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    formerly = c.getValue();
+
+                }
+            }
+        }
+        String avatar = req.getParameter("avatar");
+        String sql = "update user set avatar = '" + avatar +"' where username = '"+ formerly +"'";
+        n = jdbc.Edit(sql);
+        return  n;
     }
 }

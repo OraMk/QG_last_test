@@ -11,10 +11,9 @@
                 type:"GET",
                 async:true,
                 dataType:'text',
-                data:{"method":"loginUser","username":$("#username").val()},
+                data:{"method":"loginUser"},
                 success :function (res){
-                    alert("已登录，账户为 ：" + res);
-
+                    $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"enterprise\" value=\"查看我的企业\">");
                     $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
                     $("#research_button").click(function (){
                         let url = "userInformation.html";
@@ -33,7 +32,7 @@
                                 {
                                     alert("退出成功!");
                                     $("#login").submit();
-                                    var url="operation.html";
+                                    let url="operation.html";
                                     location.assign(url);
                                 },
                                 error : function (err){
@@ -72,10 +71,16 @@
     </script>
 </head>
 <body>
+<div>
+
+<div style="position: absolute;left: 1000px;top: 90px" id="show">
+
+</div>
 <div style="position: absolute;left: 300px;top: 120px">
     企业名称<input type="text" name="enterprise_name">
     &nbsp;&nbsp;人数<input type="text" name="number">
-    &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="name_button" value="查找">
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="name_button" value="查找"> &nbsp;&nbsp;
+
 
 </div>
 <div style="position: absolute;left: 1100px;top: 120px " id="sign">

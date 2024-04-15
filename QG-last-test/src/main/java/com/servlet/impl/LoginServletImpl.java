@@ -182,6 +182,12 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
 
     @Override
     public void avatarChange(HttpServletRequest req, HttpServletResponse resp) {
-
+        int n = userData.changeAvatar(req,resp);
+        if (n == 1 )
+        {//更改成功
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 }
