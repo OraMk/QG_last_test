@@ -23,11 +23,13 @@
                     $.ajax({
                         url:"loginServlet",
                         type:"GET",
-                        data:{"username":username,
+                        data:{
+                            "username":username,
                             "password":password,
                             "name":name,
-                            "pNumber":pNumber,
-                            "method":"add"},
+                            "phone_number":pNumber,
+                            "method":"add"
+                        },
                         async:true,
                         dataType:'text',
                         success :function ()
@@ -110,13 +112,14 @@
 
 
             });
-            $("#phone_number").blur(function (){
+            $("#pNumber").blur(function (){
                 let s_phone = $("#phone_span");
                 let phone_RegExP = /^[12]\d{10}$/;
                 let ok = phone_RegExP.test(this.value);
                 if (ok){
                     s_phone.html("手机号合法");
                     s_phone.css("color","green");
+                    alert($("#pNumber").val());
                 }else {
                     s_phone.html("请输入正确的手机号")
                     s_phone.css("color","red");
@@ -177,7 +180,7 @@
             昵称<input id="name" type="text" name="name" placeholder="QG后台" /><span id="s_name"></span><br>
             密码<input id="password" type="password" name="password"/><span id="s_password"></span><br>
             确认密码<input type="password" id="repeat_password"/><span id="repeat"></span><br>
-            手机号码<input type="password" name="pNumber" id="phone_number"/><span id="phone_span"></span><br>
+            手机号码<input type="text" id="pNumber" /><span id="phone_span"></span><br>
             <input type="button" id="formSubmit" value="注册">
 
         </form>

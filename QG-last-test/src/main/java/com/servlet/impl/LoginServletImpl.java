@@ -141,8 +141,8 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
 
     @Override
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp) {
-        String username = req.getParameter("username");
-        resultSet = userData.selectUsername(req,resp);
+
+        resultSet = userData.selectUserByName(req,resp);
         Map<String,String> map = new HashMap<String,String>();
         try {
             if (resultSet.next())

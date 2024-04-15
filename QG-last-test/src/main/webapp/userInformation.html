@@ -6,13 +6,21 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         $(function (){
-            $.ajax({url:"operationServlet",
+            $.ajax({
+                url:"loginServlet",
                 type:"GET",
                 async:true,
                 dataType:'json',
                 data:{"method":"selectByUsername"},
                 success:function (res){
-
+                    alert(res);
+                    $("#body").html("<td>"+ res.uid +"</td>\n" +
+                        "            <td>"+ res.username+"</td>\n" +
+                        "            <td>"+ res.name +"</td>\n" +
+                        "            <td>"+ res.pnumber +"</td>\n" +
+                        "            <td>"+ res.avatar +"</td>\n" +
+                        "            <td>"+ res.fund +"</td>\n" +
+                        "            <td>"+ res.is_administrator+"</td>")
                 },
                 error: function (err){
 
@@ -43,7 +51,13 @@
         </tr>
         </thead>
        <tbody id="body">
-
+            <td>id</td>
+            <td>用户名</td>
+            <td>昵称</td>
+            <td>手机号码</td>
+            <td>头像</td>
+            <td>资金</td>
+            <td>封禁(yes/no)</td>
        </tbody>
     </table>
 </div>

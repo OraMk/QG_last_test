@@ -13,4 +13,6 @@ public interface UserData {
     public int add(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp);
+
+    public ResultSet selectUserByName(HttpServletRequest req, HttpServletResponse resp);
 }
