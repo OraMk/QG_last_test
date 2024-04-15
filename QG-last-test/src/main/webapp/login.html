@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录功能</title>
+
+    <style type="text/css">
+        a {text-decoration:underline;color:red;background:white;}
+    </style>
+<!--    <script src="js/vue.min.js"></script>-->
+<!--    <script src="js/lib-master/index.js"></script>-->
+<!--    <link rel="stylesheet" href="js/lib-master/theme-chalk/index.css">-->
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $("#formSubmit").click(function (){
+
+                let username = $("#username").val();
+                let password = $("#password").val();
+                $.ajax({
+                    url:"loginServlet",
+                    type:"GET",
+                    data:{"username":username,"password":password,"method":"selectUser"},
+                    async:true,
+                    dataType:'text',
+                    success :function (res)
+                    {
+                        alert("登录成功!");
+                        $("#login").submit();
+                    },
+                    error : function (err){
+                        var span = $("#error");
+                        span.html("登录失败，用户名或者密码错误");
+                        span.css("color","red");
+                    }
+
+                })
+            });
+            $("#tourist").click(function (){
+
+                $.ajax({
+                    url:"loginServlet",
+                    type:"GET",
+                    data:{"method":"selectUser"},
+                    async:true,
+                    dataType:'text',
+                    success :function (res)
+                    {
+                        alert("登录成功!");
+                        $("#login").submit();
+                        var url="operation.html";
+                        location.assign(url);
+                    },
+                    error : function (err){
+                        var span = $("#s_error");
+                        span.html("登录失败,请稍后再试");
+                        span.css("color","red");
+                    }
+
+                })
+            });
+        })
+    </script>
+</head>
+<body>
+
+
+<center>
+    <div style="width :600px;height:400px;
+     border-color:black ;border-style:solid;border-width:1px;position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;" >
+        <div>
+            <h1>登录</h1>
+        </div>
+        <div>
+            没有账号?
+            <a href="sign.html" color="red">请先注册</a>
+        </div>
+        <form action="operation.html" id="login" method="post">
+            账号<input id="username" type="text" name="username" placeholder="QGStudio" ><br>
+            密码<input id="password" type="password" name="password"><br><br>
+            <input type="button" id="formSubmit" value="登录">
+        </form>
+        <span id="error"></span>
+        <br><br>
+            <input type="button" id="tourist" value="游客登录"><br>
+        <span id="s_error"></span>
+
+    </div>
+</center>
+
+
+</body>
+</html>

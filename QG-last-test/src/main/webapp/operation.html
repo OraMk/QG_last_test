@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主界面</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $.ajax({
+                url:"operationServlet",
+                type:"GET",
+                async:true,
+                dataType:'text',
+                data:{"method":"loginUser","username":$("#username").val()},
+                success :function (res){
+                    alert("已登录，账户为 ：" + res);
+                },
+                error : function (err){
+                    alert("未登录");
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+<div style="position: absolute;left: 300px;top: 120px">
+    企业名称<input type="text" name="enterprise_name">
+    &nbsp;&nbsp;人数<input type="text" name="number">
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="name_button" value="查找">
+
+</div>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>企业名称</th>
+                <th>人数</th>
+                <th>发展方向</th>
+                <th>详细</th>
+            </tr>
+            </thead>
+            <tbody align="center">
+            <tr>
+                <td>华为</td>
+                <td>150</td>
+                <td>5G通信</td>
+                <td><input type="button" value="查看详情"></td>
+            </tr>
+            <tr>
+                <td>腾讯</td>
+                <td>1000</td>
+                <td>游戏开发</td>
+                <td><input type="button" value="查看详情"></td>
+            </tr>
+            <tr>
+                <td>网易</td>
+                <td>500</td>
+                <td>信息网络</td>
+                <td><input type="button" value="查看详情"></td>
+            </tr>
+            </tbody>
+        </table>
+
+
+</form>
+</div>
+</body>
+</html>
