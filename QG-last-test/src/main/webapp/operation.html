@@ -14,6 +14,37 @@
                 data:{"method":"loginUser","username":$("#username").val()},
                 success :function (res){
                     alert("已登录，账户为 ：" + res);
+
+                    $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
+                    $("#research_button").click(function (){
+
+                    });
+                    $("#sign").html("<input type=\"button\" id=\"tourist\" value=\"退出登录\">");
+                    $("#tourist").click(function (){
+                        if (window.confirm("确认退出登录吗?")){
+                            $.ajax({
+                                url:"loginServlet",
+                                type:"GET",
+                                data:{"method":"selectUser"},
+                                async:true,
+                                dataType:'text',
+                                success :function (res)
+                                {
+                                    alert("退出成功!");
+                                    $("#login").submit();
+                                    var url="operation.html";
+                                    location.assign(url);
+                                },
+                                error : function (err){
+                                    var span = $("#s_error");
+                                    span.html("退出失败,请稍后再试");
+                                    span.css("color","red");
+                                }
+
+                            });
+                        }
+
+                    });
                 //     判断是不是网站管理
                     $.ajax({
                         url:"operationServlet",
@@ -26,13 +57,16 @@
                         },
                         error :function (){
                         //     普通用户
+
                         }
                     })
                 },
                 error : function (err){
                     alert("未登录");
+                    $("#sign").html("<a href=\"login.html\">登录</a></center>");
                 }
-            })
+            });
+
         });
     </script>
 </head>
@@ -42,6 +76,11 @@
     &nbsp;&nbsp;人数<input type="text" name="number">
     &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="name_button" value="查找">
 
+</div>
+<div style="position: absolute;left: 1100px;top: 120px " id="sign">
+
+</div>
+<div style="position: absolute;left: 950px;top: 120px" id="research">
 </div>
 <div style="width :800px;
      position: absolute;

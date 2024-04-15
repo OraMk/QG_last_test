@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>个人信息</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $.ajax({url:"operationServlet",
+                type:"GET",
+                async:true,
+                dataType:'json',
+                data:{"method":"selectByUsername"},
+                success:function (res){
+
+                },
+                error: function (err){
+
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <table>
+        <thead>
+        <tr>
+            <th>id</th>
+            <th>用户名</th>
+            <th>昵称</th>
+            <th>手机号码</th>
+            <th>头像</th>
+            <th>资金</th>
+            <th>封禁(yes/no)</th>
+
+        </tr>
+        </thead>
+       <tbody id="body">
+
+       </tbody>
+    </table>
+</div>
+</body>
+</html>

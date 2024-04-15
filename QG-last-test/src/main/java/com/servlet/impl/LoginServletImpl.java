@@ -4,14 +4,17 @@ import com.Dao.UserData;
 import com.Dao.impl.UserDataImpl;
 import com.servlet.BaseServlet;
 import com.servlet.LoginServlet;
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author 86178
@@ -132,6 +135,36 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
                 }
             }
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void selectByUsername(HttpServletRequest req, HttpServletResponse resp) {
+        String username = req.getParameter("username");
+        resultSet = userData.selectUsername(req,resp);
+        Map<String,String> map = new HashMap<String,String>();
+        try {
+            if (resultSet.next())
+            {
+                String uid = resultSet.getString("uid");
+                String userName = resultSet.getString("username");
+                String name = resultSet.getString("name");
+                String avatar = resultSet.getString("avatar");
+                String pNumber = resultSet.getString("pnumber");
+                String fund = String.valueOf(resultSet.getDouble("fund"));
+                String isAdministrator = resultSet.getString("is_administrator");
+                map.put("uid",uid);
+                map.put("username",userName);
+                map.put("name",name);
+                map.put("avatar",avatar);
+                map.put("pnumber",pNumber);
+                map.put("fund",fund);
+                map.put("is_administrator",isAdministrator);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(resp.getWriter(),map);
+                }
+        } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
         }
     }

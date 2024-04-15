@@ -13,6 +13,7 @@ public interface LoginServlet {
     public void selectUsername(HttpServletRequest req, HttpServletResponse resp);
 //    判断是否为网站管理员
     public void judgment(HttpServletRequest req, HttpServletResponse resp);
+    public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
 
 
 }

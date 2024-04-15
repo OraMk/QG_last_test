@@ -14,7 +14,7 @@ public class User {
     //用户头像url
     private String pNumber;
 //    用户手机号码
-    private long fund;
+    private double fund;
 //    用户资金
     private String isAdministrator;
     //用户是否为网站管理员
@@ -22,7 +22,7 @@ public class User {
     //用户是否被封禁
 
 
-    public User(int uid, String userName, String name, String passWord, String avatar, String pNumber, long fund, String isAdministrator, String banned) {
+    public User(int uid, String userName, String name, String passWord, String avatar, String pNumber, double fund, String isAdministrator, String banned) {
         this.uid = uid;
         this.userName = userName;
         this.name = name;
@@ -84,7 +84,7 @@ public class User {
         this.pNumber = pNumber;
     }
 
-    public long getFund() {
+    public double getFund() {
         return fund;
     }
 
