@@ -13,7 +13,15 @@ public interface LoginServlet {
     public void selectUsername(HttpServletRequest req, HttpServletResponse resp);
 //    判断是否为网站管理员
     public void judgment(HttpServletRequest req, HttpServletResponse resp);
+
+    //查找用户信息通过用户名
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
+
+    //更换普通信息
+    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
+
+    //更改头像
+    public void avatarChange(HttpServletRequest req, HttpServletResponse resp);
 
 
 }

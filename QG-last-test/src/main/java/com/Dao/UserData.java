@@ -15,4 +15,7 @@ public interface UserData {
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet selectUserByName(HttpServletRequest req, HttpServletResponse resp);
+
+    //更改普通信息
+    public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
 }

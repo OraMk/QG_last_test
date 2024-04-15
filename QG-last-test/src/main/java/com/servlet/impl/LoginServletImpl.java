@@ -168,4 +168,20 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) {
+        int n = userData.changeInformationSimple(req,resp);
+        if (n == 1)
+        {//则更改成功
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void avatarChange(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
 }

@@ -18,18 +18,49 @@
                         "            <td>"+ res.username+"</td>\n" +
                         "            <td>"+ res.name +"</td>\n" +
                         "            <td>"+ res.pnumber +"</td>\n" +
-                        "            <td>"+ res.avatar +"</td>\n" +
                         "            <td>"+ res.fund +"</td>\n" +
                         "            <td>"+ res.is_administrator+"</td>")
+                    $("#img").html("<img src = "+ res.avatar +" width=\"250px\" />");
+
+                    //更改头像
+                    $("#change_img").change(function (){
+                        let fileInput = $("#change_img").get(0);
+                        const file = fileInput.files[0];
+                        const filePath = URL.createObjectURL(file);
+                        $("#img").html("<img src = "+ filePath +" width=\"250px\" />")
+                        $.ajax({
+                            url:"loginServlet",
+                            type:"GET",
+                            data:{"method":"avatarChange"}
+                        })
+                    });
                 },
                 error: function (err){
 
                 }
             })
+            $("#body").click(function (){
+                // 返回主界面
+                let url = "operation.html";
+                location.assign(url);
+            });
+
+
+            $("#change_information").click(function (){
+                let url = "changeImg.html";
+                location.assign(url);
+            })
         })
     </script>
 </head>
 <body>
+
+<div id="img" style="position: absolute;top:180px;left: 180px">
+    <img src="https://img.zcool.cn/community/01a3865ab91314a8012062e3c38ff6.png@1280w_1l_2o_100sh.png" width="250px"></img>
+</div>
+<div style="position: absolute;top:480px;left: 210px">
+    <input type="file" id="change_img" value="更改头像" style="width: 170px; height: 40px">
+</div>
 <div style="width :800px;
      position: absolute;
             top: 180px;
@@ -37,29 +68,27 @@
             left: 0;
             right: 0;
             margin: auto;">
-    <table>
+    <table width =100% border="1px">
         <thead>
         <tr>
             <th>id</th>
             <th>用户名</th>
             <th>昵称</th>
             <th>手机号码</th>
-            <th>头像</th>
             <th>资金</th>
             <th>封禁(yes/no)</th>
 
         </tr>
         </thead>
        <tbody id="body">
-            <td>id</td>
-            <td>用户名</td>
-            <td>昵称</td>
-            <td>手机号码</td>
-            <td>头像</td>
-            <td>资金</td>
-            <td>封禁(yes/no)</td>
        </tbody>
     </table>
+
 </div>
+    <div style="position: absolute;top: 800px;left: 800px">
+        <input type="button" id="change_information" value="修改信息" style="width: 200px;height: 40px">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" value="返回" id="back" style="width: 200px;height:40px">
+    </div>
 </body>
 </html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改用户信息</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $("#formSubmit").click(function (){
+
+                if (
+                    ($("#s_username").html() == "用户名可用" || $("#s_username").html() == "") &&
+                    ($("#s_password").html() == "密码合法" || $("#s_password").html() == "" )&&
+                    ($("#s_name").html() == "昵称合法" || $("#s_name").html() == "") &&
+                    ($("#phone_span").html() == "手机号合法" || $("#phone_span").html() == "")){
+                    let username = $("#username").val();
+                    let password = $("#password").val();
+                    let name = $("#name").val();
+                    let pNumber = $("#pNumber").val();
+                    let span = $("#error");
+                    span.html("");
+                    $.ajax({
+                        url:"loginServlet",
+                        type:"GET",
+                        data:{
+                            "username":username,
+                            "password":password,
+                            "name":name,
+                            "phone_number":pNumber,
+                            "method":"changeInformationSimple"
+                        },
+                        async:true,
+                        dataType:'text',
+                        success :function ()
+                        {
+                            alert("更改成功!");
+                            let url ="userInformation.html";
+                            location.assign(url);
+                        },
+                        error : function (){
+                            span.html("更改失败");
+                        }
+
+                    });
+                }else{
+
+                    alert("请输入正确的信息")
+                }
+
+
+            });
+
+            $("#username").blur(function (){
+                let s_username = $("#s_username");
+                if (this.value=="")
+                {
+                    s_username.html("");
+                }
+                else{
+                    username_RegExP = /^(?!^\d)(?=.*[A-Za-z])(?=.*\d?)[A-Za-z\d]{6,10}$/;
+                    let ok = username_RegExP.test(this.value);
+                    if(ok)
+                    {
+                        s_username.html("用户名可用");
+                        s_username.css("color","green");
+                    }else{
+                        s_username.html("用户名6-10位，含有大写字母和小写字母以及数字，且首位不能位数字,数字非必须");
+                        s_username.css("color","red");
+                    }
+                }
+
+
+
+
+            });
+            $("#password").blur(function (){
+                let s_password = $("#s_password");
+                if (this.value == ""){
+                    s_password.html("");
+                }
+                else{
+                    password_RegExP = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)[A-Za-z\d]{8,16}$/;
+                    let ok = password_RegExP.test(this.value);
+                    if (ok){
+                        s_password.html("密码合法");
+                        s_password.css("color","green");
+                    }else {
+                        s_password.html("密码长度为8到16个字符，且包含至少一个大小写字母、一个数字。")
+                        s_password.css("color","red");
+
+                    }
+                }
+
+
+
+            });
+            $("#pNumber").blur(function (){
+
+                let s_phone = $("#phone_span");
+                if (this.value==""){
+                    s_phone.html("");
+                }
+                else{
+                    let phone_RegExP = /^[12]\d{10}$/;
+                    let ok = phone_RegExP.test(this.value);
+                    if (ok){
+                        s_phone.html("手机号合法");
+                        s_phone.css("color","green");
+                    }else {
+                        s_phone.html("请输入正确的手机号")
+                        s_phone.css("color","red");
+
+                    }
+                }
+
+
+
+            });
+            $("#name").blur(function (){
+                let s_name = $("#s_name");
+                if (this.value == "")
+                {
+                    s_name.html("");
+                }
+                else {
+                    let name_RegExP = /^[\u4e00-\u9fa5\w\d]{2,20}$/;
+                    let ok = name_RegExP.test(this.value);
+                    if (ok){
+                        s_name.html("昵称合法");
+                        s_name.css("color","green");
+                    }else {
+                        s_name.html("请输入正确的昵称(2-20 汉字，大小写字母，数字)")
+                        s_name.css("color","red");
+
+                    }
+                }
+
+
+
+            });
+
+            $("#back").click(function (){
+                let url ="userInformation.html";
+                location.assign(url);
+            });
+        })
+    </script>
+</head>
+<body>
+<div style="width :1000px;height:400px;
+     border-color:black ;border-style:solid;border-width:1px;position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <center><h1>更改用户信息</h1><h4>若不想更改该选项则不填写信息即可</h4></center>
+    <div style="width :820px;height:380px;position: absolute;
+            top: 220px;
+            bottom: 0;
+            left: 150px;
+            right: 0;
+            margin: auto;"  >
+        <form>
+            用户名<input type="text" id="username" name="username"><span id="s_username"></span><br>
+        昵称<input type="text" id="name" name="name"><span id="s_name"></span><br>
+        手机号码<input type="text" id="pNumber" name="pNumber"><span id="phone_span"></span><br>
+        密码<input type="password" id="password" name="password"><span id="s_password"></span><br><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" value="提交" id="formSubmit">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="button" value="返回" id="back">
+        </form>
+
+
+    </div>
+
+
+
+</div>
+
+
+</body>
+</html>

@@ -42,13 +42,15 @@ public class UserDataImpl implements UserData {
         String name = req.getParameter("name");
         String password =  req.getParameter("password");
         String avatar = req.getParameter("avatar");
+        //设置默认头像
+        avatar = "https://img.zcool.cn/community/01a3865ab91314a8012062e3c38ff6.png@1280w_1l_2o_100sh.png" ;
         String pNumber = req.getParameter("phone_number");
         int fund = 0;
         String isAdminstaraor = "no";
         String banned = "no";
         Connection connection=jdbc.getConnection();
-        String sql = "insert into user(username,name,password,avatar,pnumber,fund,is_administrator,u_banned) '" +
-                "values('" +username + "','" + name +  "','" + password + "','" +avatar+ "',"+
+        String sql = "insert into user(username,name,password,avatar,pnumber,fund,is_administrator,u_banned) " +
+                "values('" +username + "','" + name +  "','" + password + "','" +avatar+ "','"+
                 pNumber + "',"+ fund + ",'" +isAdminstaraor + "','" +banned+ "')";
         return jdbc.Edit(sql);
 
@@ -91,5 +93,45 @@ public class UserDataImpl implements UserData {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) {
+        Connection connection=jdbc.getConnection();
+        Cookie[] cookies = req.getCookies();
+        String formerly = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    formerly = c.getValue();
+
+                }
+            }
+        }
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String pNumber = req.getParameter("pnumber");
+        String name = req.getParameter("name");
+
+        int n = 0;
+        if (username != null || password != null || pNumber != null || name != null){
+            StringBuffer sql = new StringBuffer("update user set username = '" + formerly +"'");
+            if (username != null){
+                sql.append(", username= '" + username + "'");
+            }
+            if (password != null)
+            {
+                sql.append(", password= '"+ password + "'");
+            }
+            if (name != null){
+                sql.append(", name= '"+ name + "'");
+            }
+            if (pNumber != null){
+                sql.append(", pnumber = '"+ pNumber +"'");
+            }
+            sql.append("where username = '" + username +"'");
+            n = jdbc.Edit(String.valueOf(sql));
+        }
+        return n;
     }
 }
