@@ -115,10 +115,14 @@
                         type:"GET",
                         async:true,
                         data_type:'json',
-                        data:{"method":"judgmentApplyLeader"},
+                        data:{"method":"judgmentLeader"},
                         success:function (){//是企业负责人
-                            $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"join\">" +
+                            $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"change\">" +
                                 "<br><br><br><input type=\"button\" value=\"分配企业资金\" id=\"join\">");
+                            $("#change").click(function (){
+                                var url = "changeEnterpriseInformation.html"
+                                location.assign(url);
+                            });
                         },
                         error:function (){//不是企业负责人
                             $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");

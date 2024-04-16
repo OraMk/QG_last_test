@@ -160,4 +160,15 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
         }
 
     }
+
+    @Override
+    public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.changeInformationSimple(req,resp);
+        if (n == 1)
+        {//则更改成功
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }else{
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
 }

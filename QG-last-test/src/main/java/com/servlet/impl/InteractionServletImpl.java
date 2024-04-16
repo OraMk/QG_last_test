@@ -106,34 +106,24 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     public void judgmentLeader(HttpServletRequest req, HttpServletResponse resp) {
         resultSet = applicationData.judgmentJoin(req,resp);
         int n = 0;
-        while(true)
-        {
-            try {
-                if (!resultSet.next()) break;
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-            n++ ;
-        }
 
-        if (n != 0){
-            //则说明已经在在该企业了
+
             try {//判断是不是负责人
-                if ("yes".equals(resultSet.getString("isleader")))
-                {//是负责人
-                    resp.setStatus(HttpServletResponse.SC_OK);
+                if (resultSet.next()){
+                    if ("yes".equals(resultSet.getString("isleader")))
+                    {//是负责人
+                        resp.setStatus(HttpServletResponse.SC_OK);
 
-                }
-                else {//不是负责人
-                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    }
+                    else {//不是负责人
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
+                    }
                 }
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-        }else{
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-        }
     }
 }

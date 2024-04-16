@@ -9,4 +9,6 @@ public interface EnterpriseData {
     public ResultSet selectAll(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet displayIntroductionById(HttpServletRequest req, HttpServletResponse resp);
+
+    public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
 }
