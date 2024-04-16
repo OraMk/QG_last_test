@@ -123,6 +123,11 @@
                                 var url = "changeEnterpriseInformation.html"
                                 location.assign(url);
                             });
+                            $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\">")
+                            $("#apply").click(function (){
+                                let url = "";
+                                location.assign(url);
+                            })
                         },
                         error:function (){//不是企业负责人
                             $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
@@ -216,6 +221,9 @@
         <h1>介绍</h1>
     </div>
     <div style="width:800px;height: 320px;position: absolute; top: 40px; left: 130px;" id="introduce"></div>
+</div>
+<div style="position: absolute; top: 700px; left: 400px;" id="apply_div">
+
 </div>
     <div style="position: absolute; top: 700px; left: 600px;" id="join_div">
 <!--        <input type="button" value="申请加入企业" id="join">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
