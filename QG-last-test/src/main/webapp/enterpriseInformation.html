@@ -27,12 +27,148 @@
                     $("#body").html(str);
                     str = "<h4>"+data.introduction+"</h4>";
                     $("#introduce").html(str);
+                    $.ajax({//判断是否已经属于该企业
+                        url:"InteractionServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"judgmentJoin"},
+                        success:function (){//不属于该企业
+                            $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
+                            $("#join").click(function (){
+                                $.ajax({
+                                    url:"InteractionServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"applyToJoin"},
+                                    success:function (){
+                                        alert("申请成功");
+                                    },
+                                    error:function (){
+                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                    }
+                                });
+
+                            });
+                        },
+                        error:function (){//属于
+                            $("#quit_div").html("<input type=\"button\" value=\"退出企业\" id=\"quit\">");
+                            $("#quit").click(function (){
+                                if (window.confirm("确认要退出企业吗?")){
+                                    $.ajax({
+                                        url:"InteractionServlet",
+                                        type:"GET",
+                                        data:{"method":"deleteRelation"},
+                                        async:true,
+                                        dataType:'text',
+                                        success :function (res)
+                                        {
+                                            alert("已退出企业");
+                                            let url="enterpriseInformation.html";
+                                            location.assign(url);
+                                        },
+                                        error : function (err){
+                                            alert("退出企业失败，请稍后再试");
+                                        }
+
+                                    });
+                                }
+                            })
+                        }
+                    })
 
                 },
                 error:function (){
                     alert("查询失败，服务器异常，请稍后再试");
                 }
+            });
+            $.ajax({//判断是否已经属于该企业
+                url:"InteractionServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgmentJoin"},
+                success:function (){//不属于该企业
+                    $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
+                    $("#join").click(function (){
+                        $.ajax({
+                                url:"InteractionServlet",
+                                type:"GET",
+                                async:true,
+                                data_type:'json',
+                                data:{"method":"applyToJoin"},
+                                success:function (){
+                                    alert("申请成功");
+                                },
+                                error:function (){
+                                    alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                }
+                        });
+
+                    });
+                },
+                error:function (){//属于
+                    //判断是否为企业负责人
+                    $.ajax({
+                        url:"InteractionServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"judgmentApplyLeader"},
+                        success:function (){//是企业负责人
+                            $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"join\">" +
+                                "<br><br><br><input type=\"button\" value=\"分配企业资金\" id=\"join\">");
+                        },
+                        error:function (){//不是企业负责人
+                            $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
+                            $("#join").click(function (){
+                                $.ajax({
+                                    url:"InteractionServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"applyToLeader"},
+                                    success:function (){
+                                        alert("申请成功");
+                                    },
+                                    error:function (){
+                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                    }
+                                });
+
+                            });
+                        }
+                    })
+
+                    $("#quit_div").html("<input type=\"button\" value=\"退出企业\" id=\"quit\">");
+                    $("#quit").click(function (){
+                        if (window.confirm("确认要退出企业吗?")){
+                            $.ajax({
+                                url:"InteractionServlet",
+                                type:"GET",
+                                data:{"method":"deleteRelation"},
+                                async:true,
+                                dataType:'text',
+                                success :function (res)
+                                {
+                                    alert("已退出企业");
+                                    let url="enterpriseInformation.html";
+                                    location.assign(url);
+                                },
+                                error : function (err){
+                                    alert("退出企业失败，请稍后再试");
+                                }
+
+                            });
+                        }
+                    });
+                }
             })
+            $("#back").click(function (){
+                var url = "operation.html"
+                location.assign(url);
+            });
         });
     </script>
 </head>
@@ -77,5 +213,15 @@
     </div>
     <div style="width:800px;height: 320px;position: absolute; top: 40px; left: 130px;" id="introduce"></div>
 </div>
+    <div style="position: absolute; top: 700px; left: 600px;" id="join_div">
+<!--        <input type="button" value="申请加入企业" id="join">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-->
+    </div>
+
+    <div style="position: absolute; top: 700px; left: 800px;">
+        <input type="button" value="返回" id="back">
+    </div>
+    <div style="position: absolute; top: 700px; left: 900px;" id="quit_div">
+<!--        <input type="button" value="退出企业" id="quit">-->
+    </div>
 </body>
 </html>
