@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 86178
@@ -99,6 +101,63 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
                 throw new RuntimeException(e);
             }
 
+
+    }
+
+    @Override
+    public void remainEnterpriseId(HttpServletRequest req, HttpServletResponse resp) {
+
+        Cookie cookie = new Cookie("eid", req.getParameter("eid"));
+//                cookie.setMaxAge(3600); // 设置Cookie的过期时间为1小时
+        resp.addCookie(cookie);
+        resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    public void displayIntroductionById(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet = enterpriseData.displayIntroductionById(req,resp);
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String,String> map = new HashMap<String,String>();
+        try {
+            //获取查询结果集中的数据
+            if (resultSet.next()){
+                String eid = String.valueOf(resultSet.getInt("eid"));
+                String ename = resultSet.getString("ename");
+                String number = String.valueOf(resultSet.getLong("number"));
+                String size = resultSet.getString("size");
+                String direction = resultSet.getString("direction");
+                String publicMode = resultSet.getString("public_mode");
+                String totalFund = resultSet.getString("total_fund");
+                String ebanned = resultSet.getString("e_banned");
+                String introduction = resultSet.getString("introduction");
+                //包装数据为json数据
+                map.put("eid",eid);
+                map.put("ename",ename);
+                map.put("number",number);
+                map.put("size",size);
+                map.put("direction",direction);
+                map.put("public_mode",publicMode);
+                map.put("total_fund",totalFund);
+                map.put("e_banned",ebanned);
+                map.put("introduction",introduction);
+
+                //发送数据到前端
+                mapper.writeValue(resp.getWriter(),map);
+
+            }
+
+
+
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

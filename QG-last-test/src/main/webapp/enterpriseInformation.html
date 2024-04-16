@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>企业信息</title>
+
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $.ajax({
+                url:"operationServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"displayIntroductionById"},
+                success:function (res){
+                    let data = JSON.parse(res);//解析json数据
+                    if (data.public_mode == "public")data.public_mode = "公开";
+                    let str= "<tr>\n" +
+                        "            <th>"+data.ename+"</th>\n" +
+                        "            <th>"+data.number+"</th>\n" +
+                        "            <th>"+data.size+"</th>\n" +
+                        "            <th>"+data.direction+"</th>\n" +
+                        "            <th>"+data.e_banned+"</th>\n" +
+                        "            <th>"+data.public_mode+"</th>\n" +
+                        "        </tr>"
+                    $("#body").html(str);
+                    str = "<h4>"+data.introduction+"</h4>";
+                    $("#introduce").html(str);
+
+                },
+                error:function (){
+                    alert("查询失败，服务器异常，请稍后再试");
+                }
+            })
+        });
+    </script>
+</head>
+<body>
+
+
+<div style="width :800px;
+     position: absolute;
+            top: 100px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <table width =100% border="1px">
+        <thead>
+        <tr>
+            <th>企业名称</th>
+            <th>企业人数</th>
+            <th>规模</th>
+            <th>方向</th>
+            <th>是否被封禁</th>
+            <th>公开状态</th>
+        </tr>
+        </thead>
+        <tbody id="body">
+
+        </tbody>
+    </table>
+
+</div>
+
+<div style="width :1000px;height:400px;
+     border-color:black ;border-style:solid;border-width:1px;position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <div style="width:80px;height: 400px;border-color:black ;border-style:solid;border-width:1px;">
+        <br><br><br><br><br><br>
+        <h1>介绍</h1>
+    </div>
+    <div style="width:800px;height: 320px;position: absolute; top: 40px; left: 130px;" id="introduce"></div>
+</div>
+</body>
+</html>

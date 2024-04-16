@@ -13,7 +13,6 @@
                 data_type:'json',
                 data:{"method":"selectAll"},
                 success:function (res){
-                    alert(res);
                     var data = JSON.parse(res);
                     let str ="";
                     for(i in data){;
@@ -27,8 +26,22 @@
                     }
                     $("#body").html(str);
                     $(".research").click(function (){
-                        let id = this.id();
+                        let id = $(this).attr('id');
+                            $.ajax({
+                                url: "operationServlet",
+                                type: "GET",
+                                async: true,
+                                data_type: 'json',
+                                data: {"method": "remainEnterpriseId", "eid":id},
+                                success:function (res){
+                                    let url ="enterpriseInformation.html";
+                                    location.assign(url);
+                                },
+                                error:function (){
+                                    alert("查询异常请稍后再试");
+                                }
 
+                            });
                     })
                 },
                 error:function (){

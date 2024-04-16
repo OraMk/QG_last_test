@@ -2,6 +2,7 @@ package com.Dao.impl;
 
 import com.Dao.EnterpriseData;
 import com.untils.JDBC;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -27,7 +28,19 @@ public class EnterpriseDataImpl implements EnterpriseData {
 
     @Override
     public ResultSet displayIntroductionById(HttpServletRequest req, HttpServletResponse resp) {
-        return null;
+        String id = null;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    id = c.getValue();
+
+                }
+            }
+        }
+        String sql = "select * from enterprise where eid = " + id;
+        resultSet = jdbc.Select(sql);
+        return  resultSet;
     }
 
 
