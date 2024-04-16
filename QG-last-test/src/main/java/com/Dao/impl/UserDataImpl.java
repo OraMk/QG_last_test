@@ -15,13 +15,14 @@ import java.sql.SQLException;
 
 public class UserDataImpl implements UserData {
     JDBC jdbc = new JDBC();
+    Connection connection=jdbc.getConnection();
     ResultSet resultSet= null;
     public UserDataImpl() throws SQLException, IOException, ClassNotFoundException {
     }
 
     @Override
     public ResultSet selectUser(HttpServletRequest req, HttpServletResponse resp) {
-        Connection connection=jdbc.getConnection();
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
         try {
@@ -58,7 +59,6 @@ public class UserDataImpl implements UserData {
 
     @Override
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp) {
-        Connection connection=jdbc.getConnection();
         String username = req.getParameter("username");
         try {
             String sql = "select * from user where username = ?";
@@ -73,7 +73,6 @@ public class UserDataImpl implements UserData {
 
     @Override
     public ResultSet selectUserByName(HttpServletRequest req, HttpServletResponse resp) {
-        Connection connection=jdbc.getConnection();
         Cookie[] cookies = req.getCookies();
         String username = null;
         if (cookies != null) {
@@ -97,7 +96,6 @@ public class UserDataImpl implements UserData {
 
     @Override
     public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) {
-        Connection connection=jdbc.getConnection();
         Cookie[] cookies = req.getCookies();
         String formerly = null;
         if (cookies != null) {
@@ -137,7 +135,6 @@ public class UserDataImpl implements UserData {
 
     @Override
     public int changeAvatar(HttpServletRequest req, HttpServletResponse resp) {
-        Connection connection=jdbc.getConnection();
         Cookie[] cookies = req.getCookies();
         String formerly = null;
         int n = 0;
@@ -153,5 +150,10 @@ public class UserDataImpl implements UserData {
         String sql = "update user set avatar = '" + avatar +"' where username = '"+ formerly +"'";
         n = jdbc.Edit(sql);
         return  n;
+    }
+
+    @Override
+    public void close() {
+        jdbc.close();
     }
 }

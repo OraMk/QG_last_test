@@ -1,11 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>主界面</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         $(function (){
+            $.ajax({
+                url:"operationServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"selectAll"},
+                success:function (res){
+                    alert(res);
+                    var data = JSON.parse(res);
+                    let str ="";
+                    for(i in data){;
+                        str +="<tr>\n" +
+                            "                <td>" +data[i].eName + "</td>\n" +
+                            "                <td>" +data[i].number+ "</td>\n" +
+                            "                <td>"+ data[i].direction+"</td>\n" +
+                            "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                            "            </tr>"
+
+                    }
+                    $("#body").html(str);
+                    $(".research").click(function (){
+                        let id = this.id();
+
+                    })
+                },
+                error:function (){
+                    alert("数据异常，请稍后再查询");
+                }
+            });
             $.ajax({
                 url:"operationServlet",
                 type:"GET",
@@ -71,7 +100,7 @@
     </script>
 </head>
 <body>
-<div>
+
 
 <div style="position: absolute;left: 1000px;top: 90px" id="show">
 
@@ -105,25 +134,25 @@
                 <th>详细</th>
             </tr>
             </thead>
-            <tbody align="center">
-            <tr>
-                <td>华为</td>
-                <td>150</td>
-                <td>5G通信</td>
-                <td><input type="button" value="查看详情"></td>
-            </tr>
-            <tr>
-                <td>腾讯</td>
-                <td>1000</td>
-                <td>游戏开发</td>
-                <td><input type="button" value="查看详情"></td>
-            </tr>
-            <tr>
-                <td>网易</td>
-                <td>500</td>
-                <td>信息网络</td>
-                <td><input type="button" value="查看详情"></td>
-            </tr>
+            <tbody align="center" id="body">
+<!--            <tr>-->
+<!--                <td>华为</td>-->
+<!--                <td>150</td>-->
+<!--                <td>5G通信</td>-->
+<!--                <td><input type="button" value="查看详情"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>腾讯</td>-->
+<!--                <td>1000</td>-->
+<!--                <td>游戏开发</td>-->
+<!--                <td><input type="button" value="查看详情"></td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>网易</td>-->
+<!--                <td>500</td>-->
+<!--                <td>信息网络</td>-->
+<!--                <td><input type="button" value="查看详情"></td>-->
+<!--            </tr>-->
             </tbody>
         </table>
 
@@ -131,4 +160,5 @@
 </form>
 </div>
 </body>
+
 </html>

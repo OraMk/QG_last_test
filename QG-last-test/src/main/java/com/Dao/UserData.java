@@ -20,4 +20,5 @@ public interface UserData {
     public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
     //更改头像
     public int changeAvatar(HttpServletRequest req, HttpServletResponse resp);
+    public void close();
 }
