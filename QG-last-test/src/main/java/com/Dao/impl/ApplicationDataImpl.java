@@ -219,4 +219,6 @@ public class ApplicationDataImpl implements ApplicationData {
         String sql = "select * from application where is_accept != 'pending' and eid = " + eid;
         return jdbc.Select(sql);
     }
+
+
 }

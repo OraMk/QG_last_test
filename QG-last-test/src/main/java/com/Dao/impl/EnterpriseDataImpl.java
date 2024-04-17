@@ -224,5 +224,39 @@ public class EnterpriseDataImpl implements EnterpriseData {
         }
     }
 
+    @Override
+    public int inviteUsername(HttpServletRequest req, HttpServletResponse resp) {
+        String username = null;
+        int eid = 0;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        username = req.getParameter("username");
+        String sql = "insert relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
+        return jdbc.Edit(sql);
+
+    }
+    @Override
+    public ResultSet judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp) {
+        String username = req.getParameter("username");
+        String eid = null;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+            }
+        }
+
+        String sql = "select * from relation where username ='"+ username +"'  and eid = "+ eid ;
+        resultSet =  jdbc.Select(sql);
+        return resultSet;
+    }
 
 }

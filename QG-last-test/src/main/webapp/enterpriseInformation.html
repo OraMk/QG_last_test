@@ -16,6 +16,7 @@
                 success:function (res){
                     let data = JSON.parse(res);//解析json数据
                     if (data.public_mode == "public")data.public_mode = "公开";
+                    if (data.public_mode == "private")data.public_mode = "私有";
                     let str= "<tr>\n" +
                         "            <th>"+data.ename+"</th>\n" +
                         "            <th>"+data.number+"</th>\n" +
@@ -80,21 +81,69 @@
                             });
                             $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
                             $("#delete").click(function (){
-                                $.ajax({
-                                    url:"InteractionServlet",
+                                if (window.confirm("确认要注销企业吗?")){
+                                    $.ajax({
+                                        url:"InteractionServlet",
+                                        type:"GET",
+                                        async:true,
+                                        data_type:'json',
+                                        data:{"method":"deregisterEnterprise"},
+                                        success:function (){
+                                            alert("注销成功");
+                                            let url = "operation.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("注销失败，请稍后再试");
+                                        }
+                                    })
+                                }
+                            });
+                            $("#invite").html("<input type=\"text\" id=\"invite_name\">\n" +
+                                "        <input type=\"button\" value=\"邀请\" id=\"invite_button\">");
+                            $("#invite_button").click(function (){
+                                let username = $("#invite_name").val();
+                                $.ajax({//判断用户名是否存在
+                                    url:"loginServlet",
                                     type:"GET",
                                     async:true,
                                     data_type:'json',
-                                    data:{"method":"deregisterEnterprise"},
+                                    data:{"method":"selectUsername","username":username},
                                     success:function (){
-                                        alert("注销成功");
-                                        let url = "operation.html";
-                                        location.assign(url);
+                                        //先判断是否为已经为企业成员，再进行邀请
+                                        $.ajax({//判断是否为企业成员
+                                            url:"InteractionServlet",
+                                            type:"GET",
+                                            async:true,
+                                            data_type:'json',
+                                            data:{"method":"judgmentJoinForInvite","username":username},
+                                            success:function (){
+                                                alert("该用户已在企业内，无需邀请");
+
+                                            },
+                                            error:function (){
+                                                $.ajax({
+                                                    url:"InteractionServlet",
+                                                    type:"GET",
+                                                    async:true,
+                                                    data_type:'json',
+                                                    data:{"method":"inviteUsername","username":username},
+                                                    success:function (){
+                                                        alert("邀请成功");
+                                                    },
+                                                    error:function (){
+                                                        alert("邀请失败,请稍后再试");
+                                                    }
+                                                });
+                                            }
+                                        })
+
                                     },
                                     error:function (){
-                                        alert("注销失败，请稍后再试");
+                                        alert("该用户不存在");
                                     }
                                 })
+
                             })
                         },
                         error:function (){//不是企业负责人
@@ -204,6 +253,10 @@
 <!--        <input type="button" value="退出企业" id="quit">-->
     </div>
 
+    <div style="position: absolute; top: 750px; left: 900px;" id="invite">
+<!--        <input type="text" id="invite_name">-->
+<!--        <input type="button" value="邀请" id="invite_button">-->
+    </div>
     <div id="delete_div" style="position: absolute; top: 700px; left: 1000px;">
 <!--        <input type="button" value="注销企业" id="quit">-->
     </div>

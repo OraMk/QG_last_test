@@ -23,6 +23,9 @@ public interface InteractionServlet {
     //同意申请
     public void agreeApplication(HttpServletRequest req, HttpServletResponse resp);
 
+    //拒绝申请
+    public void refuseApplication(HttpServletRequest req, HttpServletResponse resp);
+
     //同意加入企业
     public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
@@ -31,4 +34,10 @@ public interface InteractionServlet {
 
     //注销企业
     public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    //拉用户进入企业
+    public void inviteUsername(HttpServletRequest req, HttpServletResponse resp);
+
+    //判断邀请用户是否为企业成员
+    public void judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp);
 }

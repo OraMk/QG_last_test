@@ -47,6 +47,26 @@
                         });
 
                     });
+                    $(".refuse").click(function (){
+                        //获取该按钮的name属性
+                        aid = $(this).attr('name');
+                        $.ajax({
+                            url: "InteractionServlet",
+                            type: "GET",
+                            async: true,
+                            data_type: 'json',
+                            data: {"method": "refuseApplication","aid":aid},
+                            success:function (res){
+                                alert("受理成功")
+                                $("#"+aid).html("no");
+
+                            },
+                            error:function (){
+                                alert("请求异常,请稍后再试");
+                            }
+                        });
+
+                    });
 
                 },
                 error:function (){

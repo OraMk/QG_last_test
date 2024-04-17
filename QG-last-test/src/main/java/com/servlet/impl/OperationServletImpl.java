@@ -40,7 +40,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
     @Override
     public void loginUser(HttpServletRequest req, HttpServletResponse resp) {
 
-
+            int ture = 0;
         try {
             Cookie[] cookies = req.getCookies();
             if (cookies != null)
@@ -48,12 +48,14 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
                 for (Cookie c: cookies)
                 {
                     if ("username".equals(c.getName())){
+                        ture = 1 ;
                         String username = c.getValue();
                         if ("".equals(c.getValue())){
                             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                         }
                         else {
                             resp.setStatus(HttpServletResponse.SC_OK);
+
                             resp.getWriter().write(username);
                         }
 
@@ -62,9 +64,13 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
             }else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
-            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        if (ture == 0){
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         }
 
 

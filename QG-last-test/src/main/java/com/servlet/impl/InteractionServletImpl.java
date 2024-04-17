@@ -226,6 +226,18 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
+    public void refuseApplication(HttpServletRequest req, HttpServletResponse resp) {
+        int n = applicationData.refuseApplication(req, resp);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
     public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
         int n = enterpriseData.joinEnterprise(req, resp);
         if (n == 1){
@@ -255,6 +267,37 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
         }else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void inviteUsername(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.inviteUsername(req,resp);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet = enterpriseData.judgmentJoinForInvite(req,resp);
+        int n = 0 ;
+        try {
+            if (resultSet.next()){
+                n++;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         }
     }
 }
