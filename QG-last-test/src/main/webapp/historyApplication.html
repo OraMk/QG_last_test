@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>处理申请</title>
+    <title>已经审理的申请信息</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         $(function (){
@@ -11,7 +11,7 @@
                 type: "GET",
                 async: true,
                 data_type: 'json',
-                data: {"method": "displayApplication"},
+                data: {"method": "displayHistoryApplication"},
                 success:function (res){
                     let data = JSON.parse(res);
                     let str ="";
@@ -20,33 +20,10 @@
                             "                <td>" +data[i].username + "</td>\n" +
                             "                <td id='"+data[i].aId +"'>" +data[i].isAccept+ "</td>\n" +
                             "                <td>"+ data[i].description+"</td>\n" +
-                            "                <td><input type=\"button\" name='"+data[i].aId+"' class='agree' value=\"同意\">\n" +
-                            "       &nbsp;&nbsp;&nbsp;<input type=\"button\" name='"+data[i].aId+"' class='refuse' value=\"不同意\"></td>\n" +
                             "            </tr>"
 
                     }
                     $("#body").html(str);
-                    //判断点击同意的选项
-                    $(".agree").click(function (){
-                        //获取该按钮的name属性
-                        aid = $(this).attr('name');
-                        $.ajax({
-                            url: "InteractionServlet",
-                            type: "GET",
-                            async: true,
-                            data_type: 'json',
-                            data: {"method": "agreeApplication","aid":aid},
-                            success:function (res){
-                                alert("确认成功")
-                                $("#"+aid).html("yes");
-
-                            },
-                            error:function (){
-                                alert("请求异常,请稍后再试");
-                            }
-                        });
-
-                    });
 
                 },
                 error:function (){
@@ -55,7 +32,7 @@
 
             });
             $("#back").click(function (){
-                let url = "enterpriseInformation.html";
+                let url = "handleApplication.html";
                 location.assign(url);
             });
             $.ajax({
@@ -69,10 +46,7 @@
                     $("#enterpriseId").html("<h3>企业名称为 "+data.ename +"</h3>")
                 }
             })
-            $("#history").click(function (){
-                let url = "historyApplication.html";
-                location.assign(url);
-            })
+
         })
     </script>
 </head>
@@ -89,14 +63,6 @@
 <div style="position: absolute;
             top: 120px;
             bottom: 0;
-            left: 600px;
-            right: 0;
-            margin: auto;">
-    <input type="button" id="history" value="查看已经审理的申请信息">
-</div >
-<div style="position: absolute;
-            top: 120px;
-            bottom: 0;
             left: 800px;
             right: 0;
             margin: auto;">
@@ -110,18 +76,17 @@
             right: 0;
             margin: auto;">
 
-        <table width =100% border="1px">
-            <thead align="center">
-            <tr>
-                <th>申请人用户名</th>
-                <th>是否受理</th>
-                <th>申请类型</th>
-                <th>进行处理</th>
-            </tr>
-            </thead>
-            <tbody align="center" id="body">
-            </tbody>
-        </table>
+    <table width =100% border="1px">
+        <thead align="center">
+        <tr>
+            <th>申请人用户名</th>
+            <th>是否受理</th>
+            <th>申请类型</th>
+        </tr>
+        </thead>
+        <tbody align="center" id="body">
+        </tbody>
+    </table>
 </div>
 </body>
 </html>

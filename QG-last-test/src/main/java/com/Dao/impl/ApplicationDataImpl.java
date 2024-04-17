@@ -202,4 +202,21 @@ public class ApplicationDataImpl implements ApplicationData {
         String sql = "update application set is_accept = 'no' where aid = " + aId;
         return jdbc.Edit(sql);
     }
+
+    @Override
+    public ResultSet displayHistoryApplication(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String eid = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+            }
+        }
+        //查询属于该企业的请求
+        String sql = "select * from application where is_accept != 'pending' and eid = " + eid;
+        return jdbc.Select(sql);
+    }
 }

@@ -29,4 +29,5 @@ public interface ApplicationData {
 
     public int refuseApplication(HttpServletRequest req, HttpServletResponse resp);
 
+    public ResultSet displayHistoryApplication(HttpServletRequest req, HttpServletResponse resp);
 }

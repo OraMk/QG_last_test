@@ -170,6 +170,36 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
+    public void displayHistoryApplication(HttpServletRequest req, HttpServletResponse resp) {
+        //调用dao层
+        resultSet = applicationData.displayHistoryApplication(req,resp);
+        long aid = 0;
+        String username = null;
+        int eid = 0;
+        String isAccept = null;
+        String description = null;
+        //获取查询结果
+        applicationList = new ArrayList<Application>();
+        try {
+            while (resultSet.next()){
+                aid = resultSet.getLong("aid");
+                username = resultSet.getString("username");
+                eid = resultSet.getInt("eid");
+                isAccept = resultSet.getString("is_accept");
+                description = resultSet.getString("description");
+                application = new Application(aid,username,eid,isAccept,description);
+                applicationList.add(application);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),applicationList);
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
     public void agreeApplication(HttpServletRequest req, HttpServletResponse resp) {
         resultSet = applicationData.selectApplicationById(req,resp);
         String description = null;
@@ -186,7 +216,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             agreeJoinEnterprise(req,resp);
 
         } else if ("申请成为负责人".equals(description)) {
-
+            updateEnterpriseLeader(req,resp);
         }
         int n = applicationData.agreeApplication(req,resp);
         if (n == 1){
@@ -198,6 +228,17 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     @Override
     public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
         int n = enterpriseData.joinEnterprise(req, resp);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.joinLeader(req,resp);
         if (n == 1){
             resp.setStatus(HttpServletResponse.SC_OK);
 

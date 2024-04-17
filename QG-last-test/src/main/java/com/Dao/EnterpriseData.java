@@ -13,4 +13,6 @@ public interface EnterpriseData {
     public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
 
     public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    public int joinLeader(HttpServletRequest req, HttpServletResponse resp);
 }

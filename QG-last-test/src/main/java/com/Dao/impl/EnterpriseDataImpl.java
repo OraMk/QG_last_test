@@ -108,5 +108,22 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public int joinLeader(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet =  applicationData.selectApplicationById(req,resp);
+        String username = null;
+        int eid = 0;
+        try {
+            if (resultSet.next()){
+                username = resultSet.getString("username");
+                eid = resultSet.getInt("eid");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = "update relation set isLeader = 'yes' where eid = " + eid +" and username = '" + username + "'";
+        return jdbc.Edit(sql);
+    }
+
 
 }
