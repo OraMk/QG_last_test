@@ -18,4 +18,7 @@ public interface OperationServlet {
     public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp);
     //根据企业名称查找企业
     public void selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
+
+    //根据名称查找所属企业
+    public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
 }

@@ -62,7 +62,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
             }else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
-
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -190,6 +190,42 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
                 enterprise = new Enterprise(eid,ename,number,size,direction,publicMode,totalFund,introduction,ebanned);
                 enterpriseList.add(enterprise);
             }
+            mapper.writeValue(resp.getWriter(),enterpriseList);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void selectByUsername(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet = enterpriseData.selectAllByUsername(req,resp);
+        if (resultSet == null){
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+        enterpriseList = new ArrayList<Enterprise>();
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            while (resultSet.next()){
+                int eid = resultSet.getInt("eid");
+                String ename = resultSet.getString("ename");
+                long number = resultSet.getLong("number");
+                String size = resultSet.getString("size");
+                String direction = resultSet.getString("direction");
+                String publicMode = resultSet.getString("public_mode");
+                String totalFund = resultSet.getString("total_fund");
+                String ebanned = resultSet.getString("e_banned");
+                String introduction = resultSet.getString("introduction");
+                enterprise = new Enterprise(eid,ename,number,size,direction,publicMode,totalFund,introduction,ebanned);
+                enterpriseList.add(enterprise);
+            }
+            resp.setStatus(HttpServletResponse.SC_OK);
             mapper.writeValue(resp.getWriter(),enterpriseList);
         } catch (SQLException e) {
             throw new RuntimeException(e);

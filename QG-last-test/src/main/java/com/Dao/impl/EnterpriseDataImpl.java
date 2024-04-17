@@ -12,6 +12,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * @author 86178
+ */
 public class EnterpriseDataImpl implements EnterpriseData {
     JDBC jdbc = new JDBC();
     ResultSet resultSet= null;
@@ -181,6 +184,44 @@ public class EnterpriseDataImpl implements EnterpriseData {
         }
 
         return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectAllByUsername(HttpServletRequest req, HttpServletResponse resp) {
+        String username = null;
+        Cookie[] cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+
+                }
+            }
+        }
+        String sql = "select * from relation where username = '" + username + "'";
+        resultSet = jdbc.Select(sql);
+        int[] eid = new int[100];
+        int i = 0;
+        try {
+            while (resultSet.next()){
+                eid[i++] = resultSet.getInt("eid");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (i != 0){
+            StringBuffer SQL = new StringBuffer("select * from enterprise where eid in (");
+            int j = 0 ;
+            SQL.append(eid[j++]);
+            for (; j < i ; j++ ){
+                SQL.append("," + eid[j]);
+            }
+            SQL.append(")");
+            return jdbc.Select(String.valueOf(SQL));
+
+        }else {
+            return  null;
+        }
     }
 
 

@@ -33,7 +33,7 @@
                                 async: true,
                                 data_type: 'json',
                                 data: {"method": "remainEnterpriseId", "eid":id},
-                                success:function (res){
+                                success:function (){
                                     let url ="enterpriseInformation.html";
                                     location.assign(url);
                                 },
@@ -55,7 +55,99 @@
                 dataType:'text',
                 data:{"method":"loginUser"},
                 success :function (res){
-                    $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"enterprise\" value=\"查看我的企业\">");
+                    $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"self-enterprise\" value=\"查看我的企业\">");
+                    $("#self-enterprise").click(function (){
+                        $.ajax({
+                            url:"operationServlet",
+                            type:"GET",
+                            async:true,
+                            dataType:'text',
+                            data:{"method":"selectByUsername"},
+                            success:function (res){
+                                let data = JSON.parse(res);
+                                let str ="";
+                                for(i in data){
+                                    str +="<tr>\n" +
+                                        "                <td>" +data[i].eName + "</td>\n" +
+                                        "                <td>" +data[i].number+ "</td>\n" +
+                                        "                <td>"+ data[i].direction+"</td>\n" +
+                                        "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                        "            </tr>"
+
+                                }
+                                $("#body").html(str);
+                                $(".research").click(function (){
+                                    let id = $(this).attr('id');
+                                    $.ajax({
+                                        url: "operationServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "remainEnterpriseId", "eid":id},
+                                        success:function (){
+                                            let url ="enterpriseInformation.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("查询异常请稍后再试");
+                                        }
+
+                                    });
+                                })
+                                alert("当前为所属企业")
+                                $("#back").html("<input type=\"button\" id=\"re_back\" value=\"返回\">");
+                                $("#re_back").click(function (){
+                                    $.ajax({
+                                        url:"operationServlet",
+                                        type:"GET",
+                                        async:true,
+                                        data_type:'json',
+                                        data:{"method":"selectAll"},
+                                        success:function (res){
+                                            let data = JSON.parse(res);
+                                            let str ="";
+                                            for(i in data){
+                                                str +="<tr>\n" +
+                                                    "                <td>" +data[i].eName + "</td>\n" +
+                                                    "                <td>" +data[i].number+ "</td>\n" +
+                                                    "                <td>"+ data[i].direction+"</td>\n" +
+                                                    "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                                    "            </tr>"
+
+                                            }
+                                            $("#body").html(str);
+                                            $(".research").click(function (){
+                                                let id = $(this).attr('id');
+                                                $.ajax({
+                                                    url: "operationServlet",
+                                                    type: "GET",
+                                                    async: true,
+                                                    data_type: 'json',
+                                                    data: {"method": "remainEnterpriseId", "eid":id},
+                                                    success:function (){
+                                                        let url ="enterpriseInformation.html";
+                                                        location.assign(url);
+                                                    },
+                                                    error:function (){
+                                                        alert("查询异常请稍后再试");
+                                                    }
+
+                                                });
+                                            })
+                                            $("#back").html("");
+                                        },
+                                        error:function (){
+                                            alert("数据异常，请稍后再查询");
+                                        }
+                                    });
+                                })
+
+                            },
+                            error:function (){
+                                alert("该用户无所属企业");
+                            }
+                        })
+                    })
                     $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
                     $("#research_button").click(function (){
                         let url = "userInformation.html";
@@ -70,14 +162,14 @@
                                 data:{"method":"selectUser"},
                                 async:true,
                                 dataType:'text',
-                                success :function (res)
+                                success :function ()
                                 {
                                     alert("退出成功!");
                                     $("#login").submit();
                                     let url="operation.html";
                                     location.assign(url);
                                 },
-                                error : function (err){
+                                error : function (){
                                     var span = $("#s_error");
                                     span.html("退出失败,请稍后再试");
                                     span.css("color","red");
@@ -103,7 +195,7 @@
                         }
                     })
                 },
-                error : function (err){
+                error : function (){
                     alert("未登录");
                     $("#sign").html("<a href=\"login.html\">登录</a></center>");
                 }
@@ -137,7 +229,7 @@
                                 async: true,
                                 data_type: 'json',
                                 data: {"method": "remainEnterpriseId", "eid":id},
-                                success:function (res){
+                                success:function (){
                                     let url ="enterpriseInformation.html";
                                     location.assign(url);
                                 },
@@ -158,7 +250,9 @@
     </script>
 </head>
 <body>
+<div style="position: absolute;left: 800px;top: 50px" id="back">
 
+</div>
 
 <div style="position: absolute;left: 1000px;top: 90px" id="show">
 

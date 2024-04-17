@@ -19,4 +19,6 @@ public interface EnterpriseData {
     public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
+
+    public ResultSet selectAllByUsername(HttpServletRequest req, HttpServletResponse resp);
 }
