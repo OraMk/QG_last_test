@@ -11,8 +11,16 @@ public interface InteractionServlet {
     public void judgmentJoin(HttpServletRequest req, HttpServletResponse resp);
     //退出企业
     public void deleteRelation(HttpServletRequest req, HttpServletResponse resp);
-
+    //申请成为负责人
     public void applyToLeader(HttpServletRequest req, HttpServletResponse resp);
-
+    //判断是否未企业负责人
     public void judgmentLeader(HttpServletRequest req, HttpServletResponse resp);
+
+    //展示申请表
+    public void displayApplication(HttpServletRequest req, HttpServletResponse resp);
+
+    //同意申请
+    public void agreeApplication(HttpServletRequest req, HttpServletResponse resp);
+
+    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp);
 }

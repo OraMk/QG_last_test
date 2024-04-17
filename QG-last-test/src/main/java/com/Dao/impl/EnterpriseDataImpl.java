@@ -1,5 +1,6 @@
 package com.Dao.impl;
 
+import com.Dao.ApplicationData;
 import com.Dao.EnterpriseData;
 import com.untils.JDBC;
 import jakarta.servlet.http.Cookie;
@@ -15,6 +16,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
     JDBC jdbc = new JDBC();
     ResultSet resultSet= null;
     Connection connection=jdbc.getConnection();
+    ApplicationData applicationData = new ApplicationDataImpl();
 
     public EnterpriseDataImpl() throws SQLException, IOException, ClassNotFoundException {
     }
@@ -87,6 +89,23 @@ public class EnterpriseDataImpl implements EnterpriseData {
             n = jdbc.Edit(String.valueOf(sql));
         }
         return n;
+    }
+
+    @Override
+    public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet =  applicationData.selectApplicationById(req,resp);
+        String username = null;
+        int eid = 0;
+        try {
+            if (resultSet.next()){
+                username = resultSet.getString("username");
+                eid = resultSet.getInt("eid");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        String sql = "insert relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
+        return jdbc.Edit(sql);
     }
 
 

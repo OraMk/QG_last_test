@@ -2,15 +2,23 @@ package com.servlet.impl;
 
 import com.Dao.ApplicationData;
 import com.Dao.impl.ApplicationDataImpl;
+import com.Dao.impl.EnterpriseDataImpl;
+import com.pojo.Application;
+import com.pojo.Enterprise;
 import com.servlet.BaseServlet;
 import com.servlet.InteractionServlet;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author 86178
@@ -19,6 +27,9 @@ import java.sql.SQLException;
 public class InteractionServletImpl extends BaseServlet implements InteractionServlet {
     ResultSet resultSet = null;
     ApplicationData applicationData = new ApplicationDataImpl();
+    List<Application> applicationList = null;
+    Application application = null;
+    EnterpriseDataImpl enterpriseData = new EnterpriseDataImpl();
 
     public InteractionServletImpl() throws SQLException, IOException, ClassNotFoundException {
     }
@@ -49,6 +60,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
     @Override
     public void judgmentJoin(HttpServletRequest req, HttpServletResponse resp) {
+        //调用dao层去实现查询
         resultSet = applicationData.judgmentJoin(req,resp);
         int n = 0;
         while(true)
@@ -125,5 +137,72 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                 throw new RuntimeException(e);
             }
 
+    }
+
+    @Override
+    public void displayApplication(HttpServletRequest req, HttpServletResponse resp) {
+        //调用dao层
+        resultSet = applicationData.displayApplication(req,resp);
+        long aid = 0;
+        String username = null;
+        int eid = 0;
+        String isAccept = null;
+        String description = null;
+        //获取查询结果
+        applicationList = new ArrayList<Application>();
+        try {
+            while (resultSet.next()){
+                aid = resultSet.getLong("aid");
+                username = resultSet.getString("username");
+                eid = resultSet.getInt("eid");
+                isAccept = resultSet.getString("is_accept");
+                description = resultSet.getString("description");
+                application = new Application(aid,username,eid,isAccept,description);
+                applicationList.add(application);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),applicationList);
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public void agreeApplication(HttpServletRequest req, HttpServletResponse resp) {
+        resultSet = applicationData.selectApplicationById(req,resp);
+        String description = null;
+//        long aid = 0;
+        try {
+            if (resultSet.next()){
+                description = resultSet.getString("description");
+//                aid = resultSet.getLong("aid");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if ("申请加入企业".equals(description)){
+            agreeJoinEnterprise(req,resp);
+
+        } else if ("申请成为负责人".equals(description)) {
+
+        }
+        int n = applicationData.agreeApplication(req,resp);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+        }
+
+    }
+
+    @Override
+    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.joinEnterprise(req, resp);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 }

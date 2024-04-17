@@ -37,6 +37,10 @@ public class ApplicationDataImpl implements ApplicationData {
                 }
             }
         }
+        if (username == null || username == "")
+        {
+            return 0;
+        }
         String isAccept = "pending";
         String description = "申请加入企业";
         String sql = "insert into application(username,eid,is_accept,description) values( '"+username +"' , " +eid + " ,'" + isAccept + "', '"+description +"')";
@@ -45,25 +49,21 @@ public class ApplicationDataImpl implements ApplicationData {
 
     @Override
     public ResultSet judgmentJoin(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet = userData.selectUserByName(req, resp);
-        String uid = null;
+        String username = null;
         String eid = null;
-        try {
-            if (resultSet.next()){
-                uid = resultSet.getString("uid");
-                cookies = req.getCookies();
-                if (cookies != null) {
-                    for (Cookie c : cookies) {
-                        if ("eid".equals(c.getName())) {
-                            eid = c.getValue();
-                        }
-                    }
+        cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+                if ("username".equals(c.getName())){
+                    username = c.getValue();
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-        String sql = "select * from relation where uid ="+ uid +"  and eid = "+ eid ;
+
+        String sql = "select * from relation where username ='"+ username +"'  and eid = "+ eid ;
         resultSet =  jdbc.Select(sql);
         return resultSet;
     }
@@ -96,24 +96,22 @@ public class ApplicationDataImpl implements ApplicationData {
     @Override
     public int deleteRelation(HttpServletRequest req, HttpServletResponse resp) {
         resultSet = userData.selectUserByName(req, resp);
-        String uid = null;
+        String username = null;
         String eid = null;
-        try {
-            if (resultSet.next()){
-                uid = resultSet.getString("uid");
-                cookies = req.getCookies();
-                if (cookies != null) {
-                    for (Cookie c : cookies) {
-                        if ("eid".equals(c.getName())) {
-                            eid = c.getValue();
-                        }
-                    }
+
+        cookies = req.getCookies();
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+                if ("username".equals(c.getName())){
+                    username = c.getValue();
                 }
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
         }
-        String sql = "delete from relation where uid ="+ uid +"  and eid = "+ eid ;
+
+        String sql = "delete from relation where username ="+ username +"  and eid = "+ eid ;
         return jdbc.Edit(sql);
 
     }
@@ -122,6 +120,7 @@ public class ApplicationDataImpl implements ApplicationData {
     public int addApplicationLeader(HttpServletRequest req, HttpServletResponse resp) {
 
             Cookie[] cookies = req.getCookies();
+            //获取cookie
             String username = null;
             String eid = null;
             if (cookies != null) {
@@ -163,5 +162,44 @@ public class ApplicationDataImpl implements ApplicationData {
             if ("pending".equals(isAccept))return true;
         }
         return false;
+    }
+
+    @Override
+    public ResultSet displayApplication(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String eid = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                 if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+            }
+        }
+        //查询属于该企业的请求
+        String sql = "select * from application where is_accept = 'pending' and eid = " + eid;
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectApplicationById(HttpServletRequest req, HttpServletResponse resp) {
+        long aId = Integer.parseInt(req.getParameter("aid"));
+        //通过id查找目标请求
+        String sql = "select * from application where aid =" + aId;
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int agreeApplication(HttpServletRequest req, HttpServletResponse resp) {
+        long aId = Integer.parseInt(req.getParameter("aid"));
+        String sql = "update application set is_accept = 'yes' where aid = " + aId;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int refuseApplication(HttpServletRequest req, HttpServletResponse resp) {
+        long aId = Integer.parseInt(req.getParameter("aid"));
+        String sql = "update application set is_accept = 'no' where aid = " + aId;
+        return jdbc.Edit(sql);
     }
 }

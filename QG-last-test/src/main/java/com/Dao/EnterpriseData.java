@@ -11,4 +11,6 @@ public interface EnterpriseData {
     public ResultSet displayIntroductionById(HttpServletRequest req, HttpServletResponse resp);
 
     public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
+
+    public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp);
 }

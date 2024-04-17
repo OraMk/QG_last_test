@@ -5,10 +5,90 @@
     <title>处理申请</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+        $(function (){
+            $.ajax({
+                url: "InteractionServlet",
+                type: "GET",
+                async: true,
+                data_type: 'json',
+                data: {"method": "displayApplication"},
+                success:function (res){
+                    let data = JSON.parse(res);
+                    let str ="";
+                    for(i in data){
+                        str +="<tr >\n" +
+                            "                <td>" +data[i].username + "</td>\n" +
+                            "                <td id='"+data[i].aId +"'>" +data[i].isAccept+ "</td>\n" +
+                            "                <td>"+ data[i].description+"</td>\n" +
+                            "                <td><input type=\"button\" name='"+data[i].aId+"' class='agree' value=\"同意\">\n" +
+                            "       &nbsp;&nbsp;&nbsp;<input type=\"button\" name='"+data[i].aId+"' class='refuse' value=\"不同意\"></td>\n" +
+                            "            </tr>"
 
+                    }
+                    $("#body").html(str);
+                    //判断点击同意的选项
+                    $(".agree").click(function (){
+                        //获取该按钮的name属性
+                        aid = $(this).attr('name');
+                        $.ajax({
+                            url: "InteractionServlet",
+                            type: "GET",
+                            async: true,
+                            data_type: 'json',
+                            data: {"method": "agreeApplication","aid":aid},
+                            success:function (res){
+                                alert("确认成功")
+                                $("#"+aid).html("yes");
+
+                            },
+                            error:function (){
+                                alert("请求异常,请稍后再试");
+                            }
+                        });
+
+                    });
+
+                },
+                error:function (){
+                    alert("查询异常请稍后再试");
+                }
+
+            });
+            $("#back").click(function (){
+                let url = "enterpriseInformation.html";
+                location.assign(url);
+            });
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                data_type: 'json',
+                data: {"method": "displayIntroductionById"},
+                success:function (res){
+                    let data = JSON.parse(res);
+                    $("#enterpriseId").html("<h3>企业名称为 "+data.ename +"</h3>")
+                }
+            })
+        })
     </script>
 </head>
 <body>
+<div style="position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 700px;
+            right: 0;
+            margin: auto;" id="enterpriseId">
+    11111
+</div >
+<div style="position: absolute;
+            top: 120px;
+            bottom: 0;
+            left: 800px;
+            right: 0;
+            margin: auto;">
+    <input type="button" id="back" value="返回">
+</div >
 <div style="width :800px;
      position: absolute;
             top: 180px;

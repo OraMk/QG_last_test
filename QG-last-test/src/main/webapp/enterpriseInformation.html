@@ -27,56 +27,6 @@
                     $("#body").html(str);
                     str = "<h4>"+data.introduction+"</h4>";
                     $("#introduce").html(str);
-                    $.ajax({//判断是否已经属于该企业
-                        url:"InteractionServlet",
-                        type:"GET",
-                        async:true,
-                        data_type:'json',
-                        data:{"method":"judgmentJoin"},
-                        success:function (){//不属于该企业
-                            $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
-                            $("#join").click(function (){
-                                $.ajax({
-                                    url:"InteractionServlet",
-                                    type:"GET",
-                                    async:true,
-                                    data_type:'json',
-                                    data:{"method":"applyToJoin"},
-                                    success:function (){
-                                        alert("申请成功");
-                                    },
-                                    error:function (){
-                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
-                                    }
-                                });
-
-                            });
-                        },
-                        error:function (){//属于
-                            $("#quit_div").html("<input type=\"button\" value=\"退出企业\" id=\"quit\">");
-                            $("#quit").click(function (){
-                                if (window.confirm("确认要退出企业吗?")){
-                                    $.ajax({
-                                        url:"InteractionServlet",
-                                        type:"GET",
-                                        data:{"method":"deleteRelation"},
-                                        async:true,
-                                        dataType:'text',
-                                        success :function (res)
-                                        {
-                                            alert("已退出企业");
-                                            let url="enterpriseInformation.html";
-                                            location.assign(url);
-                                        },
-                                        error : function (err){
-                                            alert("退出企业失败，请稍后再试");
-                                        }
-
-                                    });
-                                }
-                            })
-                        }
-                    })
 
                 },
                 error:function (){
@@ -125,7 +75,7 @@
                             });
                             $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\">")
                             $("#apply").click(function (){
-                                let url = "";
+                                let url = "handleApplication.html";
                                 location.assign(url);
                             })
                         },
