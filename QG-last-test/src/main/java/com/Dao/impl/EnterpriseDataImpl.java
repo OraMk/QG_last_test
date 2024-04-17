@@ -22,8 +22,8 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public ResultSet selectAll(HttpServletRequest req, HttpServletResponse resp) {
-        String sql = "select * from enterprise";
+    public ResultSet selectAllInPublic(HttpServletRequest req, HttpServletResponse resp) {
+        String sql = "select * from enterprise where public_mode = 'public'";
         resultSet = jdbc.Select(sql);
         return resultSet;
     }
@@ -123,6 +123,64 @@ public class EnterpriseDataImpl implements EnterpriseData {
         }
         String sql = "update relation set isLeader = 'yes' where eid = " + eid +" and username = '" + username + "'";
         return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        String eid = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+
+                }
+            }
+        }
+        int n = 0;
+        //删除企业信息表
+        try {
+            //设置事务
+            connection.setAutoCommit(false);
+            String sql = "delete from enterprise where eid =" + eid;
+            n = jdbc.Edit(sql);
+            if (n == 1)
+            {
+                //删除企业员工关系
+                sql = "delete from relation where eid =" + eid;
+                n = jdbc.Edit(sql);
+                if (n != 0){
+                    //删除与该企业相关的申请表
+                    sql = "delete from application where eid =" + eid;
+                    n = jdbc.Edit(sql);
+                    if (n==0)n++;
+                    //提交事务
+                    connection.commit();
+                }
+            }
+        } catch (Exception e) {
+            try {
+                //出现异常回滚事务
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
+
+        return n;
+    }
+
+    @Override
+    public ResultSet selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp) {
+        String ename = req.getParameter("ename");
+        String sql = "select * from enterprise where public_mode = 'public'";
+        if (!(ename == null || "".equals(ename)))
+        {//判断用户是否有输入
+            sql += "and ename like '%" + ename + "%'";
+        }
+
+        return jdbc.Select(sql);
     }
 
 

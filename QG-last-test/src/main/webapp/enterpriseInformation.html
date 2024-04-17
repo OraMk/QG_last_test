@@ -77,6 +77,24 @@
                             $("#apply").click(function (){
                                 let url = "handleApplication.html";
                                 location.assign(url);
+                            });
+                            $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
+                            $("#delete").click(function (){
+                                $.ajax({
+                                    url:"InteractionServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"deregisterEnterprise"},
+                                    success:function (){
+                                        alert("注销成功");
+                                        let url = "operation.html";
+                                        location.assign(url);
+                                    },
+                                    error:function (){
+                                        alert("注销失败，请稍后再试");
+                                    }
+                                })
                             })
                         },
                         error:function (){//不是企业负责人
@@ -87,7 +105,7 @@
                                     type:"GET",
                                     async:true,
                                     data_type:'json',
-                                    data:{"method":"applyToLeader"},
+                                    data:{"method":"deregisterEnterprise"},
                                     success:function (){
                                         alert("申请成功");
                                     },
@@ -184,6 +202,10 @@
     </div>
     <div style="position: absolute; top: 700px; left: 900px;" id="quit_div">
 <!--        <input type="button" value="退出企业" id="quit">-->
+    </div>
+
+    <div id="delete_div" style="position: absolute; top: 700px; left: 1000px;">
+<!--        <input type="button" value="注销企业" id="quit">-->
     </div>
 </body>
 </html>

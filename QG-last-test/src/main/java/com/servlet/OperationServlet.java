@@ -16,4 +16,6 @@ public interface OperationServlet {
     public void displayIntroductionById(HttpServletRequest req, HttpServletResponse resp);
     //更改企业信息
     public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp);
+    //根据企业名称查找企业
+    public void selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
 }

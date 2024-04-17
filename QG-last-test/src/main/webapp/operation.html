@@ -108,6 +108,51 @@
                     $("#sign").html("<a href=\"login.html\">登录</a></center>");
                 }
             });
+            $("#find_button").click(function (){
+                let ename = $("#enterprise_name").val();
+                $.ajax({
+                    url: "operationServlet",
+                    type: "GET",
+                    async: true,
+                    dataType: 'text',
+                    data: {"method": "selectByEnterpriseName","ename":ename},
+                    success:function (res){
+                        let data = JSON.parse(res);
+                        let str ="";
+                        for(i in data){
+                            str +="<tr>\n" +
+                                "                <td>" +data[i].eName + "</td>\n" +
+                                "                <td>" +data[i].number+ "</td>\n" +
+                                "                <td>"+ data[i].direction+"</td>\n" +
+                                "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                "            </tr>"
+
+                        }
+                        $("#body").html(str);
+                        $(".research").click(function (){
+                            let id = $(this).attr('id');
+                            $.ajax({
+                                url: "operationServlet",
+                                type: "GET",
+                                async: true,
+                                data_type: 'json',
+                                data: {"method": "remainEnterpriseId", "eid":id},
+                                success:function (res){
+                                    let url ="enterpriseInformation.html";
+                                    location.assign(url);
+                                },
+                                error:function (){
+                                    alert("查询异常请稍后再试");
+                                }
+
+                            });
+                        })
+                    },
+                    error:function (){
+                        alert("数据异常，请稍后再查询");
+                    }
+                })
+            })
 
         });
     </script>
@@ -118,10 +163,9 @@
 <div style="position: absolute;left: 1000px;top: 90px" id="show">
 
 </div>
-<div style="position: absolute;left: 300px;top: 120px">
-    企业名称<input type="text" name="enterprise_name">
-    &nbsp;&nbsp;人数<input type="text" name="number">
-    &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" name="name_button" value="查找"> &nbsp;&nbsp;
+<div style="position: absolute;left: 400px;top: 120px">
+    企业名称<input type="text" id="enterprise_name">
+    &nbsp;&nbsp;&nbsp;&nbsp;<input type="button" id="find_button" value="查找"> &nbsp;&nbsp;
 
 
 </div>
@@ -148,24 +192,6 @@
             </tr>
             </thead>
             <tbody align="center" id="body">
-<!--            <tr>-->
-<!--                <td>华为</td>-->
-<!--                <td>150</td>-->
-<!--                <td>5G通信</td>-->
-<!--                <td><input type="button" value="查看详情"></td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td>腾讯</td>-->
-<!--                <td>1000</td>-->
-<!--                <td>游戏开发</td>-->
-<!--                <td><input type="button" value="查看详情"></td>-->
-<!--            </tr>-->
-<!--            <tr>-->
-<!--                <td>网易</td>-->
-<!--                <td>500</td>-->
-<!--                <td>信息网络</td>-->
-<!--                <td><input type="button" value="查看详情"></td>-->
-<!--            </tr>-->
             </tbody>
         </table>
 

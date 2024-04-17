@@ -28,4 +28,7 @@ public interface InteractionServlet {
 
     //同意成为企业负责人
     public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp);
+
+    //注销企业
+    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp);
 }

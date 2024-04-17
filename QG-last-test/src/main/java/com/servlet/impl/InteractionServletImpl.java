@@ -246,4 +246,15 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
+
+    @Override
+    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.deleteEnterprise(req,resp);
+        if (n != 0){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
 }

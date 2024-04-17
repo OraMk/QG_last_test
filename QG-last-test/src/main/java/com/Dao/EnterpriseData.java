@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.sql.ResultSet;
 
 public interface EnterpriseData {
-    public ResultSet selectAll(HttpServletRequest req, HttpServletResponse resp);
+    public ResultSet selectAllInPublic(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet displayIntroductionById(HttpServletRequest req, HttpServletResponse resp);
 
@@ -15,4 +15,8 @@ public interface EnterpriseData {
     public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
     public int joinLeader(HttpServletRequest req, HttpServletResponse resp);
+
+    public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    public ResultSet selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
 }
