@@ -69,11 +69,15 @@
                         data:{"method":"judgmentLeader"},
                         success:function (){//是企业负责人
                             $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"change\">" +
-                                "<br><br><br><input type=\"button\" value=\"分配企业资金\" id=\"join\">");
+                                "<br><br><br><input type=\"button\" value=\"查看企业资金分配情况\" id=\"review\">");
                             $("#change").click(function (){
                                 var url = "changeEnterpriseInformation.html"
                                 location.assign(url);
                             });
+                            $("#review").click(function (){
+                                let url = "reviewAssignments.html";
+                                location.assign(url);
+                            })
                             $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\">")
                             $("#apply").click(function (){
                                 let url = "handleApplication.html";

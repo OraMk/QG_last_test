@@ -40,4 +40,7 @@ public interface InteractionServlet {
 
     //判断邀请用户是否为企业成员
     public void judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp);
+
+    //展示分配的资金
+    public void displayAllocationFunds(HttpServletRequest req, HttpServletResponse resp);
 }

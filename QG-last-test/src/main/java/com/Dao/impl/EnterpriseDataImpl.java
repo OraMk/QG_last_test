@@ -259,4 +259,10 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return resultSet;
     }
 
+    @Override
+    public ResultSet selectAllocationFundsByEid(int eid) {
+        String sql = "select * from relation where eid = " + eid;
+        return jdbc.Select(sql);
+    }
+
 }

@@ -27,4 +27,6 @@ public interface EnterpriseData {
 
     //判断邀请对象是否为企业成员
     public ResultSet judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp);
+    //根据企业id查找分配资金
+    public ResultSet selectAllocationFundsByEid(int eid);
 }

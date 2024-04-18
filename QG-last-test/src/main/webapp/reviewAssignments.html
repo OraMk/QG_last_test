@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看分配资金</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function (){
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                data_type: 'json',
+                data: {"method": "displayIntroductionById"},
+                success:function (res){
+                    let data = JSON.parse(res);//解析json数据
+                    str = "<h1>当前企业为："+ data.ename +"</h1>\n" +
+                        "<h2>企业总资产为:"+ data.total_fund +"</h2>";
+                    $("#introduce").html(str);
+                },
+                error:function (res){
+
+                }
+            });
+            $.ajax({
+               url:"InteractionServlet",
+               type:"GET",
+               async:true,
+               data_type:'json',
+               data:{"method":"displayAllocationFunds"},
+               success:function (res){
+                   let data = JSON.parse(res);
+                   let str ="";
+                   for(let i in data){
+                       str +="<tr>\n" +
+                           "                <td>" +data[i].username + "</td>\n" +
+                           "                <td>" +data[i].isleader+ "</td>\n" +
+                           "                <td>"+ data[i].allocationFunds+"</td>\n" +
+                           "                <td><input type=\"button\" id='"+data[i].eid+"' class='change' value=\"修改\"></td>\n" +
+                           "            </tr>"
+
+                   }
+                   $("#body").html(str);
+               },
+               error:function (){
+                   alert("查询失败，服务器异常，请稍后再试");
+               }
+           })
+        });
+    </script>
+</head>
+<body>
+<div style="width:800px;height: 320px;position: absolute; top: 30px; left: 650px;" id="introduce">
+</div>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>用户名称</th>
+                <th>是否企业负责人</th>
+                <th>分配的资金</th>
+                <th>修改</th>
+            </tr>
+            </thead>
+            <tbody align="center" id="body">
+            </tbody>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>
