@@ -41,4 +41,6 @@ public interface EnterpriseData {
 
     //添加企业并成为企业负责人
     public int addEnterpriseLeader(String eid,String username);
+    //根据企业名字查询企业
+    public ResultSet selectEnterpriseByEnterpriseName(String ename);
 }

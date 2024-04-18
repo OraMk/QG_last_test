@@ -302,4 +302,10 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public ResultSet selectEnterpriseByEnterpriseName(String ename) {
+        String sql = "select * from enterprise where ename = '" + ename + "'";
+        return jdbc.Select(sql);
+    }
+
 }

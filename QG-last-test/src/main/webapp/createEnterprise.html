@@ -17,31 +17,52 @@
                     let size = $("#size").val();
                     let public_mode = $("#public_mode").val();
                     let introduce =$("#introduce").val();
+                    //判断企业名字是否存在
                     $.ajax({
                         url:"operationServlet",
                         type:"GET",
                         data:{
                             "ename":ename,
-                            "number":number,
-                            "direction":direction,
-                            "size":size,
-                            "public_mode":public_mode,
-                            "introduce":introduce,
-                            "method":"createEnterprise"
+                            "method":"judgementEnterpriseName"
                         },
                         async:true,
                         dataType:'text',
                         success :function ()
-                        {
-                            alert("申请成功");
-                            let url ="enterpriseInformation.html";
-                            location.assign(url);
+                        {//企业名存在
+                            alert("企业名已存在，请重新命名");
+
                         },
-                        error : function (){
-                            alert("申请失败");
+                        error : function (){//企业名不存在
+                            //创建企业
+                            $.ajax({
+                                url:"operationServlet",
+                                type:"GET",
+                                data:{
+                                    "ename":ename,
+                                    "number":number,
+                                    "direction":direction,
+                                    "size":size,
+                                    "public_mode":public_mode,
+                                    "introduce":introduce,
+                                    "method":"createEnterprise"
+                                },
+                                async:true,
+                                dataType:'text',
+                                success :function ()
+                                {
+                                    alert("申请成功");
+                                    let url ="enterpriseInformation.html";
+                                    location.assign(url);
+                                },
+                                error : function (){
+                                    alert("申请失败");
+                                }
+
+                            });
                         }
 
-                    });
+                    })
+
                 }else{
 
                     alert("请输入正确的信息")
@@ -57,7 +78,7 @@
                     s_ename.html("");
                 }
                 else{
-                    ename_RegExP = /^[\u4e00-\u9fa5a-zA-Z]{2,10}$/;
+                    ename_RegExP = /^(?![0-9])([\u4e00-\u9fa5a-zA-Z0-9]{2,})$/;
                     let ok = ename_RegExP.test(this.value);
                     if(ok)
                     {

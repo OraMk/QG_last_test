@@ -281,4 +281,21 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
         }
 
     }
+
+    @Override
+    public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp) {
+        String ename = req.getParameter("ename");
+        resultSet = enterpriseData.selectEnterpriseByEnterpriseName(ename);
+        try {
+            if (resultSet.next()){
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

@@ -25,4 +25,7 @@ public interface OperationServlet {
 
     //申请企业
     public void createEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    //判断企业名是否存在
+    public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
 }

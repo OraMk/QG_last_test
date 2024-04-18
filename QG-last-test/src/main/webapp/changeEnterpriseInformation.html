@@ -17,6 +17,7 @@
                     let size = $("#size").val();
                     let public_mode = $("#public_mode").val();
                     let introduce =$("#introduce").val();
+                    //更改信息
                     $.ajax({
                         url:"operationServlet",
                         type:"GET",
@@ -57,12 +58,32 @@
                     s_ename.html("");
                 }
                 else{
-                    ename_RegExP = /^[\u4e00-\u9fa5a-zA-Z]{2,10}$/;
+                    ename_RegExP = /^(?![0-9])([\u4e00-\u9fa5a-zA-Z0-9]{2,})$/;
                     let ok = ename_RegExP.test(this.value);
                     if(ok)
                     {
-                        s_ename.html("企业名称合法");
-                        s_ename.css("color","green");
+                        //判断是否存在该企业名称
+                        $.ajax({
+                            url:"operationServlet",
+                            type:"GET",
+                            data:{
+                                "ename":this.value,
+                                "method":"judgementEnterpriseName"
+                            },
+                            success:function (){
+                                //存在
+                                s_ename.html("企业名称已存在，若无需更改则可以不填写");
+                                s_ename.css("color","red");
+
+
+                            },
+                            error:function (){
+                                //不存在
+                                s_ename.html("企业名称合法");
+                                s_ename.css("color","green");
+                            }
+                        })
+
                     }else{
                         s_ename.html("企业名称6-10位，含有大写字母和小写字母以及数字，且首位不能位数字,数字非必须");
                         s_ename.css("color","red");
