@@ -23,6 +23,8 @@ public interface LoginServlet {
     //更改头像
     public void avatarChange(HttpServletRequest req, HttpServletResponse resp);
 
+    //判断用户是否被封禁
+    public void judgementBanned(HttpServletRequest req, HttpServletResponse resp);
 
 }
 

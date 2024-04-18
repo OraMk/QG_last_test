@@ -220,5 +220,17 @@ public class ApplicationDataImpl implements ApplicationData {
         return jdbc.Select(sql);
     }
 
+    @Override
+    public ResultSet selectUnblockingApplicationByUsername(String username) {
+        String sql = "select * from blocking_application where username= '" + username +"'";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int applyUnblockingForUsername(String username) {
+        String sql = "insert into blocking_application(username) values('"+username+"')";
+        return jdbc.Edit(sql);
+    }
+
 
 }

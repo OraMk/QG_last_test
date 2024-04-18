@@ -190,4 +190,27 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
+
+    @Override
+    public void judgementBanned(HttpServletRequest req, HttpServletResponse resp) {
+
+        resultSet = userData.selectUserByName(req, resp);
+        String banned = null;
+        try {
+            if (resultSet.next()){
+                banned = resultSet.getString("u_banned");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if ("yes".equals(banned)){
+            //用户被封禁
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            //用户没有被封禁
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
 }

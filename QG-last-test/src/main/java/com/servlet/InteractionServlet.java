@@ -52,4 +52,7 @@ public interface InteractionServlet {
 
     //实现分配资金功能
     public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp);
+
+    //申请用户解封
+    public void applyUnblockingByUsername(HttpServletRequest req, HttpServletResponse resp);
 }

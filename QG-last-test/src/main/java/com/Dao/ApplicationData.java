@@ -31,4 +31,7 @@ public interface ApplicationData {
     //展示已经受理过的请求
     public ResultSet displayHistoryApplication(HttpServletRequest req, HttpServletResponse resp);
 
+    public ResultSet selectUnblockingApplicationByUsername(String username);
+
+    public int applyUnblockingForUsername(String username);
 }

@@ -55,7 +55,16 @@
                 dataType:'text',
                 data:{"method":"loginUser"},
                 success :function (res){
+
                     $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"self-enterprise\" value=\"查看我的企业\">");
+
+                    $("#transfer_div").html("<input type=\"button\" id=\"transfer\" value=\"转账功能\">");
+                    $("#transfer").click(function (){
+                       let url = "transfer.html";
+                       location.assign(url);
+                    });
+
+
                     $("#self-enterprise").click(function (){
                         $.ajax({
                             url:"operationServlet",
@@ -147,7 +156,7 @@
                                 alert("该用户无所属企业");
                             }
                         })
-                    })
+                    });
                     $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
                     $("#research_button").click(function (){
                         let url = "userInformation.html";
@@ -200,7 +209,37 @@
                         //     普通用户
 
                         }
-                    })
+                    });
+                    //判断是否被封禁了
+                    $.ajax({
+                        url:"loginServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"judgementBanned"},
+                        success:function (){
+                            //被封禁
+                            $("#unblocking_div").html("<input type=\"button\" value=\"申请解封\" id=\"unblocking\">")
+                            $("#unblocking").click(function (){
+                                $.ajax({
+                                    url:"InteractionServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"applyUnblockingByUsername"},
+                                    success:function (){
+                                        alert("申请成功,请勿反复申请");
+                                    },
+                                    error:function (){
+                                        alert("申请失败，请勿重复申请");
+                                    }
+                                });
+                            });
+                        },
+                        error:function (){
+                            //没有被封禁
+                        }
+                    });
                 },
                 error : function (){
                     alert("未登录");
@@ -267,6 +306,14 @@
 
 <div style="position: absolute;left: 1000px;top: 90px" id="show">
 
+</div>
+
+<div style="position: absolute;left: 1000px;top: 55px;" id="transfer_div">
+
+</div>
+
+<div style="position: absolute;left: 1150px;top: 55px;" id="unblocking_div">
+<!--    <input type="button" value="申请解封" id="unblocking">-->
 </div>
 <div style="position: absolute;left: 400px;top: 120px">
     企业名称<input type="text" id="enterprise_name">

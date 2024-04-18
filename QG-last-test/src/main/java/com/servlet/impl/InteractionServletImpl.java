@@ -442,8 +442,48 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
-            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
+    }
+
+    @Override
+    public void applyUnblockingByUsername(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+
+                }
+            }
+        }
+        //判断是否发送过一个待定审理的申请
+        resultSet = applicationData.selectUnblockingApplicationByUsername(username);
+        int judgment = 0 ;
+        try {
+            while (resultSet.next()){
+                if ("pending".equals(resultSet.getString("is_accept"))){
+                    //存在待定的申请，避免重复申请
+                    judgment = 1;
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (judgment == 0){
+            int n = applicationData.applyUnblockingForUsername(username);
+            if (n == 1){
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+        }
+
     }
 }
