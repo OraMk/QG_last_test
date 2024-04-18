@@ -36,4 +36,9 @@ public interface EnterpriseData {
     public ResultSet selectEnterpriseByEid(int eid);
     //更改分配资金根据关系id
     public int  updateAllocateFunds(int rid, double fund);
+    //增添企业
+    public int addEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    //添加企业并成为企业负责人
+    public int addEnterpriseLeader(String eid,String username);
 }

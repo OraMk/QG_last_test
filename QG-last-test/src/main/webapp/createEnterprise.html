@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>修改企业信息</title>
+    <title>申请企业</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         $(function (){
@@ -27,18 +27,18 @@
                             "size":size,
                             "public_mode":public_mode,
                             "introduce":introduce,
-                            "method":"changeEnterpriseInformation"
+                            "method":"createEnterprise"
                         },
                         async:true,
                         dataType:'text',
                         success :function ()
                         {
-                            alert("更改成功!");
+                            alert("申请成功");
                             let url ="enterpriseInformation.html";
                             location.assign(url);
                         },
                         error : function (){
-                            alert("更改失败");
+                            alert("申请失败");
                         }
 
                     });
@@ -110,7 +110,7 @@
             left: 0;
             right: 0;
             margin: auto;">
-    <center><h1>更改企业信息</h1><h4>若不想更改该选项则不填写信息即可</h4></center>
+    <center><h1>申请企业信息</h1></center>
     <div style="width :350px;height:20px;position: absolute;
             top: 60px;
             bottom: 0;
@@ -132,7 +132,7 @@
         <option value="private">私有</option>
     </select>
         <form>
-            企业昵称<input type="text" id="ename" ><span id="s_ename"></span><br>
+            企业名称<input type="text" id="ename" ><span id="s_ename"></span><br>
             企业人数<input type="text" id="number" ><span id="s_number"></span><br>
             企业方向<input type="text" id="direction"><span id="s_size"></span><br>
             企业介绍<textarea id="introduce" style="height: 100px;width: 500px;resize: none;"></textarea>

@@ -179,6 +179,13 @@
                         }
 
                     });
+
+
+                    $("#create").html("<input type=\"button\" value=\"申请企业\" id='applyEnterprise'>")
+                    $("#applyEnterprise").click(function (){
+                        let url = "createEnterprise.html";
+                        location.assign(url);
+                    })
                 //     判断是不是网站管理
                     $.ajax({
                         url:"operationServlet",
@@ -250,6 +257,10 @@
     </script>
 </head>
 <body>
+
+<div style="position: absolute;left: 800px;top: 120px" id="create">
+<!--    <input type="button" value="申请企业">-->
+</div>
 <div style="position: absolute;left: 800px;top: 50px" id="back">
 
 </div>

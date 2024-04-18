@@ -22,4 +22,7 @@ public interface OperationServlet {
 
     //根据名称查找所属企业
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
+
+    //申请企业
+    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp);
 }

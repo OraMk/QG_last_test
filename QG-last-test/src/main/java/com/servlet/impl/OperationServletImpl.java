@@ -243,4 +243,42 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        int n = enterpriseData.addEnterprise(req,resp);
+        Cookie[] cookies = req.getCookies();
+        String username = null;
+        for (Cookie c :cookies){
+            if ("username".equals(c.getName())){
+                username = c.getValue();
+            }
+        }
+        int eid = 0;
+        if (n == 1)
+        {//企业添加成功
+            resultSet = enterpriseData.selectByEnterpriseName(req,resp);
+            try {
+                if (resultSet.next()){
+                     eid = resultSet.getInt("eid");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            int success = enterpriseData.addEnterpriseLeader(String.valueOf(eid),username);
+            if (success == 1){
+                Cookie cookie = new Cookie("eid", String.valueOf(eid));
+                //添加cookie或者更改cookie
+                resp.addCookie(cookie);
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }
+            else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+
+    }
 }

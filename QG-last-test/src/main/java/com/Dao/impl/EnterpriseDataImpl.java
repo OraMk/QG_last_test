@@ -283,4 +283,23 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public int addEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        String ename = req.getParameter("ename");
+        String number = req.getParameter("number");
+        String size = req.getParameter("size");
+        String direction = req.getParameter("direction");
+        String public_mode = req.getParameter("public_mode");
+        String introduction = req.getParameter("introduce");
+        String sql = "insert into enterprise(ename,number,size,direction,public_mode,introduction)" +
+                " values('"+ename+"',"+number+",'"+size+"','"+direction+"','"+public_mode+"','"+introduction+"')";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int addEnterpriseLeader(String eid, String username) {
+        String sql ="insert into relation(username,eid,isleader,allocation_funds) values('"+username+"',"+eid+",'yes',0)";
+        return jdbc.Edit(sql);
+    }
+
 }
