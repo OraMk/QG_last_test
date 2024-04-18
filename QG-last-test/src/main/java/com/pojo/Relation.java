@@ -57,4 +57,15 @@ public class Relation {
     public void setAllocationFunds(double allocationFunds) {
         this.allocationFunds = allocationFunds;
     }
+
+    @Override
+    public String toString() {
+        return "Relation{" +
+                "rid=" + rid +
+                ", username='" + username + '\'' +
+                ", eid=" + eid +
+                ", isleader='" + isleader + '\'' +
+                ", allocationFunds=" + allocationFunds +
+                '}';
+    }
 }

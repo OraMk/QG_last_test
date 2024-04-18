@@ -35,12 +35,79 @@
                        str +="<tr>\n" +
                            "                <td>" +data[i].username + "</td>\n" +
                            "                <td>" +data[i].isleader+ "</td>\n" +
-                           "                <td>"+ data[i].allocationFunds+"</td>\n" +
-                           "                <td><input type=\"button\" id='"+data[i].eid+"' class='change' value=\"修改\"></td>\n" +
+                           "                <td class='"+data[i].rid+"'>"+ data[i].allocationFunds+"</td>\n" +
+                           "                <td><input type=\"button\" id='"+data[i].rid +"' class='change' value=\"修改\"><input type=\"button\" value=\"确认\" class='"+data[i].username+"'>\n" +
+                           "    <input type=\"button\" value=\"返回\" name='"+data[i].username +"'></td>\n" +
                            "            </tr>"
 
                    }
                    $("#body").html(str);
+                   $(".change").click(function (){
+                       // 获取该按钮的id
+                       let res = $(this).attr('id');
+                       $.ajax({
+                           url:"InteractionServlet",
+                           type:"GET",
+                           async:true,
+                           data_type:'json',
+                           data:{"method":"selectRelationById","rid" : res},
+                           success:function (res){
+                               let Data = JSON.parse(res);
+                               $("."+Data.rid).html("<input type=\"text\" name='"+Data.rid+"'>");
+                               $("."+Data.username).click(function (){
+                                   let fund = $('[name="'+Data.rid+'"]').val();
+
+                                   let fundRegExp = /^\d+(\.\d{1,2})?|^\d{1,2}$/;
+                                   let ok = fundRegExp.test(fund);
+                                   if (ok){
+                                       $.ajax({//先对比资金是否合理(即为有没有溢出，溢出则返回error，不溢出则返回success)
+                                           url: "InteractionServlet",
+                                           type: "GET",
+                                           async: true,
+                                           data_type: 'json',
+                                           data: {"method": "compareFunds","allocation_funds":fund,"rid":Data.rid},
+                                           success:function (){
+                                               //进行数据修改
+                                               $.ajax({
+                                                   url: "InteractionServlet",
+                                                   type: "GET",
+                                                   async: true,
+                                                   data_type: 'json',
+                                                   data: {
+                                                       "method": "toAllocateFunds",
+                                                       "allocation_funds": fund,
+                                                       "rid": Data.rid
+                                                   },
+                                                   success:function (){
+                                                       $("."+Data.rid).html(fund);
+                                                       Data.Allocation_funds = fund;
+                                                       alert("修改成功");
+                                                   },
+                                                   error:function (){
+                                                       alert("修改失败，请稍后再试");
+                                                   }
+                                               })
+                                           },
+                                           error:function (){
+                                               alert("资金溢出了，请重新输入");
+                                           }
+                                       })
+                                   }else {
+                                       alert("请输入数字，且不能为负数");
+                                   }
+                               });
+                               $($('[name="'+Data.username+'"]')).click(function (){
+                                   $("."+Data.rid).html(Data.Allocation_funds);
+                               });
+                           },
+                           error: function (){
+                               alert("数据异常，请稍后再试");
+                           }
+                       })
+
+
+
+                   })
                },
                error:function (){
                    alert("查询失败，服务器异常，请稍后再试");

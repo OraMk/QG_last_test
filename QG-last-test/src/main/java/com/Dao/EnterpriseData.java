@@ -29,4 +29,11 @@ public interface EnterpriseData {
     public ResultSet judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp);
     //根据企业id查找分配资金
     public ResultSet selectAllocationFundsByEid(int eid);
+    //通过关系id查找关系
+    public ResultSet selectRelationById(int rid);
+
+    //根据企业id查找企业
+    public ResultSet selectEnterpriseByEid(int eid);
+    //更改分配资金根据关系id
+    public int  updateAllocateFunds(int rid, double fund);
 }

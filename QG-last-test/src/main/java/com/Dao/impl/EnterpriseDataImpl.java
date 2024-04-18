@@ -265,4 +265,22 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Select(sql);
     }
 
+    @Override
+    public ResultSet selectRelationById(int rid) {
+        String sql = "select * from relation where rid = " + rid;
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectEnterpriseByEid(int eid) {
+        String sql = "select * from enterprise where eid = " + eid;
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int updateAllocateFunds(int rid, double fund) {
+        String sql = "update relation set Allocation_funds = " + fund + " where rid =" + rid;
+        return jdbc.Edit(sql);
+    }
+
 }

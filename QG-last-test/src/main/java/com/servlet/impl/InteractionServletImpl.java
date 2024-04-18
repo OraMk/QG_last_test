@@ -19,7 +19,9 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 86178
@@ -346,5 +348,102 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
         }
 
 
+    }
+
+    @Override
+    public void selectRelationById(HttpServletRequest req, HttpServletResponse resp) {
+        int rid = Integer.parseInt(req.getParameter("rid"));
+        resultSet = enterpriseData.selectRelationById(rid);
+        int eid = 0;
+        String username = null;
+        String isLeader =null;
+        double allocationFunds = 0;
+        Map<String,String> map = new HashMap<String,String>();
+        try {
+            if (resultSet.next()){
+                eid = resultSet.getInt("eid");
+                username = resultSet.getString("username");
+                isLeader = resultSet.getString("isLeader");
+                allocationFunds = resultSet.getDouble("Allocation_funds");
+
+            }
+            map.put("rid", String.valueOf(rid));
+            map.put("username",username);
+            map.put("eid", String.valueOf(eid));
+            map.put("isLeader",isLeader);
+            map.put("Allocation_funds", String.valueOf(allocationFunds));
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),map);
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void compareFunds(HttpServletRequest req, HttpServletResponse resp) {
+        //获取企业id
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        int eid = 0;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        int rid = Integer.parseInt(req.getParameter("rid"));
+        double fund = Double.parseDouble(req.getParameter("allocation_funds"));
+        double totalFunds = 0;
+        resultSet = enterpriseData.selectEnterpriseByEid(eid);
+        try {
+            if (resultSet.next()){
+                totalFunds = resultSet.getDouble("Total_fund");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        double sumFunds = 0;
+        resultSet = enterpriseData.selectAllocationFundsByEid(eid);
+        try {
+            while (resultSet.next()){
+                if (resultSet.getInt("rid") != rid){
+                    //判断更改关系编号为哪一个
+                    sumFunds += resultSet.getDouble("Allocation_funds");
+
+                }
+                else//找到了
+                {
+                    sumFunds +=fund;//加上更改后的资金
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (sumFunds <= totalFunds){
+            //若资金总和小于等于总资金则合理
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            //若资金总和大于总资金则该次更改不合理
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+
+    }
+
+    @Override
+    public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp) {
+        int rid = Integer.parseInt(req.getParameter("rid"));
+        double fund = Double.parseDouble(req.getParameter("allocation_funds"));
+        int n = enterpriseData.updateAllocateFunds(rid,fund);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }
     }
 }

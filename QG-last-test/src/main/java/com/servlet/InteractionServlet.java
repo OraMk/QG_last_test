@@ -43,4 +43,13 @@ public interface InteractionServlet {
 
     //展示分配的资金
     public void displayAllocationFunds(HttpServletRequest req, HttpServletResponse resp);
+
+    //根据关系id查找关系
+    public void selectRelationById(HttpServletRequest req, HttpServletResponse resp);
+
+    //比较资金
+    public void compareFunds(HttpServletRequest req, HttpServletResponse resp);
+
+    //实现分配资金功能
+    public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp);
 }
