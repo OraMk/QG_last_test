@@ -266,7 +266,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public ResultSet selectRelationById(int rid) {
+    public ResultSet selectRelationById(long rid) {
         String sql = "select * from relation where rid = " + rid;
         return jdbc.Select(sql);
     }
@@ -278,7 +278,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public int updateAllocateFunds(int rid, double fund) {
+    public int updateAllocateFunds(long rid, double fund) {
         String sql = "update relation set Allocation_funds = " + fund + " where rid =" + rid;
         return jdbc.Edit(sql);
     }
@@ -305,6 +305,12 @@ public class EnterpriseDataImpl implements EnterpriseData {
     @Override
     public ResultSet selectEnterpriseByEnterpriseName(String ename) {
         String sql = "select * from enterprise where ename = '" + ename + "'";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectRelationByUsernameAndEid(int eid, String username) {
+        String sql = "select * from relation where eid = "+eid+" and username = '"+username+"'";
         return jdbc.Select(sql);
     }
 

@@ -55,4 +55,10 @@ public interface InteractionServlet {
 
     //申请用户解封
     public void applyUnblockingByUsername(HttpServletRequest req, HttpServletResponse resp);
+
+    //查找企业为用户分配的资金
+    public void enterpriseAllocateFund(HttpServletRequest req, HttpServletResponse resp);
+
+    //判断企业是否被封禁
+    public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp);
 }

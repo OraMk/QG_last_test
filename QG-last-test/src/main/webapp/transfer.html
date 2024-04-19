@@ -5,7 +5,179 @@
     <title>转账界面</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+        let funds = 0;
+        let enterprise = null;
+        let enterprise_payee = null;
+        let usr_payee = null;
+        function ShowPayment() {
+                $(function () {
+                    // 显示支付界面
+                    alert("进入转账界面");
+                    $("#div_pay_option").html("请选择转账对象\n" +
+                        "        <select id='pay_option'\">\n" +
+                        "        <option value=\"null\" selected>请选择</option>\n" +
+                        "        <option value=\"user\">用户</option>\n" +
+                        "        <option value=\"enterprise\">企业</option>\n" +
+                        "        </select>");
+
+                    $("#pay_option").change(function (){
+                        $("#div_pay_name").html("转账对象名称<input type=\"text\" id=\"target\"><span id=\"s_target\"></span><br><br>\n" +
+                            "        转账金额<input type=\"text\" id=\"Fund\"><span id=\"s_Fund\"></span><br><br>\n" +
+                            "        <center><input type=\"button\" value=\"确认发起转账\" id=\"pushTransfer\"></center>");
+                        if ($(this).val() == "user"){
+                            enterprise_payee = null;
+                        }else if ($(this).val() == "enterprise"){
+                            enterprise_payee = "企业";
+                            usr_payee = null
+                        }else {
+                            $("#pay_name").html("");
+                        }
+                        //判断转账对象是否存在
+                        if (enterprise_payee == null){
+                            $("#pay_password").html("");
+
+                            //为用户非企业
+                            $("#target").blur(function (){
+                                $("#pay_password").html("");
+
+                                $.ajax({
+                                    url:"loginServlet",
+                                    type:"GET",
+                                    async:true,
+                                    dataType:'text',
+                                    data:{"method":"selectUsername","username":$("#target").val()},
+                                    success:function (){
+                                        $("#s_target").html("该用户存在");
+                                        $("#s_target").css("color","green");
+                                    },
+                                    error: function () {
+                                        $("#s_target").html("该用户不存在");
+                                        $("#s_target").css("color","red");
+                                    }
+                                })
+
+                            });
+                            usr_payee = $("#target").val();
+                        }else {
+                            $("#pay_password").html("");
+
+                            //为企业
+                            $("#target").blur(function () {
+                                $("#pay_password").html("");
+                                $.ajax({
+                                    url:"operationServlet",
+                                    type:"GET",
+                                    async:true,
+                                    dataType:'text',
+                                    data:{"method":"judgementEnterpriseName","ename":$("#target").val()},
+                                    success :function () {
+                                        $("#s_target").html("该企业存在");
+                                        $("#s_target").css("color","green");
+                                    },
+                                    error:function () {
+                                        $("#s_target").html("该企业不存在");
+                                        $("#s_target").css("color","red");
+
+                                    }
+                                });
+                                enterprise_payee = $("#target").val();
+                            })
+                        }
+                        $("#Fund").blur(function (){
+                            $("#pay_password").html("");
+                            let fundRegExp = /^\d+(\.\d{1,2})?|^\d{1,2}$/;
+                            let transferFund = $(this).val();
+                            if (fundRegExp.test(transferFund)){
+                                if (transferFund > funds){
+                                    $("#s_Fund").html("金额溢出");
+                                    $("#s_Fund").css("color","red");
+                                }else {
+                                    $("#s_Fund").html("金额合法");
+                                    $("#s_Fund").css("color","green");
+                                }
+                            }else {
+                                $("#s_Fund").html("输入不合法，不可为负数");
+                                $("#s_Fund").css("color","red");
+                            }
+
+                        });
+                        $("#pushTransfer").click(function () {
+                            if ( ($("#s_target").html() == "该用户存在" || $("#s_target").html() == "该企业存在") && $("#s_Fund").html() == "金额合法"  ){
+                                $("#pay_password").html("请输入支付密码<input type=\"password\" id='password'><br>\n" +
+                                    "        <center><input type=\"button\" value=\"确认支付\" id='check_transfer'></center>");
+
+                                $("#check_transfer").click(function (){
+                                    let pay_password = $("#password").val();
+                                    let passwordRegExp = /^\d{6}$/;
+                                    if (passwordRegExp.test(pay_password)){
+                                        //判断密码是否正确
+                                        $.ajax({
+                                            url:"transferServlet",
+                                            type:"GET",
+                                            async:true,
+                                            dataType:'text',
+                                            data:{"method":"judgementTransferPassword","payment_password":$("#password").val()},
+                                            success :function () {
+                                                alert("密码正确");
+                                            },
+                                            error:function () {
+                                                alert("密码错误，请重新输入");
+
+                                            }
+                                        })
+                                    }else {
+                                        alert("密码输入非法,密码为数字纯6位")
+                                    }
+                                })
+                            }else {
+                                alert("请输入合法后再确认");
+                            }
+                        })
+
+                    })
+                })
+
+
+        }
+
+        function CleanShowPayment(){
+            $(function () {
+                alert("退出转账界面");
+                $("paymentScreen").html("");
+            })
+
+        }
         $(function (){
+
+            $.ajax({
+                url:"operationServlet",
+                type:"GET",
+                async:true,
+                dataType:'text',
+                data:{"method":"loginUser"},
+                success :function (res){
+                    //已经登录显示金额
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        async: true,
+                        dataType: 'json',
+                        data: {"method": "selectByUsername"},
+                        success:function (res){
+                            $("#account").html("当前账户为:" + res.username + "<br>账户资金为: " + res.fund);
+                            funds = res.fund;
+                        },
+                        error:function (){
+
+                        }
+                    });
+                },
+                error:function (){
+                    alert("未登录，请先进行登录");
+                    let url ="operation.html"
+                    location.assign(url);
+                }
+            });
             $.ajax({
                 url:"loginServlet",
                 type:"GET",
@@ -22,10 +194,134 @@
                     //没有被封禁
                 }
             });
-        })
+            $("#options_from").change(function (){
+                let selectedValue = $(this).val();
+                if (selectedValue == "enterprise"){
+                    CleanShowPayment();
+                    //选择企业
+                    str = "请选择企业<br><select id=\"options_enterprise\"></select>";
+                    $("#choose_enterprise").html(str);
+                    //获取该用户所在的企业
+                    $.ajax({
+                        url:"operationServlet",
+                        type:"GET",
+                        async:true,
+                        dataType:'text',
+                        data:{"method":"selectByUsername"},
+                        success:function (res){
+                            let data = JSON.parse(res);
+                            str = "<option value=\"null\" selected>请选择</option>";
+                            for(i in data){
+                                str +="<option value=\""+data[i].eid+"\">"+data[i].eName+"</option>"
+
+                            }
+                            let option_enterprise = $("#options_enterprise");
+                            option_enterprise.html(str);
+                            option_enterprise.change(function (){
+                                CleanShowPayment();
+                                //展示用户的企业资金
+                                if ($(this).val()=="null"){//未选择
+                                    $("#enterprise_fund").html("");
+                                }else {
+                                    //判断该企业是否被封禁
+                                    $.ajax({
+                                        url: "InteractionServlet",
+                                        type: "GET",
+                                        async: true,
+                                        dataType: 'json',
+                                        data: {"method": "judgmentEnterpriseBan","eid":option_enterprise.val()},
+                                        success:function (res) {
+                                            //没有被封禁
+                                            //获取该用户在企业中的资金
+                                            enterprise = res.ename;
+                                            $.ajax({
+                                                url: "InteractionServlet",
+                                                type: "GET",
+                                                async: true,
+                                                dataType: 'json',
+                                                data: {"method": "enterpriseAllocateFund","eid":option_enterprise.val()},
+                                                success:function (res){
+                                                    // let data = JSON.parse(res);
+                                                    $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
+                                                    funds = res.Allocation_funds;
+                                                    // alert(funds +" " + enterprise);
+                                                    ShowPayment();
+                                                },
+                                                error:function (){
+                                                    alert("数据异常，请稍后再查找");
+                                                }
+                                            });
+                                        },
+                                        error:function (){
+                                            //企业被封禁
+                                            alert("抱歉，该企业被封禁，无法进行转账操作,请重新选择");
+                                            $("#enterprise_fund").html("");
+                                        }
+                                    });
+
+                                }
+                            })
+
+                        },
+                        error :function (){
+                        alert("该用户未加入企业");
+                        }
+                    })
+                }else if (selectedValue == "user"){
+                    //选择个人资产
+                    enterprise = null;
+                    ShowPayment();
+                    $("#choose_enterprise").html("");
+                    $("#enterprise_fund").html("");
+
+                }else {
+                    enterprise = null;
+                    CleanShowPayment();
+                    $("#choose_enterprise").html("");
+                    $("#enterprise_fund").html("");
+                }
+            });
+
+        });
     </script>
 </head>
 <body>
+<div id="account" style="position: absolute;left: 100px;top: 100px;"></div>
+<div id="before_option" style="position: absolute;left: 100px;top: 150px;">
+    请选择要发起转账的资金来源
+    <select id="options_from">
+        <option value="null" selected>请选择</option>
+        <option value="user">个人资金</option>
+        <option value="enterprise">企业资金</option>
+    </select>
+</div>
+<div id="choose_enterprise" style="position: absolute;left: 100px;top: 200px;">
+
+</div>
+<div id="enterprise_fund" style="position: absolute;left: 100px;top: 250px;">
+
+</div>
+<div id="paymentScreen" style="width :600px;height:400px;position: absolute;left: 450px;top: 90px;">
+
+    <div id="div_pay_option" style="position: absolute;left: 180px;top: 30px;">
+<!--        请选择转账对象-->
+<!--        <select id=pay_option">-->
+<!--        <option value="null" selected>请选择</option>-->
+<!--        <option value="user">用户</option>-->
+<!--        <option value="enterprise">企业</option>-->
+<!--        </select>-->
+    </div>
+    <div id="div_pay_name" style="position: absolute;left: 180px;top: 80px;">
+<!--        转账对象名称<input type="text" id="target"><span id="s_target"></span><br><br>-->
+<!--        转账金额<input type="text" id="Fund"><span id="s_Fund"></span><br><br>-->
+<!--        <center><input type="button" value="确认发起转账" id="pushTransfer"></center>-->
+
+    </div>
+    <div id="pay_password" style="position: absolute;left: 180px;top: 250px;">
+<!--        请输入支付密码<input type="text"><br>-->
+<!--        <center><input type="button" value="确认支付"></center>-->
+    </div>
+</div>
 
 </body>
 </html>

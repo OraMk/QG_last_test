@@ -1,7 +1,7 @@
 package com.pojo;
 
 public class Relation {
-    private int rid;
+    private long rid;
     private String username;
     private int eid;
     private String isleader;
@@ -10,7 +10,7 @@ public class Relation {
     public Relation() {
     }
 
-    public Relation(int rid, String username, int eid, String isleader, double allocationFunds) {
+    public Relation(long rid, String username, int eid, String isleader, double allocationFunds) {
         this.rid = rid;
         this.username = username;
         this.eid = eid;
@@ -18,11 +18,11 @@ public class Relation {
         this.allocationFunds = allocationFunds;
     }
 
-    public int getRid() {
+    public long getRid() {
         return rid;
     }
 
-    public void setRid(int rid) {
+    public void setRid(long rid) {
         this.rid = rid;
     }
 

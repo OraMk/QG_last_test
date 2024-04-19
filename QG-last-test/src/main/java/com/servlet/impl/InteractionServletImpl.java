@@ -35,6 +35,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     EnterpriseDataImpl enterpriseData = new EnterpriseDataImpl();
     Relation relation = null;
 
+    Map<String,String> map = null;
     List<Relation> relationList = null;
 
     public InteractionServletImpl() throws SQLException, IOException, ClassNotFoundException {
@@ -320,7 +321,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                 }
             }
         }
-        int rid = 0;
+        long rid = 0;
         String username = null;
         String isLeader = null;
         double allocationFunds = 0;
@@ -331,7 +332,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
             try {
                 while (resultSet.next()){
-                    rid = resultSet.getInt("rid");
+                    rid = resultSet.getLong("rid");
                     username = resultSet.getString("username");
                     isLeader = resultSet.getString("isLeader");
                     allocationFunds = resultSet.getDouble("Allocation_funds");
@@ -352,13 +353,13 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
     @Override
     public void selectRelationById(HttpServletRequest req, HttpServletResponse resp) {
-        int rid = Integer.parseInt(req.getParameter("rid"));
+        long rid = Long.parseLong(req.getParameter("rid"));
         resultSet = enterpriseData.selectRelationById(rid);
         int eid = 0;
         String username = null;
         String isLeader =null;
         double allocationFunds = 0;
-        Map<String,String> map = new HashMap<String,String>();
+        map = new HashMap<String,String>();
         try {
             if (resultSet.next()){
                 eid = resultSet.getInt("eid");
@@ -392,7 +393,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                 }
             }
         }
-        int rid = Integer.parseInt(req.getParameter("rid"));
+        long rid = Long.parseLong(req.getParameter("rid"));
         double fund = Double.parseDouble(req.getParameter("allocation_funds"));
         double totalFunds = 0;
         resultSet = enterpriseData.selectEnterpriseByEid(eid);
@@ -407,7 +408,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
         resultSet = enterpriseData.selectAllocationFundsByEid(eid);
         try {
             while (resultSet.next()){
-                if (resultSet.getInt("rid") != rid){
+                if (resultSet.getLong("rid") != rid){
                     //判断更改关系编号为哪一个
                     sumFunds += resultSet.getDouble("Allocation_funds");
 
@@ -435,7 +436,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
     @Override
     public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp) {
-        int rid = Integer.parseInt(req.getParameter("rid"));
+        long rid = Long.parseLong(req.getParameter("rid"));
         double fund = Double.parseDouble(req.getParameter("allocation_funds"));
         int n = enterpriseData.updateAllocateFunds(rid,fund);
         if (n == 1){
@@ -485,5 +486,75 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             }
         }
 
+    }
+
+    @Override
+    public void enterpriseAllocateFund(HttpServletRequest req, HttpServletResponse resp) {
+        int eid = Integer.parseInt(req.getParameter("eid"));
+        Cookie[] cookies = req.getCookies();
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+
+                }
+            }
+        }
+        long rid = 0;
+        String isleader = null;
+        double allocationFunds = 0;
+        resultSet = enterpriseData.selectRelationByUsernameAndEid(eid,username);
+        map = new HashMap<String,String>();
+        try {
+            if (resultSet.next()){
+                rid = resultSet.getLong("rid");
+                isleader = resultSet.getString("isLeader");
+                allocationFunds = resultSet.getDouble("Allocation_funds");
+                map.put("rid", String.valueOf(rid));
+                map.put("username",username);
+                map.put("eid", String.valueOf(eid));
+                map.put("isleader",isleader);
+                map.put("Allocation_funds", String.valueOf(allocationFunds));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(resp.getWriter(),map);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp) {
+        int eid = Integer.parseInt(req.getParameter("eid"));
+        resultSet =  enterpriseData.selectEnterpriseByEid(eid);
+        try {
+            if (resultSet.next()){
+                String e_banned = resultSet.getString("e_banned");
+                if ("no".equals(e_banned)){
+                    //没有被封禁
+                    map = new HashMap<String,String>();
+                    map.put("ename", resultSet.getString("ename"));
+                    ObjectMapper mapper = new ObjectMapper();
+                    mapper.writeValue(resp.getWriter(),map);
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

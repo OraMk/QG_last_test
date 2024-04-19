@@ -30,12 +30,12 @@ public interface EnterpriseData {
     //根据企业id查找分配资金
     public ResultSet selectAllocationFundsByEid(int eid);
     //通过关系id查找关系
-    public ResultSet selectRelationById(int rid);
+    public ResultSet selectRelationById(long rid);
 
     //根据企业id查找企业
     public ResultSet selectEnterpriseByEid(int eid);
     //更改分配资金根据关系id
-    public int  updateAllocateFunds(int rid, double fund);
+    public int  updateAllocateFunds(long rid, double fund);
     //增添企业
     public int addEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
@@ -43,4 +43,6 @@ public interface EnterpriseData {
     public int addEnterpriseLeader(String eid,String username);
     //根据企业名字查询企业
     public ResultSet selectEnterpriseByEnterpriseName(String ename);
+
+    public ResultSet selectRelationByUsernameAndEid(int eid, String username);
 }
