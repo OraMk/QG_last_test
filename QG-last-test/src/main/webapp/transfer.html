@@ -27,6 +27,7 @@
                     $("#pay_option").change(function (){
                         $("#div_pay_name").html("转账对象名称<input type=\"text\" id=\"target\"><span id=\"s_target\"></span><br><br>\n" +
                             "        转账金额<input type=\"text\" id=\"Fund\"><span id=\"s_Fund\"></span><br><br>\n" +
+                            "转账描述<input type=\"text\" id=\"description\">" +
                             "        <center><input type=\"button\" value=\"确认发起转账\" id=\"pushTransfer\"></center>");
                         if ($(this).val() == "user"){
                             enterprise_payee = null;
@@ -145,7 +146,7 @@
                                                     dataType:'text',
                                                     data:{"method":"addTransfer",
                                                         "enterprise_payer":enterprise,"user_payee":usr_payee,"enterprise_payee":enterprise_payee,
-                                                        "fund":transferFund},
+                                                        "fund":transferFund,"description":$("#description").val()},
                                                     success:function () {
                                                         alert("转账请求已发起");
                                                         let url = "operation.html";
@@ -187,7 +188,10 @@
 
         }
         $(function (){
-
+            $("#look_transfer").click(function () {
+                let url = "noTipTransfer.html";
+                location.assign(url);
+            })
             $.ajax({
                 url:"operationServlet",
                 type:"GET",
@@ -324,11 +328,19 @@
                     $("#enterprise_fund").html("");
                 }
             });
+            $("#back").click(function () {
+                let url = "operation.html";
+                location.assign(url);
+            })
 
         });
     </script>
 </head>
 <body>
+<div id="div_research_transfer" style="position: absolute;left: 100px;top: 50px;">
+    <input type="button" value="查看尚未提示的转账的信息" id="look_transfer">&nbsp;&nbsp;&nbsp;
+    <input type="button" value="返回" id="back">
+</div>
 <div id="account" style="position: absolute;left: 100px;top: 100px;"></div>
 <div id="before_option" style="position: absolute;left: 100px;top: 150px;">
     请选择要发起转账的资金来源

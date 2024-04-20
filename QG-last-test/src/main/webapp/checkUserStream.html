@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看用户流水</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url:"operationServlet",
+                type:"GET",
+                async:true,
+                dataType:'text',
+                data:{"method":"loginUser"},
+                success :function (res){
+                    //已经登录显示金额
+                    $.ajax({
+                        url:"transferServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"selectAllTransfer"},
+                        success:function (res) {
+                            let data = JSON.parse(res);
+                            let str ="";
+                            for(i in data){
+                                if (data[i].isAccept == "no"){
+                                    str +="<tr>\n" +
+                                        "                <td>" +data[i].userPayee + "</td>\n" +
+                                        "                <td>" +data[i].enterprisePayee+ "</td>\n" +
+                                        "                <td>"+ data[i].amount+"</td>\n" +
+                                        "                <td>"+ data[i].date+"</td>\n" +
+                                        "                <td>"+ data[i].description+"</td>\n" +
+                                        "                <td>"+ data[i].isAccept+"</td>\n" +
+                                        "                <td><input type='button' value='重新发起转账' id='"+data[i].tid+"' class='again'></td>\n" +
+                                        "            </tr>"
+                                }
+                                else {
+                                    str +="<tr>\n" +
+                                        "                <td>" +data[i].userPayee + "</td>\n" +
+                                        "                <td>" +data[i].enterprisePayee+ "</td>\n" +
+                                        "                <td>"+ data[i].amount+"</td>\n" +
+                                        "                <td>"+ data[i].date+"</td>\n" +
+                                        "                <td>"+ data[i].description+"</td>\n" +
+                                        "                <td>"+ data[i].isAccept+"</td>\n" +
+                                        "            </tr>"
+                                }
+
+
+                            }
+                            $("#body").html(str);
+                            for(i in data){
+                                if (data[i].isAccept != "pending" ){
+                                    if (data[i].enterprisePayee =="" || data[i].enterprisePayee == null){
+                                        alert("时间:"+data[i].date +" 向用户" + data[i].userPayee + "转账的 " + data[i].amount + " 元 结果为:" + data[i].isAccept );
+                                    }else {
+                                        alert("时间:"+data[i].date+" 向企业" + data[i].enterprisePayee + "转账的 " + data[i].amount + " 元 结果为:" + data[i].isAccept );
+
+                                    }
+                                    $.ajax({
+                                        url:"transferServlet",
+                                        type:"GET",
+                                        async:true,
+                                        data_type:'json',
+                                        data:{"method":"setTransferTipByTid","tid":data[i].tid},
+                                        success:function (){
+
+                                        },
+                                        error:function (){
+                                            console.log("修改tip失败");
+                                        }
+                                    })
+                                }
+
+                            }
+                            $(".again").click(function (){
+                                tid = $(this).attr('id');
+                                $.ajax({
+                                    url:"transferServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"editTransferStatus","tid":tid},
+                                    success:function (){
+                                        alert("重新发起转账成功");
+                                        $.ajax({
+                                            url:"transferServlet",
+                                            type:"GET",
+                                            async:true,
+                                            data_type:'json',
+                                            data:{"method":"reduceAmountByTid","tid":tid},
+                                            success:function () {
+
+                                            } ,
+                                            error:function () {
+
+                                            }
+                                        });
+                                    },
+                                    error:function (){
+
+                                    }
+                                });
+
+                            })
+
+                        },
+                        error:function () {
+
+                        }
+                    })
+                },
+                error:function (){
+                    alert("未登录，请先进行登录");
+                    let url ="operation.html"
+                    location.assign(url);
+                }
+            });
+            $("#back").click(function (){
+                let url = "transfer.html";
+                location.assign(url);
+            })
+        })
+    </script>
+</head>
+<body>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>转账用户</th>
+                <th>转账企业</th>
+                <th>转账金额</th>
+                <th>转账时间</th>
+                <th>转账描述</th>
+                <th>转账状态</th>
+                <th>处理</th>
+            </tr>
+            </thead>
+            <tbody align="center" id="body">
+            </tbody>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>

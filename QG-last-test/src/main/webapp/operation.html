@@ -188,28 +188,16 @@
                         }
 
                     });
-
-
                     $("#create").html("<input type=\"button\" value=\"申请企业\" id='applyEnterprise'>")
                     $("#applyEnterprise").click(function (){
                         let url = "createEnterprise.html";
                         location.assign(url);
-                    })
-                //     判断是不是网站管理
-                    $.ajax({
-                        url:"operationServlet",
-                        type:"GET",
-                        async:true,
-                        dataType:'text',
-                        data:{"method":"loginUser","username":$("#username").val()},
-                        success :function (){
-                        //     网站管理员
-                        },
-                        error :function (){
-                        //     普通用户
-
-                        }
                     });
+                    $("#div_check_stream").html("<input type='button' value='查看流水' id='check_stream'>");
+                    $("#check_stream").click(function (){
+                        let url = "checkUserStream.html";
+                        location.assign(url);
+                    })
                     //判断是否被封禁了
                     $.ajax({
                         url:"loginServlet",
@@ -240,6 +228,26 @@
                             //没有被封禁
                         }
                     });
+
+
+                //     判断是不是网站管理
+                    $.ajax({
+                        url:"operationServlet",
+                        type:"GET",
+                        async:true,
+                        dataType:'text',
+                        data:{"method":"loginUser","username":$("#username").val()},
+                        success :function (){
+                        //     网站管理员
+                        },
+                        error :function (){
+                        //     普通用户
+
+
+
+                        }
+                    });
+
                 },
                 error : function (){
                     alert("未登录");
@@ -308,6 +316,9 @@
 
 </div>
 
+<div style="position: absolute;left: 1200px;top: 55px;" id="div_check_stream">
+
+</div>
 <div style="position: absolute;left: 1000px;top: 55px;" id="transfer_div">
 
 </div>

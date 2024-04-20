@@ -6,13 +6,10 @@ import com.untils.JDBC;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
 
 public class TransferDataImpl implements TransferData {
 
@@ -88,6 +85,10 @@ public class TransferDataImpl implements TransferData {
                     preparedStatement.setNull(3,java.sql.Types.NULL);
                 }
             }
+            if (description == null || "".equals(description)){
+                preparedStatement.setNull(6,java.sql.Types.NULL);
+
+            }
             return preparedStatement.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -121,5 +122,35 @@ public class TransferDataImpl implements TransferData {
     public int reduceEnterpriseFunds(String enterprisePayer, double amount) {
         String sql = "update enterprise set Total_fund = Total_fund - " + amount + " where ename = '" + enterprisePayer + "'";
         return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectTransferInNOTipByUsername(String username) {
+        String sql = "select * from transfer  where is_tip = 'no' and  user_payer = '" + username + "' order by date desc";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int setTransferTipByTid(String tid) {
+        String sql = "update transfer set is_tip = 'yes' where tid = " + tid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int editTransferStatusByTid(String tid) {
+        String sql = "update transfer set is_tip = 'no' , is_accept = 'pending' where tid = "+ tid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectAllTransfer(String username) {
+        String sql = "select * from transfer  where user_payer = '" + username + "' order by date desc";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectTransferByTid(String tid) {
+        String sql = "select * from transfer where tid = " +tid;
+        return jdbc.Select(sql);
     }
 }
