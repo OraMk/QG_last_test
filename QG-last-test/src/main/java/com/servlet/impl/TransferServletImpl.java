@@ -36,13 +36,46 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         }
         String realPassword =  transferData.selectPaymentPassword(username);
         if (realPassword != null){
-            if (realPassword.equals(payment_password)){
+            if (realPassword.equals(inputPaymentPassword)){
                 resp.setStatus(HttpServletResponse.SC_OK);
 
             }else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
             }
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void addTransfer(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String user_payer = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    user_payer = c.getValue();
+                }
+            }
+        }
+        String enterprise_payer = req.getParameter("enterprise_payer");
+        String user_payee = req.getParameter("user_payee");
+        String enterprise_payee = req.getParameter("enterprise_payee");
+        double amount = Double.parseDouble(req.getParameter("fund"));
+        //将转账申请添加到数据库中
+        int n = transferData.addTransfer(user_payer,enterprise_payer,user_payee,enterprise_payee,amount,"测试代码");
+        if (n == 1 ){
+            //将用户的资金减少相应的金额
+            transferData.reduceFunds(user_payer,enterprise_payer,amount);
+            if (!(enterprise_payer == null || "".equals(enterprise_payer))){
+                //减少企业总资金
+                transferData.reduceEnterpriseFunds(enterprise_payer,amount);
+            }
+            resp.setStatus(HttpServletResponse.SC_OK);
+
         }else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 

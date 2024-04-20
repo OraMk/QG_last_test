@@ -6,9 +6,13 @@ import com.untils.JDBC;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Timestamp;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Date;
 
 public class TransferDataImpl implements TransferData {
 
@@ -16,6 +20,7 @@ public class TransferDataImpl implements TransferData {
     MessageDigest md ;
     ResultSet resultSet = null;
     JDBC jdbc = new JDBC();
+    Connection connection = jdbc.getConnection();
 
     public TransferDataImpl() throws SQLException, IOException, ClassNotFoundException {
     }
@@ -50,7 +55,7 @@ public class TransferDataImpl implements TransferData {
 
     @Override
     public String selectPaymentPassword(String username) {
-        String sql = "select * from payment_information where username = ‘" + username + "'";
+        String sql = "select * from payment_information where username = '" + username + "'";
         resultSet = jdbc.Select(sql);
         try {
             if (resultSet.next()){
@@ -60,5 +65,61 @@ public class TransferDataImpl implements TransferData {
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    @Override
+    public int addTransfer(String userPayer, String enterprisePayer, String userPayee, String enterprisePayee, double amount,String description) {
+        String sql = "insert into transfer(user_payer,enterprise_payer,user_payee,enterprise_payee,amount,description,date) values(?,?,?,?,?,?,NOW())";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,userPayer);
+            preparedStatement.setString(2,enterprisePayer);
+            preparedStatement.setString(3,userPayee);
+            preparedStatement.setString(4,enterprisePayee);
+            preparedStatement.setDouble(5,amount);
+            preparedStatement.setString(6,description);
+            if (enterprisePayer == null || enterprisePayer.equals("")){
+                preparedStatement.setNull(2,java.sql.Types.NULL);
+                if (enterprisePayee == null || enterprisePayee == ""){
+                    preparedStatement.setNull(4,java.sql.Types.NULL);
+                }
+            }else {
+                if (userPayee == null || userPayee.equals("")){
+                    preparedStatement.setNull(3,java.sql.Types.NULL);
+                }
+            }
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public int reduceFunds(String userPayer, String enterprisePayer, double amount) {
+        String sql = null;
+        if (enterprisePayer == null || "".equals(enterprisePayer)){
+             sql = "update user set fund = fund- " + amount  +" where username = '" + userPayer +"'";
+        }else {
+            //查询企业id
+             sql = "select * from enterprise where ename = '" + enterprisePayer + "'";
+            int eid = 0;
+            resultSet = jdbc.Select(sql);
+            try {
+                if (resultSet.next()){
+                    eid = resultSet.getInt("eid");
+                }
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            sql = "update relation set Allocation_funds = allocation_funds - "+amount+" where eid = " + eid + " and username = '" +userPayer + "'";
+        }
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int reduceEnterpriseFunds(String enterprisePayer, double amount) {
+        String sql = "update enterprise set Total_fund = Total_fund - " + amount + " where ename = '" + enterprisePayer + "'";
+        return jdbc.Edit(sql);
     }
 }

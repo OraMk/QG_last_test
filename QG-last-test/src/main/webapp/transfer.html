@@ -6,9 +6,13 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         let funds = 0;
+        let user_fund = 0;
+        let enterprise_fund = 0;
         let enterprise = null;
         let enterprise_payee = null;
         let usr_payee = null;
+        let transferFund = 0;
+        let user_payer = null;
         function ShowPayment() {
                 $(function () {
                     // 显示支付界面
@@ -39,22 +43,29 @@
                             //为用户非企业
                             $("#target").blur(function (){
                                 $("#pay_password").html("");
+                                if ($("#target").val() == user_payer){
+                                    $("#s_target").html("不能转账给自己");
+                                    $("#s_target").css("color","red");
+                                }
+                                else {
+                                    $.ajax({
+                                        url:"loginServlet",
+                                        type:"GET",
+                                        async:true,
+                                        dataType:'text',
+                                        data:{"method":"selectUsername","username":$("#target").val()},
+                                        success:function (){
+                                            $("#s_target").html("该用户存在");
+                                            $("#s_target").css("color","green");
+                                            usr_payee = $("#target").val();
+                                        },
+                                        error: function () {
+                                            $("#s_target").html("该用户不存在");
+                                            $("#s_target").css("color","red");
+                                        }
+                                    })
+                                }
 
-                                $.ajax({
-                                    url:"loginServlet",
-                                    type:"GET",
-                                    async:true,
-                                    dataType:'text',
-                                    data:{"method":"selectUsername","username":$("#target").val()},
-                                    success:function (){
-                                        $("#s_target").html("该用户存在");
-                                        $("#s_target").css("color","green");
-                                    },
-                                    error: function () {
-                                        $("#s_target").html("该用户不存在");
-                                        $("#s_target").css("color","red");
-                                    }
-                                })
 
                             });
                             usr_payee = $("#target").val();
@@ -64,31 +75,39 @@
                             //为企业
                             $("#target").blur(function () {
                                 $("#pay_password").html("");
-                                $.ajax({
-                                    url:"operationServlet",
-                                    type:"GET",
-                                    async:true,
-                                    dataType:'text',
-                                    data:{"method":"judgementEnterpriseName","ename":$("#target").val()},
-                                    success :function () {
-                                        $("#s_target").html("该企业存在");
-                                        $("#s_target").css("color","green");
-                                    },
-                                    error:function () {
-                                        $("#s_target").html("该企业不存在");
-                                        $("#s_target").css("color","red");
+                                if ($("#target").val() == enterprise)
+                                {
+                                    $("#s_target").html("不能转账给自己");
+                                    $("#s_target").css("color","red");
+                                }else {
+                                    $.ajax({
+                                        url:"operationServlet",
+                                        type:"GET",
+                                        async:true,
+                                        dataType:'text',
+                                        data:{"method":"judgementEnterpriseName","ename":$("#target").val()},
+                                        success :function () {
+                                            $("#s_target").html("该企业存在");
+                                            $("#s_target").css("color","green");
+                                            enterprise_payee = $("#target").val();
 
-                                    }
-                                });
-                                enterprise_payee = $("#target").val();
+                                        },
+                                        error:function () {
+                                            $("#s_target").html("该企业不存在");
+                                            $("#s_target").css("color","red");
+
+                                        }
+                                    });
+                                }
+
                             })
                         }
                         $("#Fund").blur(function (){
                             $("#pay_password").html("");
                             let fundRegExp = /^\d+(\.\d{1,2})?|^\d{1,2}$/;
-                            let transferFund = $(this).val();
+                            transferFund = $(this).val();
                             if (fundRegExp.test(transferFund)){
-                                if (transferFund > funds){
+                                if (parseFloat(transferFund) > parseFloat(funds)){
                                     $("#s_Fund").html("金额溢出");
                                     $("#s_Fund").css("color","red");
                                 }else {
@@ -119,6 +138,23 @@
                                             data:{"method":"judgementTransferPassword","payment_password":$("#password").val()},
                                             success :function () {
                                                 alert("密码正确");
+                                                $.ajax({
+                                                    url:"transferServlet",
+                                                    type:"GET",
+                                                    async:true,
+                                                    dataType:'text',
+                                                    data:{"method":"addTransfer",
+                                                        "enterprise_payer":enterprise,"user_payee":usr_payee,"enterprise_payee":enterprise_payee,
+                                                        "fund":transferFund},
+                                                    success:function () {
+                                                        alert("转账请求已发起");
+                                                        let url = "operation.html";
+                                                        location.assign(url);
+                                                    },
+                                                    error:function () {
+
+                                                    }
+                                                })
                                             },
                                             error:function () {
                                                 alert("密码错误，请重新输入");
@@ -142,8 +178,11 @@
 
         function CleanShowPayment(){
             $(function () {
-                alert("退出转账界面");
-                $("paymentScreen").html("");
+                // alert("退出转账界面");
+                $("#div_pay_option").html("");
+                $("#div_pay_name").html("");
+                $("#pay_password").html("");
+
             })
 
         }
@@ -165,7 +204,8 @@
                         data: {"method": "selectByUsername"},
                         success:function (res){
                             $("#account").html("当前账户为:" + res.username + "<br>账户资金为: " + res.fund);
-                            funds = res.fund;
+                            // funds = res.fund;
+                            user_fund = res.fund;
                         },
                         error:function (){
 
@@ -245,7 +285,9 @@
                                                     $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
                                                     funds = res.Allocation_funds;
                                                     // alert(funds +" " + enterprise);
+                                                    user_payer = res.username;
                                                     ShowPayment();
+
                                                 },
                                                 error:function (){
                                                     alert("数据异常，请稍后再查找");
@@ -270,6 +312,7 @@
                 }else if (selectedValue == "user"){
                     //选择个人资产
                     enterprise = null;
+                    funds = user_fund;
                     ShowPayment();
                     $("#choose_enterprise").html("");
                     $("#enterprise_fund").html("");
