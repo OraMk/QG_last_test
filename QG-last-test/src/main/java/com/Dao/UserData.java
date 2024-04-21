@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public interface UserData {
     //登录时候查找
@@ -21,4 +22,6 @@ public interface UserData {
     //更改头像
     public int changeAvatar(HttpServletRequest req, HttpServletResponse resp);
     public void close();
+
+
 }

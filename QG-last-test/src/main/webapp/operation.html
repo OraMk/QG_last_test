@@ -58,11 +58,15 @@
 
                     $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"self-enterprise\" value=\"查看我的企业\">");
 
-                    $("#transfer_div").html("<input type=\"button\" id=\"transfer\" value=\"转账功能\">");
+                    $("#transfer_div").html("<input type=\"button\" id=\"transfer\" value=\"转账功能\">&nbsp;&nbsp;&nbsp;<input type='button' id='collection' value='查看收款申请'>");
                     $("#transfer").click(function (){
                        let url = "transfer.html";
                        location.assign(url);
                     });
+                    $("#collection").click(function (){
+                        let url = "payoutRequests.html";
+                        location.assign(url);
+                    })
 
 
                     $("#self-enterprise").click(function (){

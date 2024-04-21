@@ -144,7 +144,7 @@ public class TransferDataImpl implements TransferData {
 
     @Override
     public ResultSet selectAllTransfer(String username) {
-        String sql = "select * from transfer  where user_payer = '" + username + "' order by date desc";
+        String sql = "select * from transfer  where user_payer = '" + username + "' or user_payee = '"+username+"' order by date desc";
         return jdbc.Select(sql);
     }
 
@@ -153,4 +153,150 @@ public class TransferDataImpl implements TransferData {
         String sql = "select * from transfer where tid = " +tid;
         return jdbc.Select(sql);
     }
+
+    @Override
+    public ResultSet selectPayoutInPendingByUsername(String username) {
+        String sql = "select * from transfer where user_payee = '" + username +"' and is_Accept = 'pending'" ;
+        return jdbc.Select(sql);
+    }
+    @Override
+    public int recordedForUser(String username, double amount)  {
+        String sql  = null;
+        double fund = 0;
+        //设置事务
+        try {
+            connection.setAutoCommit(false);
+            //设置悲观锁
+             sql = "select * from user where username = '" + username + "' for update ";
+            resultSet = jdbc.Select(sql);
+            fund = 0;
+            if (resultSet.next()){
+                fund = resultSet.getDouble("fund");
+            }
+            fund += amount;
+            //更新资金
+            sql = "update user set fund = " + fund + " where username = '" +username + "' ";
+            if (jdbc.Edit(sql) == 1)
+            {
+                //提交事务
+                connection.commit();
+                return 1;
+            }else {
+                connection.rollback();
+                return 0;
+            }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public int setIsAcceptByTid(String tid,String isAccept) {
+        String sql = "update transfer set is_accept = '"+isAccept+"' , is_tip = 'no' where tid = " + tid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int chargebacksToUser(String userPayee, double amount) {
+        String sql  = null;
+        double fund = 0;
+        //设置事务
+        try {
+            connection.setAutoCommit(false);
+            //设置悲观锁
+            sql = "select * from user where username = '" + userPayee + "' for update ";
+            resultSet = jdbc.Select(sql);
+            if (resultSet.next()){
+                fund = resultSet.getDouble("fund");
+            }
+            fund += amount;
+            //更新资金
+            sql = "update user set fund = " + fund + " where username = '" + userPayee + "' ";
+            if (jdbc.Edit(sql) == 1)
+            {
+                //提交事务
+                connection.commit();
+                connection.setAutoCommit(true);
+
+                return 1;
+            }else {
+                //回滚事务
+                connection.rollback();
+                connection.setAutoCommit(true);
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    @Override
+    public int chargebacksToEnterprise(String userPayee, String enterprisePayee, double amount) {
+        String sql = null;
+        double total_fund = 0;
+        double allocation_funds = 0;
+        int eid = 0;
+        try {
+            //设置事务
+            connection.setAutoCommit(false);
+            //设置悲观锁
+            sql = "select * from enterprise where ename = '" +enterprisePayee+ "' for update";
+            resultSet = jdbc.Select(sql);
+            if (resultSet.next()){
+                //获取企业总资金
+                total_fund = resultSet.getDouble("total_fund");
+                eid = resultSet.getInt(eid);
+            }
+            sql = "select * from relation where username = '" +userPayee+ "' and eid = " + eid + " for update";
+            resultSet = jdbc.Select(sql);
+            if (resultSet.next()){
+                allocation_funds = resultSet.getDouble("Allocation_funds");
+            }
+            total_fund += amount;
+            allocation_funds += amount;
+            sql = "update relation set Allocation_funds = " +allocation_funds + " where username = '" + userPayee + "' and eid = " + eid;
+            if (jdbc.Edit(sql) == 1){
+                sql = "update enterprise set Total_fund = " + total_fund + " where ename = '" + enterprisePayee + "'";
+                if (jdbc.Edit(sql) == 1){
+                    //当更改同时成功时
+                    //提交事务
+                    connection.commit();
+                    connection.setAutoCommit(true);
+
+                    return 1;
+                }else {
+                    connection.rollback();
+                    connection.setAutoCommit(true);
+
+                    return 0;
+                }
+            }else {
+                connection.rollback();
+                connection.setAutoCommit(true);
+
+                return 0;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }

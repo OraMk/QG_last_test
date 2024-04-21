@@ -25,4 +25,12 @@ public interface TransferServlet {
     //重新减少资金
     public void reduceAmountByTid(HttpServletRequest req, HttpServletResponse resp);
 
+    //查看尚未处理的收款信息
+    public void selectPayoutInPending(HttpServletRequest req, HttpServletResponse resp);
+    //同意入账
+    public void agreeTransferByUser(HttpServletRequest req, HttpServletResponse resp);
+
+    //拒绝入账
+    public void refuseTransferByUser(HttpServletRequest req, HttpServletResponse resp);
+
 }

@@ -5,6 +5,7 @@ import com.Dao.impl.TransferDataImpl;
 import com.pojo.Transfer;
 import com.servlet.BaseServlet;
 import com.servlet.TransferServlet;
+import com.untils.JDBC;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @WebServlet(value = "/transferServlet")
 public class TransferServletImpl extends BaseServlet implements TransferServlet {
+
     TransferData transferData = new TransferDataImpl();
     ResultSet resultSet = null;
     Transfer transfer = null;
@@ -250,5 +252,142 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
             transferData.reduceFunds(user_payer,enterprise_payer,amount);
         }
         resp.setStatus(HttpServletResponse.SC_OK);
+    }
+
+    @Override
+    public void selectPayoutInPending(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+                }
+            }
+        }
+        resultSet =  transferData.selectPayoutInPendingByUsername(username);
+        long tid = 0;
+        String userPayer = null;
+        String enterprisePayer = null;
+        String userPayee = null;
+        String enterprisePayee= null;
+        String date = null;
+        double amount = 0;
+        String description = null;
+        String isTip = null;
+        String isAccept = null;
+        try {
+            transferList = new ArrayList<Transfer>();
+            while (resultSet.next()){
+                tid = resultSet.getLong("tid");
+                userPayer = resultSet.getString("user_payer");
+                enterprisePayer = resultSet.getString("enterprise_payer");
+                userPayee = resultSet.getString("user_payee");
+                enterprisePayee = resultSet.getString("enterprise_payee");
+                date = resultSet.getString("Date");
+                amount = resultSet.getDouble("amount");
+                description = resultSet.getString("description");
+                isTip = resultSet.getString("is_tip");
+                isAccept = resultSet.getString("is_accept");
+                transfer = new Transfer(tid,userPayer,enterprisePayer,userPayee,enterprisePayee,date,amount,description,isTip,isAccept);
+                transferList.add(transfer);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),transferList);
+        } catch (SQLException e) {
+
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void agreeTransferByUser(HttpServletRequest req, HttpServletResponse resp) {
+        String tid = req.getParameter("tid");
+        resultSet = transferData.selectTransferByTid(tid);
+        double amount = 0 ;
+        String user_payee = null;
+        String enterprise_payee = null;
+        try {
+            if (resultSet.next()){
+                amount = resultSet.getDouble("amount");
+                user_payee = resultSet.getString("user_payee");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        try {
+            int n = transferData.recordedForUser(user_payee,amount);
+            if (n == 1){
+                //入账成功，更改转账信息为yes
+                int count = transferData.setIsAcceptByTid(tid,"yes");
+                if (count == 1 ){
+                    //更改信息完成
+                    resp.setStatus(HttpServletResponse.SC_OK);
+
+                }else {
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+                }
+            }
+            else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public void refuseTransferByUser(HttpServletRequest req, HttpServletResponse resp) {
+        String tid = req.getParameter("tid");
+        resultSet = transferData.selectTransferByTid(tid);
+        double amount = 0 ;
+//        String user_payer = null;
+        String enterprise_payee = null;
+        String user_payee = null;
+        int n = 0;
+        try {
+            if (resultSet.next()){
+                amount = resultSet.getDouble("amount");
+//                user_payer = resultSet.getString("user_payer");
+                enterprise_payee = resultSet.getString("enterprise_payee");
+                user_payee = resultSet.getString("user_payee");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        if (enterprise_payee == null || "".equals(enterprise_payee)){
+            //转账人为用户
+            //退账给用户
+            n = transferData.chargebacksToUser(user_payee,amount);
+
+        }else {
+            //转账主体为企业
+            n = transferData.chargebacksToEnterprise(user_payee,enterprise_payee,amount);
+        }
+        if (n == 1){
+            //退账成功，设置is_accept 为no
+            int count = transferData.setIsAcceptByTid(tid,"no");
+            if (count == 1 ){
+                //更改信息完成
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
     }
 }

@@ -6,6 +6,7 @@
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
         $(function () {
+            let username = null;
             $.ajax({
                 url:"operationServlet",
                 type:"GET",
@@ -14,6 +15,21 @@
                 data:{"method":"loginUser"},
                 success :function (res){
                     //已经登录显示金额
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        async: true,
+                        dataType: 'json',
+                        data: {"method": "selectByUsername"},
+                        success:function (res){
+                            $("#account").html("<h4>当前账户为:" + res.username + "<br>账户资金为: " + res.fund +"</h4>");
+                            // funds = res.fund;
+                            username = res.username;
+                        },
+                        error:function (){
+
+                        }
+                    });
                     $.ajax({
                         url:"transferServlet",
                         type:"GET",
@@ -24,8 +40,10 @@
                             let data = JSON.parse(res);
                             let str ="";
                             for(i in data){
-                                if (data[i].isAccept == "no"){
+                                if (data[i].isAccept == "no" && data[i].userPayer == username){
                                     str +="<tr>\n" +
+                                        "                <td>" +data[i].userPayer + "</td>\n" +
+                                        "                <td>" +data[i].enterprisePayer+ "</td>\n" +
                                         "                <td>" +data[i].userPayee + "</td>\n" +
                                         "                <td>" +data[i].enterprisePayee+ "</td>\n" +
                                         "                <td>"+ data[i].amount+"</td>\n" +
@@ -37,6 +55,8 @@
                                 }
                                 else {
                                     str +="<tr>\n" +
+                                        "                <td>" +data[i].userPayer + "</td>\n" +
+                                        "                <td>" +data[i].enterprisePayer+ "</td>\n" +
                                         "                <td>" +data[i].userPayee + "</td>\n" +
                                         "                <td>" +data[i].enterprisePayee+ "</td>\n" +
                                         "                <td>"+ data[i].amount+"</td>\n" +
@@ -50,7 +70,7 @@
                             }
                             $("#body").html(str);
                             for(i in data){
-                                if (data[i].isAccept != "pending" ){
+                                if (data[i].isAccept != "pending" && data[i].isTip == "no"){
                                     if (data[i].enterprisePayee =="" || data[i].enterprisePayee == null){
                                         alert("时间:"+data[i].date +" 向用户" + data[i].userPayee + "转账的 " + data[i].amount + " 元 结果为:" + data[i].isAccept );
                                     }else {
@@ -117,13 +137,27 @@
                 }
             });
             $("#back").click(function (){
-                let url = "transfer.html";
+                let url = "operation.html";
                 location.assign(url);
             })
         })
     </script>
 </head>
 <body>
+<div style="position: absolute;
+            top: 100px;
+            bottom: 0;
+            left: 700px;
+            right: 0;">
+    <input type="button" value="返回" id="back">
+</div>
+<div style="width: 150px;height: 40px; position: absolute;
+            top: 15px;
+            bottom: 0;
+            left: 700px;
+            right: 0;
+            " id="account">
+</div>
 <div style="width :800px;
      position: absolute;
             top: 180px;
@@ -135,8 +169,10 @@
         <table width =100% border="1px">
             <thead align="center">
             <tr>
-                <th>转账用户</th>
+                <th>转账方</th>
                 <th>转账企业</th>
+                <th>收款用户</th>
+                <th>收款企业</th>
                 <th>转账金额</th>
                 <th>转账时间</th>
                 <th>转账描述</th>
