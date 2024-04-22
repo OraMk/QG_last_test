@@ -23,6 +23,8 @@ public interface TransferServlet {
 
     //查找流水
     public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp);
+    //根据企业名称查询流水
+    public void selectAllTransferByEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
     //重新减少资金
     public void reduceAmountByTid(HttpServletRequest req, HttpServletResponse resp) throws SQLException;

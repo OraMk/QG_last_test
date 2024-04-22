@@ -149,6 +149,13 @@ public class TransferDataImpl implements TransferData {
     }
 
     @Override
+    public ResultSet selectAllTransferByEnterprise(String enterprise) {
+        String sql = "select * from transfer where enterprise_payer = '" +enterprise+ "' or enterprise_payee = '" +enterprise+ "' order by date desc";
+        return jdbc.Select(sql);
+
+    }
+
+    @Override
     public ResultSet selectTransferByTid(String tid) {
         String sql = "select * from transfer where tid = " +tid  + " for update";
         return jdbc.Select(sql);

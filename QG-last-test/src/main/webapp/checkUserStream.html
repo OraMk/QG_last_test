@@ -39,36 +39,63 @@
                         success:function (res) {
                             let data = JSON.parse(res);
                             let str ="";
-                            for(i in data){
-                                if (data[i].isAccept == "no" && data[i].userPayer == username){
-                                    str +="<tr>\n" +
-                                        "                <td>" +data[i].userPayer + "</td>\n" +
-                                        "                <td>" +data[i].enterprisePayer+ "</td>\n" +
-                                        "                <td>" +data[i].userPayee + "</td>\n" +
-                                        "                <td>" +data[i].enterprisePayee+ "</td>\n" +
-                                        "                <td>"+ data[i].amount+"</td>\n" +
-                                        "                <td>"+ data[i].date+"</td>\n" +
-                                        "                <td>"+ data[i].description+"</td>\n" +
-                                        "                <td>"+ data[i].isAccept+"</td>\n" +
-                                        "                <td><input type='button' value='重新发起转账' id='"+data[i].tid+"' class='again'></td>\n" +
-                                        "            </tr>"
-                                }
-                                else {
-                                    str +="<tr>\n" +
-                                        "                <td>" +data[i].userPayer + "</td>\n" +
-                                        "                <td>" +data[i].enterprisePayer+ "</td>\n" +
-                                        "                <td>" +data[i].userPayee + "</td>\n" +
-                                        "                <td>" +data[i].enterprisePayee+ "</td>\n" +
-                                        "                <td>"+ data[i].amount+"</td>\n" +
-                                        "                <td>"+ data[i].date+"</td>\n" +
-                                        "                <td>"+ data[i].description+"</td>\n" +
-                                        "                <td>"+ data[i].isAccept+"</td>\n" +
-                                        "            </tr>"
-                                }
+                            for(i in data) {
+                                if (data[i].isAccept == "no" && data[i].userPayer == username) {
+                                    if (username == data[i].userPayer) {
+                                        str += "<tr>\n" +
+                                            "                <td><b>" + data[i].userPayer + "</b></td>\n" +
+                                            "                <td>" + data[i].enterprisePayer + "</td>\n" +
+                                            "                <td>" + data[i].userPayee + "</td>\n" +
+                                            "                <td>" + data[i].enterprisePayee + "</td>\n" +
+                                            "                <td>" + data[i].amount + "</td>\n" +
+                                            "                <td>" + data[i].date + "</td>\n" +
+                                            "                <td>" + data[i].description + "</td>\n" +
+                                            "                <td>" + data[i].isAccept + "</td>\n" +
+                                            "                <td><input type='button' value='重新发起转账' id='" + data[i].tid + "' class='again'></td>\n" +
+                                            "            </tr>"
+                                    } else if (username == data[i].userPayee) {
+                                        str += "<tr>\n" +
+                                            "                <td>" + data[i].userPayer + "</td>\n" +
+                                            "                <td>" + data[i].enterprisePayer + "</td>\n" +
+                                            "                <td><b>" + data[i].userPayee + "</b></td>\n" +
+                                            "                <td>" + data[i].enterprisePayee + "</td>\n" +
+                                            "                <td>" + data[i].amount + "</td>\n" +
+                                            "                <td>" + data[i].date + "</td>\n" +
+                                            "                <td>" + data[i].description + "</td>\n" +
+                                            "                <td>" + data[i].isAccept + "</td>\n" +
+                                            "                <td><input type='button' value='重新发起转账' id='" + data[i].tid + "' class='again'></td>\n" +
+                                            "            </tr>"
+                                    }
 
+                                } else {
+                                    if (username == data[i].userPayer) {
+                                        str += "<tr>\n" +
+                                            "                <td><b>" + data[i].userPayer + "</b></td>\n" +
+                                            "                <td>" + data[i].enterprisePayer + "</td>\n" +
+                                            "                <td>" + data[i].userPayee + "</td>\n" +
+                                            "                <td>" + data[i].enterprisePayee + "</td>\n" +
+                                            "                <td>" + data[i].amount + "</td>\n" +
+                                            "                <td>" + data[i].date + "</td>\n" +
+                                            "                <td>" + data[i].description + "</td>\n" +
+                                            "                <td>" + data[i].isAccept + "</td>\n" +
+                                            "            </tr>"
+                                    } else if (username == data[i].userPayee) {
+                                        str += "<tr>\n" +
+                                            "                <td>" + data[i].userPayer + "</td>\n" +
+                                            "                <td>" + data[i].enterprisePayer + "</td>\n" +
+                                            "                <td><b>" + data[i].userPayee + "</b></td>\n" +
+                                            "                <td>" + data[i].enterprisePayee + "</td>\n" +
+                                            "                <td>" + data[i].amount + "</td>\n" +
+                                            "                <td>" + data[i].date + "</td>\n" +
+                                            "                <td>" + data[i].description + "</td>\n" +
+                                            "                <td>" + data[i].isAccept + "</td>\n" +
+                                            "            </tr>"
+                                    }
 
+                                }
                             }
-                            $("#body").html(str);
+
+                                $("#body").html(str);
                             for(i in data){
                                 if (data[i].isAccept != "pending" && data[i].isTip == "no"){
                                     if (data[i].enterprisePayee =="" || data[i].enterprisePayee == null){

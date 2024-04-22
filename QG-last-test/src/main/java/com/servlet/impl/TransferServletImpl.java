@@ -92,6 +92,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         try {
             //设置事务
             //将转账申请添加到数据库中
+            transferData.setAffair();
             int n = transferData.addTransfer(user_payer,enterprise_payer,user_payee,enterprise_payee,amount,description);
             if (n == 1 ){
                 int count = 0;
@@ -230,6 +231,49 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String isTip = null;
         String isAccept = null;
         resultSet = transferData.selectAllTransfer(username);
+        try {
+            transferList = new ArrayList<Transfer>();
+            while (resultSet.next()){
+                tid = resultSet.getLong("tid");
+                userPayer = resultSet.getString("user_payer");
+                enterprisePayer = resultSet.getString("enterprise_payer");
+                userPayee = resultSet.getString("user_payee");
+                enterprisePayee = resultSet.getString("enterprise_payee");
+                date = resultSet.getString("Date");
+                amount = resultSet.getDouble("amount");
+                description = resultSet.getString("description");
+                isTip = resultSet.getString("is_tip");
+                isAccept = resultSet.getString("is_accept");
+                transfer = new Transfer(tid,userPayer,enterprisePayer,userPayee,enterprisePayee,date,amount,description,isTip,isAccept);
+                transferList.add(transfer);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),transferList);
+        } catch (SQLException e) {
+
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void selectAllTransferByEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        String enterprise = req.getParameter("enterprise");
+        long tid = 0;
+        String userPayer = null;
+        String enterprisePayer = null;
+        String userPayee = null;
+        String enterprisePayee= null;
+        String date = null;
+        double amount = 0;
+        String description = null;
+        String isTip = null;
+        String isAccept = null;
+        resultSet = transferData.selectAllTransferByEnterprise(enterprise);
         try {
             transferList = new ArrayList<Transfer>();
             while (resultSet.next()){

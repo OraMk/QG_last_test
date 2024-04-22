@@ -24,6 +24,9 @@ public interface TransferData {
     //查询所有流水根据用户名
     public ResultSet selectAllTransfer(String username);
 
+    //根据企业名称查询流水
+    public ResultSet selectAllTransferByEnterprise(String enterprise);
+
     //根据转账单号查询转账单
     public ResultSet selectTransferByTid(String tid);
     //查找尚未处理的收款信息通过用户名

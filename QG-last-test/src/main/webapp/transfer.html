@@ -13,6 +13,45 @@
         let usr_payee = null;
         let transferFund = 0;
         let user_payer = null;
+        function updateEnterpriseFund(option_enterprise){
+            $.ajax({
+                url: "InteractionServlet",
+                type: "GET",
+                async: true,
+                dataType: 'json',
+                data: {"method": "enterpriseAllocateFund","eid":option_enterprise},
+                success:function (res){
+                    // let data = JSON.parse(res);
+                    $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
+                    funds = res.Allocation_funds;
+                    // alert(funds +" " + enterprise);
+                    user_payer = res.username;
+                },
+                error:function (){
+                    alert("数据异常，请稍后再查找");
+                }
+            });
+        }
+
+        function UserFund(){
+            $.ajax({
+                url: "loginServlet",
+                type: "GET",
+                async: true,
+                dataType: 'json',
+                data: {"method": "selectByUsername"},
+                success:function (res){
+                    $("#account").html("当前账户为:" + res.username + "<br>账户资金为: " + res.fund);
+                    // funds = res.fund;
+                    user_fund = res.fund;
+                },
+                error:function (){
+
+                }
+            });
+        }
+        var userUpdateInterval = 0;
+        var updateInterval = 0 ;
         function ShowPayment() {
                 $(function () {
                     // 显示支付界面
@@ -200,21 +239,26 @@
                 data:{"method":"loginUser"},
                 success :function (res){
                     //已经登录显示金额
-                    $.ajax({
-                        url: "loginServlet",
-                        type: "GET",
-                        async: true,
-                        dataType: 'json',
-                        data: {"method": "selectByUsername"},
-                        success:function (res){
-                            $("#account").html("当前账户为:" + res.username + "<br>账户资金为: " + res.fund);
-                            // funds = res.fund;
-                            user_fund = res.fund;
-                        },
-                        error:function (){
+                    // $.ajax({
+                    //     url: "loginServlet",
+                    //     type: "GET",
+                    //     async: true,
+                    //     dataType: 'json',
+                    //     data: {"method": "selectByUsername"},
+                    //     success:function (res){
+                    //         $("#account").html("当前账户为:" + res.username + "<br>账户资金为: " + res.fund);
+                    //         // funds = res.fund;
+                    //         user_fund = res.fund;
+                    //     },
+                    //     error:function (){
+                    //
+                    //     }
+                    // });
 
-                        }
-                    });
+                    userUpdateInterval = UserFund();
+                    updateInterval = setInterval(function() {
+                        UserFund();
+                    }, 1000);
                 },
                 error:function (){
                     alert("未登录，请先进行登录");
@@ -278,25 +322,31 @@
                                             //没有被封禁
                                             //获取该用户在企业中的资金
                                             enterprise = res.ename;
-                                            $.ajax({
-                                                url: "InteractionServlet",
-                                                type: "GET",
-                                                async: true,
-                                                dataType: 'json',
-                                                data: {"method": "enterpriseAllocateFund","eid":option_enterprise.val()},
-                                                success:function (res){
-                                                    // let data = JSON.parse(res);
-                                                    $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
-                                                    funds = res.Allocation_funds;
-                                                    // alert(funds +" " + enterprise);
-                                                    user_payer = res.username;
-                                                    ShowPayment();
-
-                                                },
-                                                error:function (){
-                                                    alert("数据异常，请稍后再查找");
-                                                }
-                                            });
+                                            // $.ajax({
+                                            //     url: "InteractionServlet",
+                                            //     type: "GET",
+                                            //     async: true,
+                                            //     dataType: 'json',
+                                            //     data: {"method": "enterpriseAllocateFund","eid":option_enterprise.val()},
+                                            //     success:function (res){
+                                            //         // let data = JSON.parse(res);
+                                            //         $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
+                                            //         funds = res.Allocation_funds;
+                                            //         // alert(funds +" " + enterprise);
+                                            //         user_payer = res.username;
+                                            //         ShowPayment();
+                                            //
+                                            //     },
+                                            //     error:function (){
+                                            //         alert("数据异常，请稍后再查找");
+                                            //     }
+                                            // });
+                                            clearInterval(updateInterval); // 清除之前的定时器
+                                            updateEnterpriseFund(option_enterprise.val());
+                                            updateInterval = setInterval(function() {
+                                                updateEnterpriseFund(option_enterprise.val());
+                                            }, 1000); // 每隔1秒更新一次
+                                            ShowPayment();
                                         },
                                         error:function (){
                                             //企业被封禁
@@ -316,6 +366,7 @@
                 }else if (selectedValue == "user"){
                     //选择个人资产
                     enterprise = null;
+                    clearInterval(updateInterval);
                     funds = user_fund;
                     ShowPayment();
                     $("#choose_enterprise").html("");
@@ -324,6 +375,7 @@
                 }else {
                     enterprise = null;
                     CleanShowPayment();
+                    clearInterval(updateInterval);
                     $("#choose_enterprise").html("");
                     $("#enterprise_fund").html("");
                 }

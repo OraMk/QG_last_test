@@ -403,7 +403,6 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             map.put("eid", String.valueOf(eid));
             map.put("isLeader",isLeader);
             map.put("Allocation_funds", String.valueOf(allocationFunds));
-            enterpriseData.commit();
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(resp.getWriter(),map);
         } catch (SQLException | IOException e) {
@@ -570,7 +569,6 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int eid = Integer.parseInt(req.getParameter("eid"));
         resultSet =  enterpriseData.selectEnterpriseByEid(eid);
-        enterpriseData.commit();
         try {
             if (resultSet.next()){
                 String e_banned = resultSet.getString("e_banned");
