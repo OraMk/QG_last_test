@@ -3,12 +3,14 @@ package com.servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.sql.SQLException;
+
 public interface LoginServlet {
     //    查找是否存在该用户
     public void selectUser(HttpServletRequest req, HttpServletResponse resp);
 
     //    添加用户数据
-    public void  add(HttpServletRequest req, HttpServletResponse resp);
+    public void  add(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
     //查找用户名字是否存在
     public void selectUsername(HttpServletRequest req, HttpServletResponse resp);
 //    判断是否为网站管理员
@@ -18,10 +20,10 @@ public interface LoginServlet {
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
 
     //更换普通信息
-    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
+    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //更改头像
-    public void avatarChange(HttpServletRequest req, HttpServletResponse resp);
+    public void avatarChange(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //判断用户是否被封禁
     public void judgementBanned(HttpServletRequest req, HttpServletResponse resp);

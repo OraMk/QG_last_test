@@ -5,7 +5,7 @@
     <title>查看转账申请</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
-    $(function () {
+        $(function () {
 
             $.ajax({
                 url:"operationServlet",
@@ -20,7 +20,7 @@
                         type: "GET",
                         async: true,
                         data_type: 'json',
-                        data: {"method": "selectPayoutInPending"},
+                        data: {"method": "selectPayoutInPendingByEnterprise"},
                         success: function (res) {
                             let data = JSON.parse(res);
                             let str = "";
@@ -37,6 +37,7 @@
                             }
                             $("#body").html(str);
                             $(".agree").click(function () {
+                                // $(this).disable("false");
                                 let tid = $(this).attr('name');
                                 // 禁用name属性值相同的按钮
                                 $("[name='" + tid + "']").prop('disabled', true);
@@ -46,15 +47,15 @@
                                     type: "GET",
                                     async: true,
                                     data_type: 'json',
-                                    data: {"method": "agreeTransferByUser","tid" : tid},
+                                    data: {"method": "agreeTransferByEnterprise","tid" : tid},
                                     success:function (){
                                         alert("交易成功");
-                                        let url = "payoutRequests.html";
+                                        let url = "enterprisePayoutRequests.html";
                                         location.assign(url);
                                     },
                                     error:function (){
-                                        alert("入账失败，请稍后再试(或该申请已经被处理)");
-                                        let url = "payoutRequests.html";
+                                        alert("入账失败，请稍后再试(可能该申请已经被其他企业管理员处理)");
+                                        let url = "enterprisePayoutRequests.html";
                                         location.assign(url);
 
                                     }
@@ -73,12 +74,12 @@
                                     data: {"method": "refuseTransferByUser","tid" : tid},
                                     success:function (){
                                         alert("拒绝转账成功");
-                                        let url = "payoutRequests.html";
+                                        let url = "enterprisePayoutRequests.html";
                                         location.assign(url);
                                     },
                                     error:function (){
-                                        alert("拒绝申请失败，请稍后再试(或该申请已经被处理)")
-                                        let url = "payoutRequests.html";
+                                        alert("拒绝申请失败，请稍后再试(可能该申请已经被其他企业管理员处理)")
+                                        let url = "enterprisePayoutRequests.html";
                                         location.assign(url);
                                     }
                                 });
@@ -93,11 +94,12 @@
                 }
             });
             $("#back").click(function () {
-                let url = "operation.html";
+                let url = "enterpriseInformation.html";
                 location.assign(url);
+
             })
 
-    })
+        })
     </script>
 </head>
 <body>

@@ -167,12 +167,14 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
     }
 
     @Override
-    public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp) {
+    public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.changeInformationSimple(req,resp);
         if (n == 1)
         {//则更改成功
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else{
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
@@ -245,7 +247,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
     }
 
     @Override
-    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.addEnterprise(req,resp);
         Cookie[] cookies = req.getCookies();
         String username = null;
@@ -269,10 +271,12 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
             if (success == 1){
                 Cookie cookie = new Cookie("eid", String.valueOf(eid));
                 //添加cookie或者更改cookie
+                enterpriseData.commit();
                 resp.addCookie(cookie);
                 resp.setStatus(HttpServletResponse.SC_OK);
             }
             else {
+
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }else {

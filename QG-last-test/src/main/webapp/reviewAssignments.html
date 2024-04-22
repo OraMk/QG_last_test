@@ -107,7 +107,11 @@
 
 
 
-                   })
+                   });
+                   $("#back").click(function () {
+                       let url = "enterpriseInformation.html";
+                       location.assign(url);
+                   });
                },
                error:function (){
                    alert("查询失败，服务器异常，请稍后再试");
@@ -118,6 +122,8 @@
 </head>
 <body>
 <div style="width:800px;height: 320px;position: absolute; top: 30px; left: 650px;" id="introduce">
+</div>
+<div style="width:800px;height: 320px;position: absolute; top: 60px; left: 650px;" id="back">
 </div>
 <div style="width :800px;
      position: absolute;

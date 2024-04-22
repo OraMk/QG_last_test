@@ -37,8 +37,20 @@ public interface TransferData {
     public int setIsAcceptByTid(String tid,String isAccept);
 
     //退账给用户
-    public int chargebacksToUser(String userPayee, double amount);
+    public int chargebacksToUser(String userPayer, double amount);
 
     //退账给企业
-    public int chargebacksToEnterprise(String userPayee, String enterprisePayee, double amount);
+    public int chargebacksToEnterprise(String userPayer, String enterprisePayer, double amount);
+
+    public ResultSet selectPayoutInPendingByEnterprise(String enterprisePayee);
+
+    //设置事务
+    public void setAffair() throws SQLException;
+
+    //提交事务
+    public void commit() throws SQLException;
+    //回滚事务
+    public void rollback() throws SQLException;
+
+    int recordedForEnterprise(String enterprisePayee, double amount);
 }

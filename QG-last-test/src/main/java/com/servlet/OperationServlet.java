@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public interface OperationServlet {
     //获取登录账户
@@ -16,7 +17,7 @@ public interface OperationServlet {
     //展示企业详情通过id
     public void displayIntroductionById(HttpServletRequest req, HttpServletResponse resp);
     //更改企业信息
-    public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp);
+    public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
     //根据企业名称查找企业
     public void selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
 
@@ -24,7 +25,7 @@ public interface OperationServlet {
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp);
 
     //申请企业
-    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp);
+    public void createEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //判断企业名是否存在
     public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp);

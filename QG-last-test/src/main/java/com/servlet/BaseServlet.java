@@ -23,6 +23,7 @@ public class BaseServlet extends HttpServlet {
                 method.invoke(this,req,resp);
         } catch (Exception e) {
             e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
 
 

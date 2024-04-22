@@ -42,7 +42,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void applyToJoin(HttpServletRequest req, HttpServletResponse resp) {
+    public void applyToJoin(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         boolean isApply = false;
         try {//先查询是否有重复的未受理的请求，以防产生多次请求
             isApply = applicationData.judgmentApplyJoin(req,resp);
@@ -54,11 +54,14 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             if (n == 1){
                 //数据添加成功
                 resp.setStatus(HttpServletResponse.SC_OK);
+
             }else {
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
             }
         }else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         }
 
 
@@ -66,7 +69,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void judgmentJoin(HttpServletRequest req, HttpServletResponse resp) {
+    public void judgmentJoin(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         //调用dao层去实现查询
         resultSet = applicationData.judgmentJoin(req,resp);
         int n = 0;
@@ -83,24 +86,28 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
         if (n != 0){
             //则说明已经在在该企业了
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         }else{
             resp.setStatus(HttpServletResponse.SC_OK);
+
         }
     }
 
     @Override
-    public void deleteRelation(HttpServletRequest req, HttpServletResponse resp) {
+    public void deleteRelation(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = applicationData.deleteRelation(req, resp);
         if (n != 0){
             //则退出成功
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
-    public void applyToLeader(HttpServletRequest req, HttpServletResponse resp) {
+    public void applyToLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         boolean isApply = false;
         try {//先查询是否有重复的未受理的请求，以防产生多次请求
             isApply = applicationData.judgmentApplyLeader(req,resp);
@@ -111,8 +118,10 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             int n =  applicationData.addApplicationLeader(req, resp);
             if (n == 1){
                 //数据添加成功
+
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else {
+                ;
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }else {
@@ -131,6 +140,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                 if (resultSet.next()){
                     if ("yes".equals(resultSet.getString("isleader")))
                     {//是负责人
+
                         resp.setStatus(HttpServletResponse.SC_OK);
 
                     }
@@ -207,7 +217,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void agreeApplication(HttpServletRequest req, HttpServletResponse resp) {
+    public void agreeApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         resultSet = applicationData.selectApplicationById(req,resp);
         String description = null;
 //        long aid = 0;
@@ -227,70 +237,85 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
         }
         int n = applicationData.agreeApplication(req,resp);
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
+        }else {
+
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
         }
 
     }
 
     @Override
-    public void refuseApplication(HttpServletRequest req, HttpServletResponse resp) {
+    public void refuseApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = applicationData.refuseApplication(req, resp);
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
     }
 
     @Override
-    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.joinEnterprise(req, resp);
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
-    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) {
+    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.joinLeader(req,resp);
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
-    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.deleteEnterprise(req,resp);
         if (n != 0){
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
-    public void inviteUsername(HttpServletRequest req, HttpServletResponse resp) {
+    public void inviteUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = enterpriseData.inviteUsername(req,resp);
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
     }
 
     @Override
-    public void judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp) {
+    public void judgmentJoinForInvite(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         resultSet = enterpriseData.judgmentJoinForInvite(req,resp);
         int n = 0 ;
         try {
@@ -301,15 +326,17 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             throw new RuntimeException(e);
         }
         if (n == 1){
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
     }
 
     @Override
-    public void displayAllocationFunds(HttpServletRequest req, HttpServletResponse resp) {
+    public void displayAllocationFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         //获取企业id
         Cookie[] cookies = req.getCookies();
         //获取cookie
@@ -339,9 +366,12 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                     relation = new Relation(rid,username,eid,isLeader,allocationFunds);
                     relationList.add(relation);
                 }
+
+
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.writeValue(resp.getWriter(),relationList);
             } catch (SQLException | IOException e) {
+
                 throw new RuntimeException(e);
             }
         }else {
@@ -373,6 +403,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
             map.put("eid", String.valueOf(eid));
             map.put("isLeader",isLeader);
             map.put("Allocation_funds", String.valueOf(allocationFunds));
+            enterpriseData.commit();
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(resp.getWriter(),map);
         } catch (SQLException | IOException e) {
@@ -381,7 +412,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void compareFunds(HttpServletRequest req, HttpServletResponse resp) {
+    public void compareFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         //获取企业id
         Cookie[] cookies = req.getCookies();
         //获取cookie
@@ -424,10 +455,12 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
         if (sumFunds <= totalFunds){
             //若资金总和小于等于总资金则合理
+
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
             //若资金总和大于总资金则该次更改不合理
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
@@ -435,10 +468,11 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp) {
+    public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         long rid = Long.parseLong(req.getParameter("rid"));
         double fund = Double.parseDouble(req.getParameter("allocation_funds"));
         int n = enterpriseData.updateAllocateFunds(rid,fund);
+        //提交事务
         if (n == 1){
             resp.setStatus(HttpServletResponse.SC_OK);
 
@@ -449,7 +483,7 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void applyUnblockingByUsername(HttpServletRequest req, HttpServletResponse resp) {
+    public void applyUnblockingByUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         Cookie[] cookies = req.getCookies();
         String username = null;
         if (cookies != null) {
@@ -478,9 +512,11 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
         if (judgment == 0){
             int n = applicationData.applyUnblockingForUsername(username);
             if (n == 1){
+
                 resp.setStatus(HttpServletResponse.SC_OK);
 
             }else {
+
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
             }
@@ -531,9 +567,10 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp) {
+    public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int eid = Integer.parseInt(req.getParameter("eid"));
         resultSet =  enterpriseData.selectEnterpriseByEid(eid);
+        enterpriseData.commit();
         try {
             if (resultSet.next()){
                 String e_banned = resultSet.getString("e_banned");

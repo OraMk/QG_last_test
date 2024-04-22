@@ -65,9 +65,11 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
                     Cookie cookie = new Cookie("username", req.getParameter("username"));
 //                cookie.setMaxAge(3600); // 设置Cookie的过期时间为1小时
                     resp.addCookie(cookie);
+
                     resp.setStatus(HttpServletResponse.SC_OK);
 
                 }else{
+
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
             }
@@ -79,17 +81,20 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     }
 
     @Override
-    public void add(HttpServletRequest req, HttpServletResponse resp) {
+    public void add(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         try{
             int n = userData.add(req,resp);
             if (n == 1)
             {
+
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else{
+
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }catch (Exception e)
         {
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             throw new RuntimeException(e);
         }
@@ -170,23 +175,27 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     }
 
     @Override
-    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) {
+    public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = userData.changeInformationSimple(req,resp);
         if (n == 1)
         {//则更改成功
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else{
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
-    public void avatarChange(HttpServletRequest req, HttpServletResponse resp) {
+    public void avatarChange(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         int n = userData.changeAvatar(req,resp);
         if (n == 1 )
         {//更改成功
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else{
+
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }

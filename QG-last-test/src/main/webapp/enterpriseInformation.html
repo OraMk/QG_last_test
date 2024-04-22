@@ -78,11 +78,16 @@
                                 let url = "reviewAssignments.html";
                                 location.assign(url);
                             })
-                            $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\">")
+                            $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\"><br><br><br>" +
+                                "<input type='button' value='查看企业收款请求' id='payout'>");
                             $("#apply").click(function (){
                                 let url = "handleApplication.html";
                                 location.assign(url);
                             });
+                            $("#payout").click(function () {
+                                let url = "enterprisePayoutRequests.html";
+                                location.assign(url);
+                            })
                             $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
                             $("#delete").click(function (){
                                 if (window.confirm("确认要注销企业吗?")){

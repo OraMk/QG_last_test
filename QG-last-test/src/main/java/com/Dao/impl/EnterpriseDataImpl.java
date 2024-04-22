@@ -261,7 +261,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
 
     @Override
     public ResultSet selectAllocationFundsByEid(int eid) {
-        String sql = "select * from relation where eid = " + eid;
+        String sql = "select * from relation where eid = " + eid + " for update";
         return jdbc.Select(sql);
     }
 
@@ -272,8 +272,9 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public ResultSet selectEnterpriseByEid(int eid) {
-        String sql = "select * from enterprise where eid = " + eid;
+    public ResultSet selectEnterpriseByEid(int eid) throws SQLException {
+
+        String sql = "select * from enterprise where eid = " + eid + " for update";
         return jdbc.Select(sql);
     }
 
@@ -312,6 +313,17 @@ public class EnterpriseDataImpl implements EnterpriseData {
     public ResultSet selectRelationByUsernameAndEid(int eid, String username) {
         String sql = "select * from relation where eid = "+eid+" and username = '"+username+"'";
         return jdbc.Select(sql);
+    }
+
+    @Override
+    public void setAffairs() throws SQLException {
+        connection.setAutoCommit(false);
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        connection.commit();
+        connection.setAutoCommit(true);
     }
 
 }

@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public interface EnterpriseData {
     //查找所有公开企业
@@ -33,7 +34,7 @@ public interface EnterpriseData {
     public ResultSet selectRelationById(long rid);
 
     //根据企业id查找企业
-    public ResultSet selectEnterpriseByEid(int eid);
+    public ResultSet selectEnterpriseByEid(int eid) throws SQLException;
     //更改分配资金根据关系id
     public int  updateAllocateFunds(long rid, double fund);
     //增添企业
@@ -45,4 +46,10 @@ public interface EnterpriseData {
     public ResultSet selectEnterpriseByEnterpriseName(String ename);
 
     public ResultSet selectRelationByUsernameAndEid(int eid, String username);
+
+    //设置事务
+    public void setAffairs() throws SQLException;
+
+    //提交事务
+    public void commit() throws SQLException;
 }

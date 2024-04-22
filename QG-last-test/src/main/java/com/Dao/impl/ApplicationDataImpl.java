@@ -19,7 +19,9 @@ public class ApplicationDataImpl implements ApplicationData {
     ResultSet resultSet = null;
     Connection connection = jdbc.getConnection();
 
+
     public ApplicationDataImpl() throws SQLException, IOException, ClassNotFoundException {
+        connection.setAutoCommit(false);
     }
 
     @Override
@@ -231,6 +233,4 @@ public class ApplicationDataImpl implements ApplicationData {
         String sql = "insert into blocking_application(username) values('"+username+"')";
         return jdbc.Edit(sql);
     }
-
-
 }
