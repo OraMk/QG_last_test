@@ -34,4 +34,25 @@ public interface ApplicationData {
     public ResultSet selectUnblockingApplicationByUsername(String username);
 
     public int applyUnblockingForUsername(String username);
+
+    //查找全部解封申请，按照未处理的在上面的顺序
+    public ResultSet selectBlockingApplication();
+
+    //根据id查找解封申请
+    public ResultSet selectBlockingApplicationById(String id);
+    //设置事务
+    public void setAffair() throws SQLException;
+    //提交事务
+    public void commit() throws SQLException;
+    //回滚事务
+    public void rollback() throws SQLException;
+    //为用户解封
+    public int unblockForUser(String username);
+    //为企业解封
+    public int unblockForEnterprise(String enterprise);
+
+    //更改解封申请的状态
+    public int changeUnblockingApplication(String id, String status, String processor);
+
+
 }

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看用户信息</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                dataType:'text',
+                data:{"method":"judgment"},
+                success :function (res) {
+                    //判断是否为网站管理员
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        async: true,
+                        data_type: 'json',
+                        data: {"method": "selectAllUser"},
+                        success: function (res) {
+                            let data = JSON.parse(res);
+                            let str = "";
+                            for (i in data) {
+                                if (data[i].banned == "no")
+                                {
+                                    str += "<tr>\n" +
+                                        "                <td>" + data[i].userName + "</td>\n" +
+                                        "                <td>" + data[i].pNumber + "</td>\n" +
+                                        "                <td>" + data[i].banned + "</td>\n" +
+                                        "                <td><input type='button' class='block' name='"+data[i].uid+"' value='封禁'></td>\n" +
+                                        "            </tr>"
+                                }else {
+                                    str += "<tr>\n" +
+                                        "                <td>" + data[i].userName + "</td>\n" +
+                                        "                <td>" + data[i].pNumber + "</td>\n" +
+                                        "                <td>" + data[i].banned + "</td>\n" +
+                                        "                <td><input type='button' class='unblock' name='"+data[i].uid+"' value='取消封禁'></td>\n" +
+                                        "            </tr>"
+                                }
+
+
+                            }
+                            $("#body").html(str);
+                            $(".block").click(function () {
+                                let uid = $(this).attr('name');
+                                // 禁用name属性值相同的按钮
+                                $("[name='" + uid + "']").prop('disabled', true);
+                                //禁用用户
+                                $.ajax({
+                                    url: "InteractionServlet",
+                                    type: "GET",
+                                    async: true,
+                                    data_type: 'json',
+                                    data: {"method": "blockUser","uid" : uid},
+                                    success:function (){
+                                        alert("审批成功");
+                                        let url = "researchUser.html";
+                                        location.assign(url);
+                                    },
+                                    error:function (){
+                                        alert("审批失败，请稍后再试(或该申请已经被处理)");
+                                        let url = "researchUser.html";
+                                        location.assign(url);
+
+                                    }
+                                });
+                            });
+                            $(".unblock").click(function (){
+                                let uid = $(this).attr('name');
+                                // 禁用name属性值相同的按钮
+                                $("[name='" + uid + "']").prop('disabled', true);
+                                //拒绝申请
+                                $.ajax({
+                                    url: "InteractionServlet",
+                                    type: "GET",
+                                    async: true,
+                                    data_type: 'json',
+                                    data: {"method": "unblockUser","uid" : uid},
+                                    success:function (){
+                                        alert("请求成功");
+                                        let url = "researchUser.html";
+                                        location.assign(url);
+                                    },
+                                    error:function (){
+                                        alert("请求失败，请稍后再试(或该申请已经被处理)")
+                                        let url = "researchUser.html";
+                                        location.assign(url);
+                                    }
+                                });
+                            })
+                        },
+                        error: function () {
+
+                        }
+                    })
+                },
+                error:function (){
+                    alert("您不是网站管理员，无权进入");
+                    let url = "operation.html";
+                    location.assign(url);
+                }
+            });
+            $("#back").click(function () {
+                let url = "operation.html";
+                location.assign(url);
+            });
+            $("#blockUsername").blur(function () {
+                var username = $(this).val();
+                let s_username = $("#s_blockUsername");
+                $.ajax({
+                    url:"loginServlet",
+                    type:"GET",
+                    data:{"username":username,"method":"selectUserByUsername"},
+                    async:true,
+                    dataType:'text',
+                    success :function ()
+                    {
+                        s_username.html("用户名存在");
+                        s_username.css("color","green");
+                    },
+                    error : function (){
+                        s_username.html("用户名不存在！！");
+                        s_username.css("color","red");
+                    }
+
+                });
+            });
+            $("#block_user").click(function (){
+                let username = $("#blockUsername").val();
+                if ($("#s_blockUsername").html()=="用户名存在"){
+                    //查看该用户是否已经被封禁了
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        async: true,
+                        data_type: 'json',
+                        data: {"method": "judgementBannedForUser", "username": username},
+                        success: function () {
+                            //被封禁
+                            alert("用户被封禁");
+                        },
+                        error: function () {
+                            let uid = 0;
+                            $.ajax({
+                                url: "loginServlet",
+                                type: "GET",
+                                async: true,
+                                data_type: 'json',
+                                data: {"method": "selectUserByUsername", "username": username},
+                                success: function (res) {
+                                    let date = JSON.parse(res);
+                                    uid = date.uid;
+                                    $.ajax({
+                                        url: "InteractionServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "blockUser","uid" : uid},
+                                        success:function (){
+                                            alert("审批成功");
+                                            let url = "researchUser.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("审批失败，请稍后再试(或该申请已经被处理)");
+                                            let url = "researchUser.html";
+                                            location.assign(url);
+
+                                        }
+                                    });
+                                },
+                                error: function () {
+                                    alert("数据异常");
+                                }
+                            })
+                        }
+                    });
+                }else {
+                    alert("请正确输入");
+                }
+            });
+
+
+            $("#unblock_user").click(function (){
+                let username = $("#blockUsername").val();
+                if ($("#s_blockUsername").html()=="用户名存在"){
+                    //查看该用户是否已经被封禁了
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        async: true,
+                        data_type: 'json',
+                        data: {"method": "judgementBannedForUser", "username": username},
+                        success: function () {
+                            let uid = 0;
+                            $.ajax({
+                                url: "loginServlet",
+                                type: "GET",
+                                async: true,
+                                data_type: 'json',
+                                data: {"method": "selectUserByUsername", "username": username},
+                                success: function (res) {
+                                    let date = JSON.parse(res);
+                                    uid = date.uid;
+                                    $.ajax({
+                                        url: "InteractionServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "unblockUser","uid" : uid},
+                                        success:function (){
+                                            alert("审批成功");
+                                            let url = "researchUser.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("审批失败，请稍后再试(或该申请已经被处理)");
+                                            let url = "researchUser.html";
+                                            location.assign(url);
+
+                                        }
+                                    });
+                                },
+                                error: function () {
+                                    alert("数据异常");
+                                }
+                            });
+
+                        },
+                        error: function () {
+                            //未被封禁
+                            alert("用户未被封禁，无需解封");
+                        }
+                    });
+                }else {
+                    alert("请正确输入");
+                }
+            })
+
+        })
+    </script>
+</head>
+<body>
+<div style="position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 800px;
+            right: 0;
+            margin: auto;">
+    <input type="button" value="返回" id="back"><br><br>
+    请输入要操作的用户名<input type="text" id="blockUsername"><span id="s_blockUsername"></span><br>
+    <input type="button" id="block_user" value="进行封禁">
+    <input type="button" id="unblock_user" value="取消封禁">
+</div>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>用户</th>
+                <th>手机号</th>
+                <th>是否被封禁</th>
+                <th>处理</th>
+            </tr>
+            </thead>
+            <tbody align="center" id="body">
+            </tbody>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>

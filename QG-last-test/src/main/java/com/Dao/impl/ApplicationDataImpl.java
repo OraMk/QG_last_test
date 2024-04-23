@@ -233,4 +233,54 @@ public class ApplicationDataImpl implements ApplicationData {
         String sql = "insert into blocking_application(username) values('"+username+"')";
         return jdbc.Edit(sql);
     }
+
+    @Override
+    public ResultSet selectBlockingApplication() {
+        String sql = "select * from blocking_application order by case when is_accept = 'pending' then 0 else 1 end ,case when is_accept = 'pending' then id else rand() end";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectBlockingApplicationById(String id) {
+        String sql = "select * from blocking_application where id = " + id +" for update";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public void setAffair() throws SQLException {
+            connection.setAutoCommit(false);
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        connection.commit();
+        connection.setAutoCommit(true);
+
+    }
+
+    @Override
+    public void rollback() throws SQLException {
+        connection.rollback();
+        connection.setAutoCommit(true);
+
+    }
+
+    @Override
+    public int unblockForUser(String username) {
+        String sql = "update user set u_banned = 'no' where username = '" + username + "' ";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int unblockForEnterprise(String enterprise) {
+        String sql = "update enterprise set e_banned = 'no' where ename = '" +enterprise + "'";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int changeUnblockingApplication(String id, String status, String processor) {
+        String sql = "update blocking_application set is_accept = '"+status+"',processor = '" +processor+ "' where id = "+ id;
+        return jdbc.Edit(sql);
+    }
+
 }

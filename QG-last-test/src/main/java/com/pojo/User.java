@@ -36,6 +36,15 @@ public class User {
     public User() {
     }
 
+    public User(int uid ,String userName, String pNumber, String banned) {
+        this.uid = uid;
+        this.userName = userName;
+        this.pNumber = pNumber;
+        this.banned = banned;
+    }
+
+
+
     public int getUid() {
         return uid;
     }

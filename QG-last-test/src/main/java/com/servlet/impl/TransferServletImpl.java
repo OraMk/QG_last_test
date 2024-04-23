@@ -25,7 +25,7 @@ import java.util.List;
 public class TransferServletImpl extends BaseServlet implements TransferServlet {
 
     TransferData transferData = new TransferDataImpl();
-    ResultSet resultSet = null;
+//    ResultSet ResultSet resultSet = null;
     Transfer transfer = null;
     EnterpriseData enterpriseData = new EnterpriseDataImpl();
     List<Transfer> transferList = null;
@@ -150,7 +150,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String description = null;
         String isTip = null;
         String isAccept = null;
-        resultSet = transferData.selectTransferInNOTipByUsername(username);
+        ResultSet resultSet = transferData.selectTransferInNOTipByUsername(username);
         try {
             transferList = new ArrayList<Transfer>();
             while (resultSet.next()){
@@ -185,7 +185,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String tid = req.getParameter("tid");
         int n = transferData.setTransferTipByTid(tid);
         if (n == 1){
-            transferData.commit();
+
             resp.setStatus(HttpServletResponse.SC_OK);
         }else {
 
@@ -198,7 +198,6 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String tid = req.getParameter("tid");
         int n = transferData.editTransferStatusByTid(tid);
         if (n == 1){
-            transferData.commit();
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
@@ -209,7 +208,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     }
 
     @Override
-    public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp) {
+    public void selectAllTransferByUser(HttpServletRequest req, HttpServletResponse resp) {
         Cookie[] cookies = req.getCookies();
         //获取cookie
         String username = null;
@@ -230,7 +229,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String description = null;
         String isTip = null;
         String isAccept = null;
-        resultSet = transferData.selectAllTransfer(username);
+        ResultSet resultSet = transferData.selectAllTransferByUser(username);
         try {
             transferList = new ArrayList<Transfer>();
             while (resultSet.next()){
@@ -273,7 +272,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         String description = null;
         String isTip = null;
         String isAccept = null;
-        resultSet = transferData.selectAllTransferByEnterprise(enterprise);
+        ResultSet resultSet = transferData.selectAllTransferByEnterprise(enterprise);
         try {
             transferList = new ArrayList<Transfer>();
             while (resultSet.next()){
@@ -306,7 +305,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     @Override
     public void reduceAmountByTid(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String tid = req.getParameter("tid");
-        resultSet = transferData.selectTransferByTid(tid);
+        ResultSet resultSet = transferData.selectTransferByTid(tid);
         String user_payer = null;
         String enterprise_payer = null;
 
@@ -354,7 +353,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
                 }
             }
         }
-        resultSet =  transferData.selectPayoutInPendingByUsername(username);
+        ResultSet resultSet =  transferData.selectPayoutInPendingByUsername(username);
         long tid = 0;
         String userPayer = null;
         String enterprisePayer = null;
@@ -398,7 +397,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     public void agreeTransferByUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String tid = req.getParameter("tid");
         transferData.setAffair();
-        resultSet = transferData.selectTransferByTid(tid);
+        ResultSet resultSet = transferData.selectTransferByTid(tid);
         double amount = 0 ;
         String user_payee = null;
         String isAccept = null;
@@ -450,7 +449,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     public void refuseTransferByUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String tid = req.getParameter("tid");
         transferData.setAffair();
-        resultSet = transferData.selectTransferByTid(tid);
+        ResultSet resultSet = transferData.selectTransferByTid(tid);
         double amount = 0 ;
         String user_payer = null;
         String enterprise_payer = null;
@@ -514,7 +513,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
             }
         }
 //        enterpriseData.setAffairs();
-        resultSet = enterpriseData.selectEnterpriseByEid(Integer.parseInt(eid));
+        ResultSet resultSet = enterpriseData.selectEnterpriseByEid(Integer.parseInt(eid));
         String enterprise_payee = null;
         try {
             if (resultSet.next()){
@@ -569,7 +568,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     public void agreeTransferByEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String tid = req.getParameter("tid");
         transferData.setAffair();
-        resultSet = transferData.selectTransferByTid(tid);
+        ResultSet resultSet = transferData.selectTransferByTid(tid);
         double amount = 0 ;
         String isAccept = null;
 //        String user_payee = null;
@@ -615,6 +614,84 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     @Override
     public void commitAffair(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
 
+    }
+
+    @Override
+    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        String eid = null;
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }
+            }
+        }
+        transferData.setAffair();
+        int n = transferData.distributeFundAfterDeregisterEnterprise(eid);
+
+        if (n != 0){
+            //分配企业资金
+            int count = transferData.deleteEnterprise(req,resp);
+            if (count != 0){
+                transferData.commit();
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                transferData.rollback();
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+
+        }else {
+            transferData.rollback();
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
+    public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp) {
+        long tid = 0;
+        String userPayer = null;
+        String enterprisePayer = null;
+        String userPayee = null;
+        String enterprisePayee= null;
+        String date = null;
+        double amount = 0;
+        String description = null;
+        String isTip = null;
+        String isAccept = null;
+        ResultSet resultSet = transferData.selectAllTransfer();
+
+        try {
+            transferList = new ArrayList<Transfer>();
+            while (resultSet.next()){
+                tid = resultSet.getLong("tid");
+                userPayer = resultSet.getString("user_payer");
+                enterprisePayer = resultSet.getString("enterprise_payer");
+                userPayee = resultSet.getString("user_payee");
+                enterprisePayee = resultSet.getString("enterprise_payee");
+                date = resultSet.getString("Date");
+                amount = resultSet.getDouble("amount");
+                description = resultSet.getString("description");
+                isTip = resultSet.getString("is_tip");
+                isAccept = resultSet.getString("is_accept");
+                transfer = new Transfer(tid,userPayer,enterprisePayer,userPayee,enterprisePayee,date,amount,description,isTip,isAccept);
+                transferList.add(transfer);
+            }
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),transferList);
+        } catch (SQLException e) {
+
+        } catch (JsonMappingException e) {
+            throw new RuntimeException(e);
+        } catch (JsonGenerationException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

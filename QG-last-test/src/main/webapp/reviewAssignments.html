@@ -28,6 +28,20 @@
 
                     }
                 });
+                $.ajax({
+                    url: "InteractionServlet",
+                    type: "GET",
+                    async: true,
+                    data_type: 'text',
+                    data: {"method": "checkRemainingFunds"},
+                    success:function (res){
+                        $("#remain").html("可分配资金为: " + res);
+                    },
+                    error:function (res){
+
+                    }
+                });
+
             }
 
 
@@ -78,7 +92,8 @@
                                             async: true,
                                             data_type: 'json',
                                             data: {"method": "compareFunds","allocation_funds":fund,"rid":Data.rid},
-                                            success:function (){
+                                            success:function (res){
+
                                                 //进行数据修改
                                                 $.ajax({
                                                     url: "InteractionServlet",
@@ -136,7 +151,10 @@
 <body>
 <div style="width:800px;height: 320px;position: absolute; top: 30px; left: 650px;" id="introduce">
 </div>
-<div style="width:800px;height: 320px;position: absolute; top: 60px; left: 650px;" id="back">
+<div style="width:800px;height: 320px;position: absolute; top: 30px; left: 950px;" id="remain">
+</div>
+<div style="width:800px;height: 320px;position: absolute; top: 60px; left: 400px;">
+    <input type="button" value="退出" id="back">
 </div>
 <div style="width :800px;
      position: absolute;

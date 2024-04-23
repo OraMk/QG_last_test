@@ -29,7 +29,7 @@ import java.util.Map;
 @WebServlet(value = "/operationServlet")
 public class OperationServletImpl extends BaseServlet implements OperationServlet {
     UserData userData = new UserDataImpl();
-    ResultSet resultSet = null;
+//    ResultSet ResultSet resultSet = null;
     Enterprise enterprise =null;
     EnterpriseData enterpriseData = new EnterpriseDataImpl();
     List<Enterprise> enterpriseList = null;
@@ -78,7 +78,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void selectAll(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet = enterpriseData.selectAllInPublic(req,resp);
+        ResultSet resultSet = enterpriseData.selectAllInPublic(req,resp);
         enterpriseList = new ArrayList<Enterprise>();
         ObjectMapper mapper = new ObjectMapper();
             try {
@@ -120,7 +120,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void displayIntroductionById(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet = enterpriseData.displayIntroductionById(req,resp);
+        ResultSet resultSet = enterpriseData.displayIntroductionById(req,resp);
         ObjectMapper mapper = new ObjectMapper();
         Map<String,String> map = new HashMap<String,String>();
         try {
@@ -181,7 +181,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet = enterpriseData.selectByEnterpriseName(req, resp);
+        ResultSet resultSet = enterpriseData.selectByEnterpriseName(req, resp);
         enterpriseList = new ArrayList<Enterprise>();
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -212,7 +212,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet = enterpriseData.selectAllByUsername(req,resp);
+        ResultSet resultSet = enterpriseData.selectAllByUsername(req,resp);
         if (resultSet == null){
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -248,6 +248,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void createEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        enterpriseData.setAffairs();
         int n = enterpriseData.addEnterprise(req,resp);
         Cookie[] cookies = req.getCookies();
         String username = null;
@@ -259,7 +260,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
         int eid = 0;
         if (n == 1)
         {//企业添加成功
-            resultSet = enterpriseData.selectByEnterpriseName(req,resp);
+            ResultSet resultSet = enterpriseData.selectByEnterpriseName(req,resp);
             try {
                 if (resultSet.next()){
                      eid = resultSet.getInt("eid");
@@ -289,7 +290,7 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
     @Override
     public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp) {
         String ename = req.getParameter("ename");
-        resultSet = enterpriseData.selectEnterpriseByEnterpriseName(ename);
+        ResultSet resultSet = enterpriseData.selectEnterpriseByEnterpriseName(ename);
         try {
             if (resultSet.next()){
                 resp.setStatus(HttpServletResponse.SC_OK);

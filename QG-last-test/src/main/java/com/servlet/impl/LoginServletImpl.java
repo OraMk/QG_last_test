@@ -2,6 +2,8 @@ package com.servlet.impl;
 
 import com.Dao.UserData;
 import com.Dao.impl.UserDataImpl;
+import com.alibaba.fastjson.JSONObject;
+import com.pojo.User;
 import com.servlet.BaseServlet;
 import com.servlet.LoginServlet;
 
@@ -11,9 +13,12 @@ import jakarta.servlet.annotation.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -22,7 +27,7 @@ import java.util.Map;
 @WebServlet(value = "/loginServlet")
 public class LoginServletImpl extends BaseServlet implements LoginServlet {
     UserData userData = new UserDataImpl();
-    ResultSet resultSet = null;
+//    ResultSet ResultSet resultSet = null;
     public LoginServletImpl() throws SQLException, IOException, ClassNotFoundException {
     }
 
@@ -52,7 +57,7 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
             }
             else
             {
-                resultSet = userData.selectUser(req,resp);
+                ResultSet resultSet = userData.selectUser(req,resp);
 
                 int count = 0;
                 if (resultSet.next())
@@ -104,7 +109,7 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     @Override
     public void selectUsername(HttpServletRequest req, HttpServletResponse resp) {
         try {
-            resultSet = userData.selectUsername(req,resp);
+            ResultSet resultSet = userData.selectUsername(req,resp);
             int count = 0;
             if (resultSet.next())
             {
@@ -123,12 +128,11 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
 
     @Override
     public void judgment(HttpServletRequest req, HttpServletResponse resp) {
-        String username = req.getParameter("username");
-        resultSet = userData.selectUsername(req,resp);
+            ResultSet resultSet = userData.selectUsername(req,resp);
         try {
             if (resultSet.next())
             {
-                String isAdministrator = resultSet.getString("isAdministrator");
+                String isAdministrator = resultSet.getString("is_administrator");
                 //是网站管理员
                 if ("yes".equals(isAdministrator))
                 {
@@ -147,7 +151,7 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     @Override
     public void selectByUsername(HttpServletRequest req, HttpServletResponse resp) {
 
-        resultSet = userData.selectUserByName(req,resp);
+        ResultSet resultSet = userData.selectUserByName(req,resp);
         Map<String,String> map = new HashMap<String,String>();
         try {
             if (resultSet.next())
@@ -203,7 +207,7 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     @Override
     public void judgementBanned(HttpServletRequest req, HttpServletResponse resp) {
 
-        resultSet = userData.selectUserByName(req, resp);
+        ResultSet resultSet = userData.selectUserByName(req, resp);
         String banned = null;
         try {
             if (resultSet.next()){
@@ -221,5 +225,74 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
+    }
+
+    @Override
+    public void selectAllUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ClassNotFoundException {
+        UserData userData = new UserDataImpl();
+        ResultSet resultSet = userData.selectAllUser();
+        User user = null;
+        List<User> userList = new ArrayList<User>();
+        int uid = 0;
+        String username = null;
+        String pnumber = null;
+        String u_banned = null;
+
+        while (resultSet.next()){
+            uid = resultSet.getInt("uid");
+            username = resultSet.getString("username");
+            pnumber = resultSet.getString("pnumber");
+            u_banned = resultSet.getString("u_banned");
+            user = new User(uid,username,pnumber,u_banned);
+            userList.add(user);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(resp.getWriter(),userList);
+    }
+
+    @Override
+    public void selectUserByUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+        String username = req.getParameter("username");
+        ResultSet resultSet = userData.selectUserByUsername(username);
+        Map<String,String> userMap = new HashMap<String,String>();
+        String uid = null;
+        String pnumber = null;
+        String u_banned = null;
+        if (resultSet.next()){
+            uid = resultSet.getString("uid");
+            pnumber = resultSet.getString("pnumber");
+            u_banned = resultSet.getString("u_banned");
+            userMap.put("uid",uid);
+            userMap.put("pnumber",pnumber);
+            userMap.put("banned",u_banned);
+            resp.setStatus(HttpServletResponse.SC_OK);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.writeValue(resp.getWriter(),userMap);
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+
+    }
+
+    @Override
+    public void judgementBannedForUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+        String username = req.getParameter("username");
+        ResultSet resultSet = userData.selectUserByUsername(username);
+        String u_banned = null;
+        if (resultSet.next()){
+            u_banned = resultSet.getString("u_banned");
+        }
+
+        if ("yes".equals(u_banned)){
+            //被封禁了
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            // 设置响应内容类型为JSON
+            resp.setContentType("application/json");
+
+        }
+
     }
 }

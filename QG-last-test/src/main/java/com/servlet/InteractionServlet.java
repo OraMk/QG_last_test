@@ -3,6 +3,7 @@ package com.servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public interface InteractionServlet {
@@ -34,8 +35,6 @@ public interface InteractionServlet {
     //同意成为企业负责人
     public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
-    //注销企业
-    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //拉用户进入企业
     public void inviteUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
@@ -50,7 +49,7 @@ public interface InteractionServlet {
     public void selectRelationById(HttpServletRequest req, HttpServletResponse resp);
 
     //比较资金
-    public void compareFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+    public void compareFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
 
     //实现分配资金功能
     public void toAllocateFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
@@ -63,4 +62,21 @@ public interface InteractionServlet {
 
     //判断企业是否被封禁
     public void judgmentEnterpriseBan(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    //查看剩余资金
+    public void checkRemainingFunds(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
+
+    //查看解封申请
+    public void selectBlockingApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
+
+    //同意解封申请
+    public void agreeUnblockingApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    //拒绝解封申请
+    public void refuseUnblockingApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    //禁用用户
+    public void blockUser(HttpServletRequest req, HttpServletResponse resp);
+    //解封用户
+    public void unblockUser(HttpServletRequest req, HttpServletResponse resp);
 }

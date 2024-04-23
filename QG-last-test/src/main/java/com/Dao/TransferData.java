@@ -1,5 +1,8 @@
 package com.Dao;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,7 +25,7 @@ public interface TransferData {
     public int editTransferStatusByTid(String tid);
 
     //查询所有流水根据用户名
-    public ResultSet selectAllTransfer(String username);
+    public ResultSet selectAllTransferByUser(String username);
 
     //根据企业名称查询流水
     public ResultSet selectAllTransferByEnterprise(String enterprise);
@@ -56,4 +59,11 @@ public interface TransferData {
     public void rollback() throws SQLException;
 
     int recordedForEnterprise(String enterprisePayee, double amount);
+
+    //注销企业
+    public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp);
+    //企业注销后分发资金
+    public int distributeFundAfterDeregisterEnterprise(String enterprise) throws SQLException;
+
+    public ResultSet selectAllTransfer();
 }

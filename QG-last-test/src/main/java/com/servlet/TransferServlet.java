@@ -22,7 +22,7 @@ public interface TransferServlet {
     public void editTransferStatus(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //查找流水
-    public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp);
+    public void selectAllTransferByUser(HttpServletRequest req, HttpServletResponse resp);
     //根据企业名称查询流水
     public void selectAllTransferByEnterprise(HttpServletRequest req, HttpServletResponse resp);
 
@@ -46,4 +46,9 @@ public interface TransferServlet {
     public void commitAffair(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
 
+
+
+    public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp);
 }

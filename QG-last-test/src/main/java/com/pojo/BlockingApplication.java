@@ -5,15 +5,17 @@ public class BlockingApplication {
     private String username;
     private String enterprise;
     private String isAccept;
+    private String processor;
 
     public BlockingApplication() {
     }
 
-    public BlockingApplication(long id, String username, String enterprise, String isAccept) {
+    public BlockingApplication(long id, String username, String enterprise, String isAccept, String processor) {
         this.id = id;
         this.username = username;
         this.enterprise = enterprise;
         this.isAccept = isAccept;
+        this.processor = processor;
     }
 
     public long getId() {
@@ -48,6 +50,16 @@ public class BlockingApplication {
         this.isAccept = isAccept;
     }
 
+
+
+    public String getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(String processor) {
+        this.processor = processor;
+    }
+
     @Override
     public String toString() {
         return "BlockingApplication{" +
@@ -55,6 +67,7 @@ public class BlockingApplication {
                 ", username='" + username + '\'' +
                 ", enterprise='" + enterprise + '\'' +
                 ", isAccept='" + isAccept + '\'' +
+                ", processor='" + processor + '\'' +
                 '}';
     }
 }

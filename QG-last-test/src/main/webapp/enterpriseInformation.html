@@ -6,6 +6,25 @@
 
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+        // 禁用页面函数
+        function disablePage() {
+            // 获取页面上的所有交互元素
+            var elements = document.querySelectorAll("button, input, a, select, textarea, *:focus");
+            // 禁用这些元素
+            elements.forEach(function(element) {
+                element.disabled = true;
+            });
+        }
+        // 启用页面函数
+        function enablePage() {
+            // 获取页面上的所有交互元素
+            var elements = document.querySelectorAll("button, input, a, select, textarea, *:focus");
+            // 启用这些元素
+            elements.forEach(function(element) {
+                element.disabled = false;
+            });
+        }
+        let enterprise = null;
         $(function (){
             $.ajax({
                 url:"operationServlet",
@@ -25,6 +44,7 @@
                         "            <th>"+data.e_banned+"</th>\n" +
                         "            <th>"+data.public_mode+"</th>\n" +
                         "        </tr>"
+                    enterprise = data.ename;
                     $("#body").html(str);
                     str = "<h4>"+data.introduction+"</h4>";
                     $("#introduce").html(str);
@@ -90,24 +110,52 @@
                             })
                             $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
                             $("#delete").click(function (){
-                                if (window.confirm("确认要注销企业吗?")){
-                                    $.ajax({
-                                        url:"InteractionServlet",
-                                        type:"GET",
-                                        async:true,
-                                        data_type:'json',
-                                        data:{"method":"deregisterEnterprise"},
-                                        success:function (){
-                                            alert("注销成功");
-                                            let url = "operation.html";
-                                            location.assign(url);
-                                        },
-                                        error:function (){
-                                            alert("注销失败，请稍后再试");
+                                disablePage();
+                                $.ajax({
+                                    url: "InteractionServlet",
+                                    type: "GET",
+                                    async: true,
+                                    data_type: 'text',
+                                    data: {"method": "checkRemainingFunds"},
+                                    success:function (res){
+                                        alert(parseFloat(res));
+                                        if (parseFloat(res) > 0){
+                                            alert("请将企业剩余资金分配完毕再注销")
+                                        }else {
+                                            if (window.confirm("确认要注销企业吗?")){
+                                                $.ajax({
+                                                    url:"transferServlet",
+                                                    type:"GET",
+                                                    async:true,
+                                                    data_type:'json',
+                                                    data:{"method":"deregisterEnterprise","enterprise":enterprise},
+                                                    success:function (){
+                                                        alert("注销成功");
+                                                        let url = "operation.html";
+                                                        location.assign(url);
+                                                    },
+                                                    error:function (){
+                                                        alert("注销失败，请稍后再试");
+                                                    }
+                                                })
+                                            }
                                         }
-                                    })
-                                }
+
+                                    },
+                                    error:function (res){
+
+                                    }
+                                });
+                                enablePage();
+
+
                             });
+
+                            $("#div_checkStream").html("<input type=\"button\" value=\"查看流水\" id=\"checkStream\">");
+                            $("#checkStream").click(function () {
+                                let url = "checkEnterpriseStream.html";
+                                location.assign(url);
+                            })
                             $("#invite").html("<input type=\"text\" id=\"invite_name\">\n" +
                                 "        <input type=\"button\" value=\"邀请\" id=\"invite_button\">");
                             $("#invite_button").click(function (){
@@ -258,6 +306,9 @@
     <div style="position: absolute; top: 750px; left: 800px;">
         <input type="button" value="返回" id="back">
     </div>
+<div style="position: absolute; top: 750px; left: 1150px;" id="div_checkStream">
+
+</div>
     <div style="position: absolute; top: 750px; left: 900px;" id="quit_div">
 <!--        <input type="button" value="退出企业" id="quit">-->
     </div>

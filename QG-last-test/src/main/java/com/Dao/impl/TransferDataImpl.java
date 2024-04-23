@@ -2,6 +2,9 @@ package com.Dao.impl;
 
 import com.Dao.TransferData;
 import com.untils.JDBC;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -143,7 +146,7 @@ public class TransferDataImpl implements TransferData {
     }
 
     @Override
-    public ResultSet selectAllTransfer(String username) {
+    public ResultSet selectAllTransferByUser(String username) {
         String sql = "select * from transfer  where user_payer = '" + username + "' or user_payee = '"+username+"' order by date desc";
         return jdbc.Select(sql);
     }
@@ -351,6 +354,69 @@ public class TransferDataImpl implements TransferData {
             throw new RuntimeException(e);
         }
 
+    }
+
+    @Override
+    public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        String eid = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+
+                }
+            }
+        }
+        int n = 0;
+        //删除企业信息表
+        try {
+            //设置事务
+//            connection.setAutoCommit(false);
+            String sql = "delete from enterprise where eid =" + eid;
+            n = jdbc.Edit(sql);
+            if (n == 1)
+            {
+                //删除企业员工关系
+                sql = "delete from relation where eid =" + eid;
+                n = jdbc.Edit(sql);
+                if (n != 0){
+                    //删除与该企业相关的申请表
+                    sql = "delete from application where eid =" + eid;
+                    n = jdbc.Edit(sql);
+                    if (n==0)n++;
+                    //提交事务
+//                    connection.commit();
+                }
+            }
+        } catch (Exception e) {
+            //出现异常回滚事务
+//                connection.rollback();
+            throw new RuntimeException(e);
+        }
+
+        return n;
+    }
+
+    @Override
+    public int distributeFundAfterDeregisterEnterprise(String eid) throws SQLException {
+        String sql = "select * from relation where eid =  " + eid + " for update";
+        ResultSet resultSet = jdbc.Select(sql);
+        String username = null;
+        double allocation_funds = 0;
+        int n = 0;
+        while (resultSet.next()){
+            username = resultSet.getString("username");
+            allocation_funds = resultSet.getDouble("Allocation_funds");
+            n += recordedForUser(username,allocation_funds);
+        }
+        return n;
+    }
+
+    @Override
+    public ResultSet selectAllTransfer() {
+        String sql = "select * from transfer order by date desc";
+        return jdbc.Select(sql);
     }
 
 

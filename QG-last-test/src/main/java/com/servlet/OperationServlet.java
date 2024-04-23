@@ -29,4 +29,6 @@ public interface OperationServlet {
 
     //判断企业名是否存在
     public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
+
+
 }

@@ -17,8 +17,7 @@ public interface EnterpriseData {
     public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp);
     //成为负责人
     public int joinLeader(HttpServletRequest req, HttpServletResponse resp);
-    //注销企业
-    public int deleteEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
     //通过企业名称查找企业
     public ResultSet selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
     //查找该用户所属的企业
@@ -52,4 +51,9 @@ public interface EnterpriseData {
 
     //提交事务
     public void commit() throws SQLException;
+    //查询企业总分配资金
+    public ResultSet selectSumAllocationFundsByEid(int eid);
+
+    //回滚事务
+    public void rollback() throws SQLException;
 }

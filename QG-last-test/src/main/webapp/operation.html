@@ -48,122 +48,24 @@
                     alert("数据异常，请稍后再查询");
                 }
             });
+            //     判断是不是网站管理
             $.ajax({
-                url:"operationServlet",
+                url:"loginServlet",
                 type:"GET",
                 async:true,
                 dataType:'text',
-                data:{"method":"loginUser"},
-                success :function (res){
-
-                    $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"self-enterprise\" value=\"查看我的企业\">");
-
-                    $("#transfer_div").html("<input type=\"button\" id=\"transfer\" value=\"转账功能\">&nbsp;&nbsp;&nbsp;<input type='button' id='collection' value='查看收款申请'>");
-                    $("#transfer").click(function (){
-                       let url = "transfer.html";
-                       location.assign(url);
-                    });
-                    $("#collection").click(function (){
-                        let url = "payoutRequests.html";
+                data:{"method":"judgment"},
+                success :function (){
+                    //     网站管理员
+                    alert("进入网站管理员系统");
+                    $("#unblocking_div").html("<input type=\"button\" value=\"查看申请解封信息\" id=\"unblocking\">")
+                    $("#unblocking").click(function (){
+                        let url = "applyUnblockingInformation.html";
                         location.assign(url);
-                    })
-
-
-                    $("#self-enterprise").click(function (){
-                        $.ajax({
-                            url:"operationServlet",
-                            type:"GET",
-                            async:true,
-                            dataType:'text',
-                            data:{"method":"selectByUsername"},
-                            success:function (res){
-                                let data = JSON.parse(res);
-                                let str ="";
-                                for(i in data){
-                                    str +="<tr>\n" +
-                                        "                <td>" +data[i].eName + "</td>\n" +
-                                        "                <td>" +data[i].number+ "</td>\n" +
-                                        "                <td>"+ data[i].direction+"</td>\n" +
-                                        "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
-                                        "            </tr>"
-
-                                }
-                                $("#body").html(str);
-                                $(".research").click(function (){
-                                    let id = $(this).attr('id');
-                                    $.ajax({
-                                        url: "operationServlet",
-                                        type: "GET",
-                                        async: true,
-                                        data_type: 'json',
-                                        data: {"method": "remainEnterpriseId", "eid":id},
-                                        success:function (){
-                                            let url ="enterpriseInformation.html";
-                                            location.assign(url);
-                                        },
-                                        error:function (){
-                                            alert("查询异常请稍后再试");
-                                        }
-
-                                    });
-                                })
-                                alert("当前为所属企业")
-                                $("#back").html("<input type=\"button\" id=\"re_back\" value=\"返回\">");
-                                $("#re_back").click(function (){
-                                    $.ajax({
-                                        url:"operationServlet",
-                                        type:"GET",
-                                        async:true,
-                                        data_type:'json',
-                                        data:{"method":"selectAll"},
-                                        success:function (res){
-                                            let data = JSON.parse(res);
-                                            let str ="";
-                                            for(i in data){
-                                                str +="<tr>\n" +
-                                                    "                <td>" +data[i].eName + "</td>\n" +
-                                                    "                <td>" +data[i].number+ "</td>\n" +
-                                                    "                <td>"+ data[i].direction+"</td>\n" +
-                                                    "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
-                                                    "            </tr>"
-
-                                            }
-                                            $("#body").html(str);
-                                            $(".research").click(function (){
-                                                let id = $(this).attr('id');
-                                                $.ajax({
-                                                    url: "operationServlet",
-                                                    type: "GET",
-                                                    async: true,
-                                                    data_type: 'json',
-                                                    data: {"method": "remainEnterpriseId", "eid":id},
-                                                    success:function (){
-                                                        let url ="enterpriseInformation.html";
-                                                        location.assign(url);
-                                                    },
-                                                    error:function (){
-                                                        alert("查询异常请稍后再试");
-                                                    }
-
-                                                });
-                                            })
-                                            $("#back").html("");
-                                        },
-                                        error:function (){
-                                            alert("数据异常，请稍后再查询");
-                                        }
-                                    });
-                                })
-
-                            },
-                            error:function (){
-                                alert("该用户无所属企业");
-                            }
-                        })
                     });
-                    $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
-                    $("#research_button").click(function (){
-                        let url = "userInformation.html";
+                    $("#div_research").html("<input type=\"button\" id=\"research\" value=\"查看用户信息\">");
+                    $("#research").click(function (){
+                        let url = "researchUser.html";
                         location.assign(url);
                     });
                     $("#sign").html("<input type=\"button\" id=\"tourist\" value=\"退出登录\">");
@@ -192,72 +94,215 @@
                         }
 
                     });
-                    $("#create").html("<input type=\"button\" value=\"申请企业\" id='applyEnterprise'>")
-                    $("#applyEnterprise").click(function (){
-                        let url = "createEnterprise.html";
-                        location.assign(url);
-                    });
                     $("#div_check_stream").html("<input type='button' value='查看流水' id='check_stream'>");
                     $("#check_stream").click(function (){
                         let url = "checkUserStream.html";
                         location.assign(url);
                     })
-                    //判断是否被封禁了
-                    $.ajax({
-                        url:"loginServlet",
-                        type:"GET",
-                        async:true,
-                        data_type:'json',
-                        data:{"method":"judgementBanned"},
-                        success:function (){
-                            //被封禁
-                            $("#unblocking_div").html("<input type=\"button\" value=\"申请解封\" id=\"unblocking\">")
-                            $("#unblocking").click(function (){
-                                $.ajax({
-                                    url:"InteractionServlet",
-                                    type:"GET",
-                                    async:true,
-                                    data_type:'json',
-                                    data:{"method":"applyUnblockingByUsername"},
-                                    success:function (){
-                                        alert("申请成功,请勿反复申请");
-                                    },
-                                    error:function (){
-                                        alert("申请失败，请勿重复申请");
-                                    }
-                                });
-                            });
-                        },
-                        error:function (){
-                            //没有被封禁
-                        }
-                    });
 
 
-                //     判断是不是网站管理
+                },
+                error :function (){
+                    //     普通用户
                     $.ajax({
                         url:"operationServlet",
                         type:"GET",
                         async:true,
                         dataType:'text',
-                        data:{"method":"loginUser","username":$("#username").val()},
-                        success :function (){
-                        //     网站管理员
+                        data:{"method":"loginUser"},
+                        success :function (res){
+
+                            $("#show").html("当前账户为" + res +"&nbsp;&nbsp;<input type=\"button\" name=\"enterprise\" id=\"self-enterprise\" value=\"查看我的企业\">");
+
+                            $("#transfer_div").html("<input type=\"button\" id=\"transfer\" value=\"转账功能\">&nbsp;&nbsp;&nbsp;<input type='button' id='collection' value='查看收款申请'>");
+                            $("#transfer").click(function (){
+                                let url = "transfer.html";
+                                location.assign(url);
+                            });
+                            $("#collection").click(function (){
+                                let url = "payoutRequests.html";
+                                location.assign(url);
+                            })
+
+
+                            $("#self-enterprise").click(function (){
+                                $.ajax({
+                                    url:"operationServlet",
+                                    type:"GET",
+                                    async:true,
+                                    dataType:'text',
+                                    data:{"method":"selectByUsername"},
+                                    success:function (res){
+                                        let data = JSON.parse(res);
+                                        let str ="";
+                                        for(i in data){
+                                            str +="<tr>\n" +
+                                                "                <td>" +data[i].eName + "</td>\n" +
+                                                "                <td>" +data[i].number+ "</td>\n" +
+                                                "                <td>"+ data[i].direction+"</td>\n" +
+                                                "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                                "            </tr>"
+
+                                        }
+                                        $("#body").html(str);
+                                        $(".research").click(function (){
+                                            let id = $(this).attr('id');
+                                            $.ajax({
+                                                url: "operationServlet",
+                                                type: "GET",
+                                                async: true,
+                                                data_type: 'json',
+                                                data: {"method": "remainEnterpriseId", "eid":id},
+                                                success:function (){
+                                                    let url ="enterpriseInformation.html";
+                                                    location.assign(url);
+                                                },
+                                                error:function (){
+                                                    alert("查询异常请稍后再试");
+                                                }
+
+                                            });
+                                        })
+                                        alert("当前为所属企业")
+                                        $("#back").html("<input type=\"button\" id=\"re_back\" value=\"返回\">");
+                                        $("#re_back").click(function (){
+                                            $.ajax({
+                                                url:"operationServlet",
+                                                type:"GET",
+                                                async:true,
+                                                data_type:'json',
+                                                data:{"method":"selectAll"},
+                                                success:function (res){
+                                                    let data = JSON.parse(res);
+                                                    let str ="";
+                                                    for(i in data){
+                                                        str +="<tr>\n" +
+                                                            "                <td>" +data[i].eName + "</td>\n" +
+                                                            "                <td>" +data[i].number+ "</td>\n" +
+                                                            "                <td>"+ data[i].direction+"</td>\n" +
+                                                            "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                                            "            </tr>"
+
+                                                    }
+                                                    $("#body").html(str);
+                                                    $(".research").click(function (){
+                                                        let id = $(this).attr('id');
+                                                        $.ajax({
+                                                            url: "operationServlet",
+                                                            type: "GET",
+                                                            async: true,
+                                                            data_type: 'json',
+                                                            data: {"method": "remainEnterpriseId", "eid":id},
+                                                            success:function (){
+                                                                let url ="enterpriseInformation.html";
+                                                                location.assign(url);
+                                                            },
+                                                            error:function (){
+                                                                alert("查询异常请稍后再试");
+                                                            }
+
+                                                        });
+                                                    })
+                                                    $("#back").html("");
+                                                },
+                                                error:function (){
+                                                    alert("数据异常，请稍后再查询");
+                                                }
+                                            });
+                                        })
+
+                                    },
+                                    error:function (){
+                                        alert("该用户无所属企业");
+                                    }
+                                })
+                            });
+                            $("#research").html("<input type=\"button\" id=\"research_button\" value=\"查看个人信息\">");
+                            $("#research_button").click(function (){
+                                let url = "userInformation.html";
+                                location.assign(url);
+                            });
+                            $("#sign").html("<input type=\"button\" id=\"tourist\" value=\"退出登录\">");
+                            $("#tourist").click(function (){
+                                if (window.confirm("确认退出登录吗?")){
+                                    $.ajax({
+                                        url:"loginServlet",
+                                        type:"GET",
+                                        data:{"method":"selectUser"},
+                                        async:true,
+                                        dataType:'text',
+                                        success :function ()
+                                        {
+                                            alert("退出成功!");
+                                            $("#login").submit();
+                                            let url="operation.html";
+                                            location.assign(url);
+                                        },
+                                        error : function (){
+                                            var span = $("#s_error");
+                                            span.html("退出失败,请稍后再试");
+                                            span.css("color","red");
+                                        }
+
+                                    });
+                                }
+
+                            });
+                            $("#create").html("<input type=\"button\" value=\"申请企业\" id='applyEnterprise'>")
+                            $("#applyEnterprise").click(function (){
+                                let url = "createEnterprise.html";
+                                location.assign(url);
+                            });
+                            $("#div_check_stream").html("<input type='button' value='查看流水' id='check_stream'>");
+                            $("#check_stream").click(function (){
+                                let url = "checkUserStream.html";
+                                location.assign(url);
+                            })
+                            //判断是否被封禁了
+                            $.ajax({
+                                url:"loginServlet",
+                                type:"GET",
+                                async:true,
+                                data_type:'json',
+                                data:{"method":"judgementBanned"},
+                                success:function (){
+                                    //被封禁
+                                    $("#unblocking_div").html("<input type=\"button\" value=\"申请解封\" id=\"unblocking\">")
+                                    $("#unblocking").click(function (){
+                                        $.ajax({
+                                            url:"InteractionServlet",
+                                            type:"GET",
+                                            async:true,
+                                            data_type:'json',
+                                            data:{"method":"applyUnblockingByUsername"},
+                                            success:function (){
+                                                alert("申请成功,请勿反复申请");
+                                            },
+                                            error:function (){
+                                                alert("申请失败，请勿重复申请");
+                                            }
+                                        });
+                                    });
+                                },
+                                error:function (){
+                                    //没有被封禁
+                                }
+                            });
+
+
+
+
                         },
-                        error :function (){
-                        //     普通用户
-
-
-
+                        error : function (){
+                            alert("未登录");
+                            $("#sign").html("<a href=\"login.html\">登录</a></center>");
                         }
                     });
 
-                },
-                error : function (){
-                    alert("未登录");
-                    $("#sign").html("<a href=\"login.html\">登录</a></center>");
+
                 }
             });
+
             $("#find_button").click(function (){
                 let ename = $("#enterprise_name").val();
                 $.ajax({
@@ -327,8 +372,12 @@
 
 </div>
 
-<div style="position: absolute;left: 1150px;top: 55px;" id="unblocking_div">
+<div style="position: absolute;left: 900px;top: 55px;" id="unblocking_div">
 <!--    <input type="button" value="申请解封" id="unblocking">-->
+</div >
+
+<div style="position: absolute;left: 1100px;top: 55px;" id="div_research">
+
 </div>
 <div style="position: absolute;left: 400px;top: 120px">
     企业名称<input type="text" id="enterprise_name">

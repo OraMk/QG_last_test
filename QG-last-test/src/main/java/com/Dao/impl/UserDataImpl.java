@@ -59,7 +59,16 @@ public class UserDataImpl implements UserData {
 
     @Override
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp) {
-        String username = req.getParameter("username");
+        Cookie[] cookies = req.getCookies();
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+
+                }
+            }
+        }
         try {
             String sql = "select * from user where username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -155,5 +164,23 @@ public class UserDataImpl implements UserData {
     @Override
     public void close() {
         jdbc.close();
+    }
+
+    @Override
+    public ResultSet selectAllUser() {
+        String sql = "select * from user";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int setBlockUser(String uid, String status) {
+        String sql = "update user set u_banned = '" +status+"' where uid = " + uid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectUserByUsername(String username) {
+        String sql = "select * from user where username = '" + username + "'";
+        return jdbc.Select(sql);
     }
 }
