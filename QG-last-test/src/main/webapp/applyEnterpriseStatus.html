@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看申请企业情况</title><script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        $(function () {
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                dataType: 'text',
+                data: {"method": "loginUser"},
+                success: function (res) {
+                    //已登录
+                    $.ajax({
+                        url: "operationServlet",
+                        type: "GET",
+                        async: true,
+                        dataType: 'text',
+                        data: {"method": "selectEnterpriseApplicationByUser"},
+                        success: function (res) {
+                            let data = JSON.parse(res);
+                            let str = "";
+                            for (i in data) {
+                                if (data[i].isAccept == "pending") {
+                                    str += "<tr>\n" +
+                                        "                <td>" + data[i].ename + "</td>\n" +
+                                        "                <td>" + data[i].direction + "</td>\n" +
+                                        "                <td>" + data[i].isAccept + "</td>\n" +
+                                        "                <td> </td>\n" +
+                                        "            </tr>"
+                                } else {
+                                    str += "<tr>\n" +
+                                        "                <td>" + data[i].ename + "</td>\n" +
+                                        "                <td>" + data[i].direction + "</td>\n" +
+                                        "                <td>" + data[i].isAccept + "</td>\n" +
+                                        "                <td>" + data[i].processor + "</td>\n" +
+                                        "            </tr>"
+                                }
+                            }
+                            $("#body").html(str);
+                        },
+                        error: function () {
+
+                        }
+                    });
+                },
+                error: function () {
+                    alert("未登录，请先登录");
+                    let url = "sign.html";
+                    location.assign(url);
+                }
+            });
+            $("#back").click(function () {
+                let url = "operation.html";
+                location.assign(url);
+            });
+        })
+
+    </script>
+</head>
+<body>
+<div style="position: absolute;
+            top: 50px;
+            bottom: 0;
+            left: 800px;
+            right: 0;
+            margin: auto;">
+    <input type="button" value="返回" id="back">
+</div>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>企业名称</th>
+                <th>发展方向</th>
+                <th>处理情况</th>
+                <th>处理人</th>
+            </tr>
+            </thead>
+            <tbody align="center" id="body">
+            </tbody>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>

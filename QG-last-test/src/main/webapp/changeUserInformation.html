@@ -8,9 +8,7 @@
         $(function (){
             $("#formSubmit").click(function (){
 
-                if (
-                    ($("#s_username").html() == "用户名可用" || $("#s_username").html() == "") &&
-                    ($("#s_password").html() == "密码合法" || $("#s_password").html() == "" )&&
+                if (($("#s_password").html() == "密码合法" || $("#s_password").html() == "" )&&
                     ($("#s_name").html() == "昵称合法" || $("#s_name").html() == "") &&
                     ($("#phone_span").html() == "手机号合法" || $("#phone_span").html() == "")){
                     let username = $("#username").val();
@@ -38,7 +36,7 @@
                             location.assign(url);
                         },
                         error : function (){
-                            span.html("更改失败");
+                            span.html("更改失败(可能用户名已经存在)");
                         }
 
                     });
@@ -50,29 +48,6 @@
 
             });
 
-            $("#username").blur(function (){
-                let s_username = $("#s_username");
-                if (this.value=="")
-                {
-                    s_username.html("");
-                }
-                else{
-                    username_RegExP = /^(?!^\d)(?=.*[A-Za-z])(?=.*\d?)[A-Za-z\d]{6,10}$/;
-                    let ok = username_RegExP.test(this.value);
-                    if(ok)
-                    {
-                        s_username.html("用户名可用");
-                        s_username.css("color","green");
-                    }else{
-                        s_username.html("用户名6-10位，含有大写字母和小写字母以及数字，且首位不能位数字,数字非必须");
-                        s_username.css("color","red");
-                    }
-                }
-
-
-
-
-            });
             $("#password").blur(function (){
                 let s_password = $("#s_password");
                 if (this.value == ""){
@@ -162,7 +137,6 @@
             right: 0;
             margin: auto;"  >
         <form>
-            用户名<input type="text" id="username" name="username"><span id="s_username"></span><br>
         昵称<input type="text" id="name" name="name"><span id="s_name"></span><br>
         手机号码<input type="text" id="pNumber" name="pNumber"><span id="phone_span"></span><br>
         密码<input type="password" id="password" name="password"><span id="s_password"></span><br><br>

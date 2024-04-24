@@ -107,7 +107,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        String sql = "insert relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
+        String sql = "insert into relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
         return jdbc.Edit(sql);
     }
 
@@ -193,7 +193,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
             }
         }
         username = req.getParameter("username");
-        String sql = "insert relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
+        String sql = "insert into relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
         return jdbc.Edit(sql);
 
     }
@@ -241,17 +241,11 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public int addEnterprise(HttpServletRequest req, HttpServletResponse resp) {
-        String ename = req.getParameter("ename");
-        String number = req.getParameter("number");
-        String size = req.getParameter("size");
-        String direction = req.getParameter("direction");
-        String public_mode = req.getParameter("public_mode");
-        String introduction = req.getParameter("introduce");
-        String sql = "insert into enterprise(ename,number,size,direction,public_mode,introduction)" +
-                " values('"+ename+"',"+number+",'"+size+"','"+direction+"','"+public_mode+"','"+introduction+"')";
+    public int addEnterprise(String ename, String number, String size, String direction, String publicMode, String introduce) {
+        String sql = "insert into enterprise(ename,number,size,direction,public_mode,introduction) values('"+ename+"',"+number+",'"+size+"','"+direction+"','"+publicMode+"','"+introduce+"')";
         return jdbc.Edit(sql);
     }
+
 
     @Override
     public int addEnterpriseLeader(String eid, String username) {
@@ -292,6 +286,64 @@ public class EnterpriseDataImpl implements EnterpriseData {
         String sql = "update enterprise set e_banned = '"+status+"' where eid = " + eid;
         return jdbc.Edit(sql);
     }
+
+    @Override
+    public int addEnterpriseApplication(String applicant, String ename, String number, String size, String direction, String publicMode, String introduction) {
+        String sql = "insert into enterprise_application(applicant,ename,number,direction,size,public_mode,introduce) values('"+applicant+"','"+ename+"',"+number+",'"+direction+"','"+size+"','"+publicMode+"','"+introduction+"')";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectEnterpriseApplicationByUser(String applicant) {
+        String sql = "select * from enterprise_application where applicant = '" +applicant+ "'";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectEnterpriseApplicationByEname(String ename) {
+        String sql = "select * from enterprise_application where ename = '" +ename+ "'";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectAllEnterpriseApplication() {
+        String sql = "select * from enterprise_application order by case when is_accept = 'pending' then 0 else 1 end";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectEnterpriseApplicationById(int id) {
+        String sql = "select * from enterprise_application where id = '" + id + "' for update";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int updateEnterpriseApplication(int id, String status, String username) {
+        String sql = "update enterprise_application set is_accept = '"+status+"' , processor = '"+username+"' where id =" + id;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectAllFund() {
+        String sql = "select sum(Total_fund) as enterpriseFund from enterprise";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectAllEnterprise() {
+        String sql = "select * from enterprise";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public ResultSet selectAllEnterpriseByEnterpriseName(String ename) {
+        String sql = "select * from enterprise where '1' = '1' ";
+        if (!(ename == null || "".equals(ename))){
+            sql += "and ename like '%" +ename + "%'";
+        }
+        return jdbc.Select(sql);
+    }
+
 
     @Override
     public ResultSet selectSumAllocationFundsByEid(int eid) {

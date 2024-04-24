@@ -160,12 +160,14 @@
                             }
 
                         });
+
                         $("#pushTransfer").click(function () {
                             if ( ($("#s_target").html() == "该用户存在" || $("#s_target").html() == "该企业存在") && $("#s_Fund").html() == "金额合法"  ){
                                 $("#pay_password").html("请输入支付密码<input type=\"password\" id='password'><br>\n" +
                                     "        <center><input type=\"button\" value=\"确认支付\" id='check_transfer'></center>");
-
                                 $("#check_transfer").click(function (){
+                                    $(this).prop('disabled', true);
+
                                     let pay_password = $("#password").val();
                                     let passwordRegExp = /^\d{6}$/;
                                     if (passwordRegExp.test(pay_password)){
@@ -204,11 +206,13 @@
                                     }else {
                                         alert("密码输入非法,密码为数字纯6位")
                                     }
-                                })
+                                    $(this).prop('disabled', false);
+
+                                });
                             }else {
                                 alert("请输入合法后再确认");
                             }
-                        })
+                        });
 
                     })
                 })
@@ -310,6 +314,8 @@
                                 //展示用户的企业资金
                                 if ($(this).val()=="null"){//未选择
                                     $("#enterprise_fund").html("");
+                                    clearInterval(updateInterval); // 清除之前的定时器
+
                                 }else {
                                     //判断该企业是否被封禁
                                     $.ajax({
@@ -351,7 +357,10 @@
                                         error:function (){
                                             //企业被封禁
                                             alert("抱歉，该企业被封禁，无法进行转账操作,请重新选择");
+                                            clearInterval(updateInterval); // 清除之前的定时器
+                                            CleanShowPayment();
                                             $("#enterprise_fund").html("");
+
                                         }
                                     });
 
@@ -367,6 +376,7 @@
                     //选择个人资产
                     enterprise = null;
                     clearInterval(updateInterval);
+                    CleanShowPayment();
                     funds = user_fund;
                     ShowPayment();
                     $("#choose_enterprise").html("");

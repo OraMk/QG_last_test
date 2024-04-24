@@ -183,4 +183,28 @@ public class UserDataImpl implements UserData {
         String sql = "select * from user where username = '" + username + "'";
         return jdbc.Select(sql);
     }
+
+    @Override
+    public ResultSet selectAllFund() {
+        String sql = "select sum(fund) as userFund from user";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public void setAffair() throws SQLException {
+        connection.setAutoCommit(false);
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        connection.commit();
+        connection.setAutoCommit(true);
+
+    }
+
+    @Override
+    public void rollback() throws SQLException {
+        connection.rollback();
+        connection.setAutoCommit(true);
+    }
 }

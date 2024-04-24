@@ -32,12 +32,11 @@
                 data_type:'json',
                 data:{"method":"selectAllTransferByEnterprise","enterprise":enterprise},
                 success:function (res) {
-                  alert(enterprise);
                   let data = JSON.parse(res);
                   let str ="";
                   for(i in data){
                     if (data[i].isAccept == "no" && data[i].enterprisePayer == enterprise){
-                      if (enterprise == data[i].userPayer){
+                      if (enterprise == data[i].enterprisePayer){
                         str +="<tr>\n" +
                                 "                <td>" +data[i].userPayer + "</td>\n" +
                                 "                <td><b>" +data[i].enterprisePayer+ "</b></td>\n" +
@@ -65,7 +64,7 @@
 
                     }
                     else {
-                      if (enterprise == data[i].userPayer){
+                      if (enterprise == data[i].enterprisePayer){
                         str +="<tr>\n" +
                                 "                <td>" +data[i].userPayer + "</td>\n" +
                                 "                <td><b>" +data[i].enterprisePayer+ "</b></td>\n" +
@@ -168,7 +167,7 @@
         }
       });
       $("#back").click(function (){
-        let url = "operation.html";
+        let url = "enterpriseInformation.html";
         location.assign(url);
       })
     })

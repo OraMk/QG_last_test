@@ -51,4 +51,7 @@ public interface TransferServlet {
     public void deregisterEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     public void selectAllTransfer(HttpServletRequest req, HttpServletResponse resp);
+
+    //企业负责人向企业充值
+    public void rechargeForEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 }

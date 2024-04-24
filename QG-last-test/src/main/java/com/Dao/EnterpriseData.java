@@ -37,7 +37,8 @@ public interface EnterpriseData {
     //更改分配资金根据关系id
     public int  updateAllocateFunds(long rid, double fund);
     //增添企业
-    public int addEnterprise(HttpServletRequest req, HttpServletResponse resp);
+    int addEnterprise(String ename, String number, String size, String direction, String publicMode, String introduce);
+
 
     //添加企业并成为企业负责人
     public int addEnterpriseLeader(String eid,String username);
@@ -58,4 +59,23 @@ public interface EnterpriseData {
     public void rollback() throws SQLException;
 
     public int setBlockEnterprise(int eid, String status);
+
+    int addEnterpriseApplication(String applicant, String ename, String number, String size, String direction, String publicMode, String introduction);
+    //根据申请人用户名查询用户申请企业订单
+    public ResultSet selectEnterpriseApplicationByUser(String applicant);
+
+    public ResultSet selectEnterpriseApplicationByEname(String ename);
+
+    public ResultSet selectAllEnterpriseApplication();
+
+    public ResultSet selectEnterpriseApplicationById(int id);
+
+    public int updateEnterpriseApplication(int id, String status, String username);
+
+    public ResultSet selectAllFund();
+
+    public ResultSet selectAllEnterprise();
+
+
+    public ResultSet selectAllEnterpriseByEnterpriseName(String ename);
 }

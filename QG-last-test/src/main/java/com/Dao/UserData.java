@@ -29,4 +29,13 @@ public interface UserData {
     public int setBlockUser(String uid, String status);
     //通过传入的用户名查找用户信息
     public ResultSet selectUserByUsername(String username);
+    //查找所有用户总资金
+    public ResultSet selectAllFund();
+
+    //设置事务
+    public void setAffair() throws SQLException;
+    //提交事务
+    public void commit() throws SQLException;
+    //回滚事务
+    public void rollback() throws SQLException;
 }

@@ -263,6 +263,12 @@
 
                                             });
 
+                                            $("#div_recharge").html("<input type=\"button\" value=\"进行充值\" id=\"recharge\">");
+                                            $("#recharge").click(function (){
+                                                let url = "recharge.html";
+                                                location.assign(url);
+                                            })
+
                                             $("#div_checkStream").html("<input type=\"button\" value=\"查看流水\" id=\"checkStream\">");
                                             $("#checkStream").click(function () {
                                                 let url = "checkEnterpriseStream.html";
@@ -447,6 +453,9 @@
     <div style="position: absolute; top: 800px; left: 900px;" id="invite">
 <!--        <input type="text" id="invite_name">-->
 <!--        <input type="button" value="邀请" id="invite_button">-->
+    </div>
+    <div style="position: absolute; top: 800px; left: 1150px;" id="div_recharge">
+
     </div>
     <div id="delete_div" style="position: absolute; top: 750px; left: 1000px;">
 <!--        <input type="button" value="注销企业" id="quit">-->

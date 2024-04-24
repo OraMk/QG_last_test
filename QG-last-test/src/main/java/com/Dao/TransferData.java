@@ -66,4 +66,8 @@ public interface TransferData {
     public int distributeFundAfterDeregisterEnterprise(String enterprise) throws SQLException;
 
     public ResultSet selectAllTransfer();
+    //增加企业总资金
+    public int rechargeForEnterprises(double fund, String eid);
+    //减少用户资金
+    public int reduceUser(double fund, String username);
 }

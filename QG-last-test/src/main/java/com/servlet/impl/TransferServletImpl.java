@@ -694,5 +694,43 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         }
     }
 
+    @Override
+    public void rechargeForEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        double fund = Double.parseDouble(req.getParameter("fund"));
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        String eid = null;
+        String username =  null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = c.getValue();
+                }else if ("username".equals(c.getName())){
+                    username = c.getValue();
+                }
+            }
+        }
+        transferData.setAffair();
+        int n = transferData.rechargeForEnterprises(fund,eid);
+        if (n == 1){
+            int count = transferData.reduceUser(fund,username);
+            if (count == 1)
+            {
+                transferData.commit();
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                transferData.rollback();
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+
+        }else {
+            transferData.rollback();
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
 
 }

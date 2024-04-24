@@ -142,6 +142,9 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
                     //不是网站管理员
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 }
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -180,6 +183,12 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
 
     @Override
     public void changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        String username = req.getParameter("username");
+        ResultSet resultSet = userData.selectUserByUsername(username);
+        if (resultSet.next()){
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
         int n = userData.changeInformationSimple(req,resp);
         if (n == 1)
         {//则更改成功

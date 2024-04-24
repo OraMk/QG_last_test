@@ -5,13 +5,15 @@
     <title>主界面</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+
         $(function (){
+
             $.ajax({
                 url:"operationServlet",
                 type:"GET",
                 async:true,
                 data_type:'json',
-                data:{"method":"selectAll"},
+                data:{"method":"selectAllForAdministrator"},
                 success:function (res){
                     let data = JSON.parse(res);
                     let str ="";
@@ -27,27 +29,30 @@
                     $("#body").html(str);
                     $(".research").click(function (){
                         let id = $(this).attr('id');
-                            $.ajax({
-                                url: "operationServlet",
-                                type: "GET",
-                                async: true,
-                                data_type: 'json',
-                                data: {"method": "remainEnterpriseId", "eid":id},
-                                success:function (){
-                                    let url ="enterpriseInformation.html";
-                                    location.assign(url);
-                                },
-                                error:function (){
-                                    alert("查询异常请稍后再试");
-                                }
+                        $.ajax({
+                            url: "operationServlet",
+                            type: "GET",
+                            async: true,
+                            data_type: 'json',
+                            data: {"method": "remainEnterpriseId", "eid":id},
+                            success:function (){
+                                let url ="enterpriseInformation.html";
+                                location.assign(url);
+                            },
+                            error:function (){
+                                alert("查询异常请稍后再试");
+                            }
 
-                            });
+                        });
                     })
                 },
                 error:function (){
                     alert("数据异常，请稍后再查询");
                 }
             });
+
+
+
             //     判断是不是网站管理
             $.ajax({
                 url:"loginServlet",
@@ -57,6 +62,27 @@
                 data:{"method":"judgment"},
                 success :function (){
                     //     网站管理员
+
+                    //查询网站总余额
+                    function showFund(){
+                        $.ajax({
+                            url:"operationServlet",
+                            type:"GET",
+                            async:true,
+                            dataType:'text',
+                            data:{"method":"selectAllFundInWebsite"},
+                            success:function (res) {
+                                $("#show").html("站内总余额为:"+res);
+                            },
+                            error:function () {
+                                alert("数据异常");
+                            }
+                        })
+                    }
+                    setInterval(function() {
+                        showFund();
+                    }, 1000);
+
                     alert("进入网站管理员系统");
                     $("#unblocking_div").html("<input type=\"button\" value=\"查看申请解封信息\" id=\"unblocking\">")
                     $("#unblocking").click(function (){
@@ -98,12 +124,156 @@
                     $("#check_stream").click(function (){
                         let url = "checkUserStream.html";
                         location.assign(url);
-                    })
+                    });
+
+                    $("#create").html("<input type='button' value='查看企业创建申请' id='researchEnterpriseApplication'>")
+                    $("#researchEnterpriseApplication").click(function (){
+                        let url = "createEnterpriseApplication.html";
+                        location.assign(url);
+                    });
+
+
+
+                    $("#find_button").click(function (){
+                        let ename = $("#enterprise_name").val();
+                        $.ajax({
+                            url: "operationServlet",
+                            type: "GET",
+                            async: true,
+                            dataType: 'text',
+                            data: {"method": "selectByEnterpriseNameForAdministrator","ename":ename},
+                            success:function (res){
+                                let data = JSON.parse(res);
+                                let str ="";
+                                for(i in data){
+                                    str +="<tr>\n" +
+                                        "                <td>" +data[i].eName + "</td>\n" +
+                                        "                <td>" +data[i].number+ "</td>\n" +
+                                        "                <td>"+ data[i].direction+"</td>\n" +
+                                        "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                        "            </tr>"
+
+                                }
+                                $("#body").html(str);
+                                $(".research").click(function (){
+                                    let id = $(this).attr('id');
+                                    $.ajax({
+                                        url: "operationServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "remainEnterpriseId", "eid":id},
+                                        success:function (){
+                                            let url ="enterpriseInformation.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("查询异常请稍后再试");
+                                        }
+
+                                    });
+                                })
+                            },
+                            error:function (){
+                                alert("数据异常，请稍后再查询");
+                            }
+                        })
+                    });
+
+
 
 
                 },
                 error :function (){
                     //     普通用户
+                    $.ajax({
+                        url:"operationServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"selectAll"},
+                        success:function (res){
+                            let data = JSON.parse(res);
+                            let str ="";
+                            for(i in data){
+                                str +="<tr>\n" +
+                                    "                <td>" +data[i].eName + "</td>\n" +
+                                    "                <td>" +data[i].number+ "</td>\n" +
+                                    "                <td>"+ data[i].direction+"</td>\n" +
+                                    "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                    "            </tr>"
+
+                            }
+                            $("#body").html(str);
+                            $(".research").click(function (){
+                                let id = $(this).attr('id');
+                                $.ajax({
+                                    url: "operationServlet",
+                                    type: "GET",
+                                    async: true,
+                                    data_type: 'json',
+                                    data: {"method": "remainEnterpriseId", "eid":id},
+                                    success:function (){
+                                        let url ="enterpriseInformation.html";
+                                        location.assign(url);
+                                    },
+                                    error:function (){
+                                        alert("查询异常请稍后再试");
+                                    }
+
+                                });
+                            })
+                        },
+                        error:function (){
+                            alert("数据异常，请稍后再查询");
+                        }
+                    });
+                    $("#find_button").click(function (){
+                        let ename = $("#enterprise_name").val();
+                        $.ajax({
+                            url: "operationServlet",
+                            type: "GET",
+                            async: true,
+                            dataType: 'text',
+                            data: {"method": "selectByEnterpriseName","ename":ename},
+                            success:function (res){
+                                let data = JSON.parse(res);
+                                let str ="";
+                                for(i in data){
+                                    str +="<tr>\n" +
+                                        "                <td>" +data[i].eName + "</td>\n" +
+                                        "                <td>" +data[i].number+ "</td>\n" +
+                                        "                <td>"+ data[i].direction+"</td>\n" +
+                                        "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                        "            </tr>"
+
+                                }
+                                $("#body").html(str);
+                                $(".research").click(function (){
+                                    let id = $(this).attr('id');
+                                    $.ajax({
+                                        url: "operationServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "remainEnterpriseId", "eid":id},
+                                        success:function (){
+                                            let url ="enterpriseInformation.html";
+                                            location.assign(url);
+                                        },
+                                        error:function (){
+                                            alert("查询异常请稍后再试");
+                                        }
+
+                                    });
+                                })
+                            },
+                            error:function (){
+                                alert("数据异常，请稍后再查询");
+                            }
+                        })
+                    });
+
                     $.ajax({
                         url:"operationServlet",
                         type:"GET",
@@ -253,6 +423,11 @@
                                 let url = "createEnterprise.html";
                                 location.assign(url);
                             });
+                            $("#div_createStatus").html("<input type=\"button\" value=\"查看申请企业情况\" id='applyEnterpriseStatus'>");
+                            $("#applyEnterpriseStatus").click(function (){
+                                let url = "applyEnterpriseStatus.html";
+                                location.assign(url);
+                            });
                             $("#div_check_stream").html("<input type='button' value='查看流水' id='check_stream'>");
                             $("#check_stream").click(function (){
                                 let url = "checkUserStream.html";
@@ -296,6 +471,51 @@
                         error : function (){
                             alert("未登录");
                             $("#sign").html("<a href=\"login.html\">登录</a></center>");
+                            $("#find_button").click(function (){
+                                let ename = $("#enterprise_name").val();
+                                $.ajax({
+                                    url: "operationServlet",
+                                    type: "GET",
+                                    async: true,
+                                    dataType: 'text',
+                                    data: {"method": "selectByEnterpriseName","ename":ename},
+                                    success:function (res){
+                                        let data = JSON.parse(res);
+                                        let str ="";
+                                        for(i in data){
+                                            str +="<tr>\n" +
+                                                "                <td>" +data[i].eName + "</td>\n" +
+                                                "                <td>" +data[i].number+ "</td>\n" +
+                                                "                <td>"+ data[i].direction+"</td>\n" +
+                                                "                <td><input type=\"button\" id='"+data[i].eid+"' class='research' value=\"查看详情\"></td>\n" +
+                                                "            </tr>"
+
+                                        }
+                                        $("#body").html(str);
+                                        $(".research").click(function (){
+                                            let id = $(this).attr('id');
+                                            $.ajax({
+                                                url: "operationServlet",
+                                                type: "GET",
+                                                async: true,
+                                                data_type: 'json',
+                                                data: {"method": "remainEnterpriseId", "eid":id},
+                                                success:function (){
+                                                    let url ="enterpriseInformation.html";
+                                                    location.assign(url);
+                                                },
+                                                error:function (){
+                                                    alert("查询异常请稍后再试");
+                                                }
+
+                                            });
+                                        })
+                                    },
+                                    error:function (){
+                                        alert("数据异常，请稍后再查询");
+                                    }
+                                })
+                            });
                         }
                     });
 
@@ -347,13 +567,14 @@
                         alert("数据异常，请稍后再查询");
                     }
                 })
-            })
+            });
 
         });
     </script>
 </head>
 <body>
-
+<div style="position: absolute;left: 800px;top: 95px" id="div_createStatus">
+</div>
 <div style="position: absolute;left: 800px;top: 120px" id="create">
 <!--    <input type="button" value="申请企业">-->
 </div>

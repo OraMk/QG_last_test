@@ -418,6 +418,17 @@ public class TransferDataImpl implements TransferData {
         String sql = "select * from transfer order by date desc";
         return jdbc.Select(sql);
     }
+    @Override
+    public int rechargeForEnterprises(double fund, String eid) {
+        String sql = "update enterprise set Total_fund = Total_fund + " + fund + " where eid = " + eid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int reduceUser(double fund, String username) {
+        String sql = "update user set fund = fund - " + fund + " where username = '" + username + "'";
+        return jdbc.Edit(sql);
+    }
 
 
 }
