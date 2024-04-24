@@ -101,6 +101,9 @@
                     })
                 },
                 error:function (){
+                    alert("非企业管理员")
+                    let url = "operation.html";
+                    location.assign(url);
                 }
             });
             $("#back").click(function () {

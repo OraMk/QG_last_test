@@ -56,4 +56,6 @@ public interface EnterpriseData {
 
     //回滚事务
     public void rollback() throws SQLException;
+
+    public int setBlockEnterprise(int eid, String status);
 }

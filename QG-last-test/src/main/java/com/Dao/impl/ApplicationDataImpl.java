@@ -283,4 +283,16 @@ public class ApplicationDataImpl implements ApplicationData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public ResultSet selectUnblockingApplicationByEnterprise(String enterprise) {
+        String sql = "select * from blocking_application where enterprise = '" + enterprise +"'";
+        return jdbc.Select(sql);
+    }
+
+    @Override
+    public int applyUnblockingForEnterprise(String username,String enterprise) {
+        String sql = "insert into blocking_application(username,enterprise) values('"+username+"','"+enterprise+"')";
+        return jdbc.Edit(sql);
+    }
+
 }

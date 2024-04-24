@@ -30,5 +30,8 @@ public interface OperationServlet {
     //判断企业名是否存在
     public void judgementEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
 
+    //判断企业是否被封禁
+    public void judgmentEnterpriseBanned(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
 
 }

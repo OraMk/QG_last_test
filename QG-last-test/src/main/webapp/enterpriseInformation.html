@@ -54,200 +54,331 @@
                     alert("查询失败，服务器异常，请稍后再试");
                 }
             });
-            $.ajax({//判断是否已经属于该企业
-                url:"InteractionServlet",
-                type:"GET",
-                async:true,
-                data_type:'json',
-                data:{"method":"judgmentJoin"},
-                success:function (){//不属于该企业
-                    $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
-                    $("#join").click(function (){
-                        $.ajax({
-                                url:"InteractionServlet",
-                                type:"GET",
-                                async:true,
-                                data_type:'json',
-                                data:{"method":"applyToJoin"},
-                                success:function (){
-                                    alert("申请成功");
-                                },
-                                error:function (){
-                                    alert("申请失败，请稍后再试(请勿重复发送申请)");
-                                }
-                        });
-
-                    });
-                },
-                error:function (){//属于
-                    //判断是否为企业负责人
+            //判断是不是网站管理员
+            //     判断是不是网站管理
+            $.ajax({
+                url: "loginServlet",
+                type: "GET",
+                async: true,
+                dataType: 'text',
+                data: {"method": "judgment"},
+                success: function () {
+                    //     网站管理员
+                    //判断企业是否被封禁
                     $.ajax({
-                        url:"InteractionServlet",
-                        type:"GET",
-                        async:true,
-                        data_type:'json',
-                        data:{"method":"judgmentLeader"},
-                        success:function (){//是企业负责人
-                            $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"change\">" +
-                                "<br><br><br><input type=\"button\" value=\"查看企业资金分配情况\" id=\"review\">");
-                            $("#change").click(function (){
-                                var url = "changeEnterpriseInformation.html"
-                                location.assign(url);
-                            });
-                            $("#review").click(function (){
-                                let url = "reviewAssignments.html";
-                                location.assign(url);
-                            })
-                            $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\"><br><br><br>" +
-                                "<input type='button' value='查看企业收款请求' id='payout'>");
-                            $("#apply").click(function (){
-                                let url = "handleApplication.html";
-                                location.assign(url);
-                            });
-                            $("#payout").click(function () {
-                                let url = "enterprisePayoutRequests.html";
-                                location.assign(url);
-                            })
-                            $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
-                            $("#delete").click(function (){
-                                disablePage();
+                        url: "operationServlet",
+                        type: "GET",
+                        async: true,
+                        data_type: 'json',
+                        data: {"method": "judgmentEnterpriseBanned"},
+                        success: function () {//被封禁
+                            $("#join_div").html("<input type='button' value='解封企业' id='unblockEnterprise'>");
+                            $("#unblockEnterprise").click(function () {
                                 $.ajax({
                                     url: "InteractionServlet",
                                     type: "GET",
                                     async: true,
-                                    data_type: 'text',
-                                    data: {"method": "checkRemainingFunds"},
-                                    success:function (res){
-                                        alert(parseFloat(res));
-                                        if (parseFloat(res) > 0){
-                                            alert("请将企业剩余资金分配完毕再注销")
-                                        }else {
-                                            if (window.confirm("确认要注销企业吗?")){
-                                                $.ajax({
-                                                    url:"transferServlet",
-                                                    type:"GET",
-                                                    async:true,
-                                                    data_type:'json',
-                                                    data:{"method":"deregisterEnterprise","enterprise":enterprise},
-                                                    success:function (){
-                                                        alert("注销成功");
-                                                        let url = "operation.html";
-                                                        location.assign(url);
-                                                    },
-                                                    error:function (){
-                                                        alert("注销失败，请稍后再试");
-                                                    }
-                                                })
-                                            }
-                                        }
-
+                                    data_type: 'json',
+                                    data: {"method": "unblockEnterprise"},
+                                    success: function () {
+                                        alert("解封成功");
+                                        let url = "enterpriseInformation.html";
+                                        location.assign(url);
                                     },
-                                    error:function (res){
-
+                                    error:function(){
+                                        alert("解封失败，请稍后再试");
                                     }
+
                                 });
-                                enablePage();
-
-
-                            });
-
-                            $("#div_checkStream").html("<input type=\"button\" value=\"查看流水\" id=\"checkStream\">");
-                            $("#checkStream").click(function () {
-                                let url = "checkEnterpriseStream.html";
-                                location.assign(url);
                             })
-                            $("#invite").html("<input type=\"text\" id=\"invite_name\">\n" +
-                                "        <input type=\"button\" value=\"邀请\" id=\"invite_button\">");
-                            $("#invite_button").click(function (){
-                                let username = $("#invite_name").val();
-                                $.ajax({//判断用户名是否存在
-                                    url:"loginServlet",
-                                    type:"GET",
-                                    async:true,
-                                    data_type:'json',
-                                    data:{"method":"selectUsername","username":username},
-                                    success:function (){
-                                        //先判断是否为已经为企业成员，再进行邀请
-                                        $.ajax({//判断是否为企业成员
+                        },
+                        error: function () {//未被封禁
+                            $("#join_div").html("<input type='button' value='封禁企业' id='blockEnterprise'>");
+                            $("#blockEnterprise").click(function () {
+                                $.ajax({
+                                    url: "InteractionServlet",
+                                    type: "GET",
+                                    async: true,
+                                    data_type: 'json',
+                                    data: {"method": "blockEnterprise"},
+                                    success: function () {
+                                        alert("封禁成功");
+                                        let url = "enterpriseInformation.html";
+                                        location.assign(url);
+                                    },
+                                    error:function(){
+                                        alert("封禁失败，请稍后再试");
+                                    }
+
+                                });
+                            })
+
+                        }
+                    });
+
+                },
+                error: function () {
+                    // 非网站管理员
+
+                    $.ajax({//判断是否已经属于该企业
+                        url:"InteractionServlet",
+                        type:"GET",
+                        async:true,
+                        data_type:'json',
+                        data:{"method":"judgmentJoin"},
+                        success:function (){
+                            //不属于该企业
+                            //判断企业是否被封禁
+                            $.ajax({
+                                url: "operationServlet",
+                                type: "GET",
+                                async: true,
+                                data_type: 'json',
+                                data: {"method": "judgmentEnterpriseBanned"},
+                                success: function () {//被封禁
+                                    alert("该企业被封禁，禁止访问");
+                                    let url = "operation.html";
+                                    location.assign(url);
+                                },
+                                error: function () {//未被封禁
+                                    $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
+                                    $("#join").click(function (){
+                                        $.ajax({
                                             url:"InteractionServlet",
                                             type:"GET",
                                             async:true,
                                             data_type:'json',
-                                            data:{"method":"judgmentJoinForInvite","username":username},
+                                            data:{"method":"applyToJoin"},
                                             success:function (){
-                                                alert("该用户已在企业内，无需邀请");
-
+                                                alert("申请成功");
                                             },
                                             error:function (){
+                                                alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                            }
+                                        });
+
+                                    });
+                                }
+                            });
+
+                        },
+                        error:function (){//属于
+                            //判断是否为企业负责人
+
+                            $.ajax({
+                                url:"InteractionServlet",
+                                type:"GET",
+                                async:true,
+                                data_type:'json',
+                                data:{"method":"judgmentLeader"},
+                                success:function (){//是企业负责人
+                                    //判断企业是否被封禁
+                                    $.ajax({
+                                        url: "operationServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "judgmentEnterpriseBanned"},
+                                        success: function () {//被封禁
+                                            alert("企业已被封禁，请先申请解封");
+                                            $("#join_div").html("<input type='button' value='申请解封企业' id='unblockEnterprise'>");
+                                            $("#unblockEnterprise").click(function () {
+                                                $.ajax({
+                                                    url: "InteractionServlet",
+                                                    type: "GET",
+                                                    async: true,
+                                                    data_type: 'json',
+                                                    data: {"method": "applyUnblockingByEnterprise"},
+                                                    success: function () {
+                                                        alert("申请成功，请勿重复申请")
+                                                    },
+                                                    error:function(){
+                                                        alert("申请失败（或已申请，请勿重复申请）");
+                                                    }
+
+                                                });
+                                            })
+                                        },
+                                        error: function () {//未被封禁
+                                            $("#join_div").html("<input type=\"button\" value=\"设置企业信息\" id=\"change\">" +
+                                                "<br><br><br><input type=\"button\" value=\"查看企业资金分配情况\" id=\"review\">");
+                                            $("#change").click(function (){
+                                                var url = "changeEnterpriseInformation.html"
+                                                location.assign(url);
+                                            });
+                                            $("#review").click(function (){
+                                                let url = "reviewAssignments.html";
+                                                location.assign(url);
+                                            })
+                                            $("#apply_div").html("<input type=\"button\" value=\"查看申请信息\" id=\"apply\"><br><br><br>" +
+                                                "<input type='button' value='查看企业收款请求' id='payout'>");
+                                            $("#apply").click(function (){
+                                                let url = "handleApplication.html";
+                                                location.assign(url);
+                                            });
+                                            $("#payout").click(function () {
+                                                let url = "enterprisePayoutRequests.html";
+                                                location.assign(url);
+                                            })
+                                            $("#delete_div").html("<input type=\"button\" value=\"注销企业\" id=\"delete\">");
+                                            $("#delete").click(function (){
+                                                disablePage();
+                                                $.ajax({
+                                                    url: "InteractionServlet",
+                                                    type: "GET",
+                                                    async: true,
+                                                    data_type: 'text',
+                                                    data: {"method": "checkRemainingFunds"},
+                                                    success:function (res){
+                                                        alert(parseFloat(res));
+                                                        if (parseFloat(res) > 0){
+                                                            alert("请将企业剩余资金分配完毕再注销")
+                                                        }else {
+                                                            if (window.confirm("确认要注销企业吗?")){
+                                                                $.ajax({
+                                                                    url:"transferServlet",
+                                                                    type:"GET",
+                                                                    async:true,
+                                                                    data_type:'json',
+                                                                    data:{"method":"deregisterEnterprise","enterprise":enterprise},
+                                                                    success:function (){
+                                                                        alert("注销成功");
+                                                                        let url = "operation.html";
+                                                                        location.assign(url);
+                                                                    },
+                                                                    error:function (){
+                                                                        alert("注销失败，请稍后再试");
+                                                                    }
+                                                                })
+                                                            }
+                                                        }
+
+                                                    },
+                                                    error:function (res){
+
+                                                    }
+                                                });
+                                                enablePage();
+
+
+                                            });
+
+                                            $("#div_checkStream").html("<input type=\"button\" value=\"查看流水\" id=\"checkStream\">");
+                                            $("#checkStream").click(function () {
+                                                let url = "checkEnterpriseStream.html";
+                                                location.assign(url);
+                                            })
+                                            $("#invite").html("<input type=\"text\" id=\"invite_name\">\n" +
+                                                "        <input type=\"button\" value=\"邀请\" id=\"invite_button\">");
+                                            $("#invite_button").click(function (){
+                                                let username = $("#invite_name").val();
+                                                $.ajax({//判断用户名是否存在
+                                                    url:"loginServlet",
+                                                    type:"GET",
+                                                    async:true,
+                                                    data_type:'json',
+                                                    data:{"method":"selectUsername","username":username},
+                                                    success:function (){
+                                                        //先判断是否为已经为企业成员，再进行邀请
+                                                        $.ajax({//判断是否为企业成员
+                                                            url:"InteractionServlet",
+                                                            type:"GET",
+                                                            async:true,
+                                                            data_type:'json',
+                                                            data:{"method":"judgmentJoinForInvite","username":username},
+                                                            success:function (){
+                                                                alert("该用户已在企业内，无需邀请");
+
+                                                            },
+                                                            error:function (){
+                                                                $.ajax({
+                                                                    url:"InteractionServlet",
+                                                                    type:"GET",
+                                                                    async:true,
+                                                                    data_type:'json',
+                                                                    data:{"method":"inviteUsername","username":username},
+                                                                    success:function (){
+                                                                        alert("邀请成功");
+                                                                    },
+                                                                    error:function (){
+                                                                        alert("邀请失败,请稍后再试");
+                                                                    }
+                                                                });
+                                                            }
+                                                        })
+
+                                                    },
+                                                    error:function (){
+                                                        alert("该用户不存在");
+                                                    }
+                                                })
+
+                                            });
+                                        }
+                                    });
+
+                                },
+                                error:function (){//不是企业负责人
+                                    $.ajax({
+                                        url: "operationServlet",
+                                        type: "GET",
+                                        async: true,
+                                        data_type: 'json',
+                                        data: {"method": "judgmentEnterpriseBanned"},
+                                        success: function () {//被封禁
+                                            alert("企业已被封禁，请解封后再访问")
+                                        },
+                                        error: function () {//未被封禁
+                                            $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
+                                            $("#join").click(function (){
                                                 $.ajax({
                                                     url:"InteractionServlet",
                                                     type:"GET",
                                                     async:true,
                                                     data_type:'json',
-                                                    data:{"method":"inviteUsername","username":username},
+                                                    data:{"method":"deregisterEnterprise"},
                                                     success:function (){
-                                                        alert("邀请成功");
+                                                        alert("申请成功");
                                                     },
                                                     error:function (){
-                                                        alert("邀请失败,请稍后再试");
+                                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
                                                     }
                                                 });
-                                            }
-                                        })
 
-                                    },
-                                    error:function (){
-                                        alert("该用户不存在");
-                                    }
-                                })
+                                            });
+                                        }
+                                    });
 
-                            })
-                        },
-                        error:function (){//不是企业负责人
-                            $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
-                            $("#join").click(function (){
-                                $.ajax({
-                                    url:"InteractionServlet",
-                                    type:"GET",
-                                    async:true,
-                                    data_type:'json',
-                                    data:{"method":"deregisterEnterprise"},
-                                    success:function (){
-                                        alert("申请成功");
-                                    },
-                                    error:function (){
-                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
-                                    }
-                                });
-
-                            });
-                        }
-                    })
-
-                    $("#quit_div").html("<input type=\"button\" value=\"退出企业\" id=\"quit\">");
-                    $("#quit").click(function (){
-                        if (window.confirm("确认要退出企业吗?")){
-                            $.ajax({
-                                url:"InteractionServlet",
-                                type:"GET",
-                                data:{"method":"deleteRelation"},
-                                async:true,
-                                dataType:'text',
-                                success :function (res)
-                                {
-                                    alert("已退出企业");
-                                    let url="enterpriseInformation.html";
-                                    location.assign(url);
-                                },
-                                error : function (err){
-                                    alert("退出企业失败，请稍后再试");
                                 }
+                            })
 
+                            $("#quit_div").html("<input type=\"button\" value=\"退出企业\" id=\"quit\">");
+                            $("#quit").click(function (){
+                                if (window.confirm("确认要退出企业吗?")){
+                                    $.ajax({
+                                        url:"InteractionServlet",
+                                        type:"GET",
+                                        data:{"method":"deleteRelation"},
+                                        async:true,
+                                        dataType:'text',
+                                        success :function (res)
+                                        {
+                                            alert("已退出企业");
+                                            let url="enterpriseInformation.html";
+                                            location.assign(url);
+                                        },
+                                        error : function (err){
+                                            alert("退出企业失败，请稍后再试");
+                                        }
+
+                                    });
+                                }
                             });
                         }
                     });
                 }
-            })
+            });
+
             $("#back").click(function (){
                 var url = "operation.html"
                 location.assign(url);

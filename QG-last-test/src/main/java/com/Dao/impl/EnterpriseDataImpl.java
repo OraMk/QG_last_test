@@ -288,6 +288,12 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
+    public int setBlockEnterprise(int eid, String status) {
+        String sql = "update enterprise set e_banned = '"+status+"' where eid = " + eid;
+        return jdbc.Edit(sql);
+    }
+
+    @Override
     public ResultSet selectSumAllocationFundsByEid(int eid) {
         String sql = "select sum(allocation_funds) as sumAllocation_funds from relation where eid = " + eid;
         return jdbc.Select(sql);

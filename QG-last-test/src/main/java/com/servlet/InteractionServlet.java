@@ -77,6 +77,13 @@ public interface InteractionServlet {
 
     //禁用用户
     public void blockUser(HttpServletRequest req, HttpServletResponse resp);
+    //封禁企业
+    public void blockEnterprise(HttpServletRequest req, HttpServletResponse resp);
     //解封用户
     public void unblockUser(HttpServletRequest req, HttpServletResponse resp);
+    //解封企业
+    public void unblockEnterprise(HttpServletRequest req, HttpServletResponse resp);
+
+    //申请企业解封
+    public void applyUnblockingByEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 }

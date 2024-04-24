@@ -736,9 +736,96 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
+    public void blockEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        int eid = 0;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        int n = enterpriseData.setBlockEnterprise(eid,"yes");
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
     public void unblockUser(HttpServletRequest req, HttpServletResponse resp) {
         String uid = req.getParameter("uid");
         int n = userData.setBlockUser(uid,"no");
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void unblockEnterprise(HttpServletRequest req, HttpServletResponse resp) {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        int eid = 0;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        int n = enterpriseData.setBlockEnterprise(eid,"no");
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void applyUnblockingByEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        int eid = 0;
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }else if ("username".equals(c.getName())){
+                    username = c.getValue();
+                }
+            }
+        }
+        String enterprise = null;
+        ResultSet resultSet = enterpriseData.selectEnterpriseByEid(eid);
+        if (resultSet.next()){
+            enterprise = resultSet.getString("ename");
+        }
+        resultSet = applicationData.selectUnblockingApplicationByEnterprise(enterprise);
+        int judgment = 0;
+        int n = 0;
+        if(resultSet.next()){
+            if ("pending".equals(resultSet.getString("is_accept"))){
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+
+            }else {
+                 n = applicationData.applyUnblockingForEnterprise(username,enterprise);
+            }
+        }else {
+            n = applicationData.applyUnblockingForEnterprise(username,enterprise);
+        }
         if (n == 1){
             resp.setStatus(HttpServletResponse.SC_OK);
 

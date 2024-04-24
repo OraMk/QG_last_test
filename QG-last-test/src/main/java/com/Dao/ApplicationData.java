@@ -54,5 +54,8 @@ public interface ApplicationData {
     //更改解封申请的状态
     public int changeUnblockingApplication(String id, String status, String processor);
 
-
+    //根据企业名称查找解封的信息
+    public ResultSet selectUnblockingApplicationByEnterprise(String enterprise);
+    //申请解封企业
+    public int applyUnblockingForEnterprise(String username , String enterprise);
 }

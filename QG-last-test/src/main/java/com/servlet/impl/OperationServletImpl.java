@@ -303,4 +303,28 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    public void judgmentEnterpriseBanned(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        Cookie[] cookies = req.getCookies();
+        String eid = null;
+        for (Cookie c :cookies){
+            if ("eid".equals(c.getName())){
+                eid = c.getValue();
+            }
+        }
+        ResultSet resultSet = enterpriseData.selectEnterpriseByEid(Integer.parseInt(eid));
+        if (resultSet.next()){
+            String banned = resultSet.getString("e_banned");
+            if ("yes".equals(banned)){
+                //企业被封禁
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                //企业未被封禁
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+            }
+        }
+    }
 }
