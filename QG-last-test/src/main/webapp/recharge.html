@@ -5,7 +5,48 @@
     <title>充值界面</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+            //判断该企业是否被封禁
+            $.ajax({
+                url: "InteractionServlet",
+                type: "GET",
+                async: true,
+                dataType: 'json',
+                data: {"method": "judgmentEnterpriseBanAlways"},
+                success:function (res) {
+                    //没有被封禁
+                },
+                error:function () {
+                    //被封禁
+                    alert("企业已被封禁");
+                    let url = "enterpriseInformation.html";
+                    location.assign(url);
+                }
+            });
+        }
+
+
+
         $(function (){
+            setInterval(function (){
+            judgementBanned();
+            },1000);
             let funds = 0;
             $.ajax({
                 url: "loginServlet",

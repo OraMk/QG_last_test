@@ -834,4 +834,32 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
         }
     }
+
+    @Override
+    public void judgmentEnterpriseBanAlways(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+        Cookie[] cookies = req.getCookies();
+        //获取cookie
+        int eid = 0;
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())) {
+                    eid = Integer.parseInt(c.getValue());
+                }
+            }
+        }
+        ResultSet resultSet =  enterpriseData.selectEnterpriseByEid(eid);
+        if (resultSet.next()){
+            String e_banned = resultSet.getString("e_banned");
+            if ("no".equals(e_banned)){
+                //没有被封禁
+                Map<String,String> map = new HashMap<String,String>();
+                map.put("ename", resultSet.getString("ename"));
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.writeValue(resp.getWriter(),map);
+            }else {
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            }
+        }
+    }
 }

@@ -25,7 +25,7 @@ import java.util.Map;
  * @author 86178
  */
 @WebServlet(value = "/loginServlet")
-public class LoginServletImpl extends BaseServlet implements LoginServlet {
+public class LoginServletImpl extends BaseServlet implements LoginServlet{
     UserData userData = new UserDataImpl();
 //    ResultSet ResultSet resultSet = null;
     public LoginServletImpl() throws SQLException, IOException, ClassNotFoundException {
@@ -237,9 +237,9 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
     }
 
     @Override
-    public void selectAllUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ClassNotFoundException {
+    public void selectAllUserIsNoAdministrator(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ClassNotFoundException {
         UserData userData = new UserDataImpl();
-        ResultSet resultSet = userData.selectAllUser();
+        ResultSet resultSet = userData.selectAllUserIsNoAdministrator();
         User user = null;
         List<User> userList = new ArrayList<User>();
         int uid = 0;
@@ -304,4 +304,6 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet {
         }
 
     }
+
+
 }

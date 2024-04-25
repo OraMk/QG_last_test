@@ -86,4 +86,7 @@ public interface InteractionServlet {
 
     //申请企业解封
     public void applyUnblockingByEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    //实时查看企业是否被封禁
+    public void judgmentEnterpriseBanAlways(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
 }

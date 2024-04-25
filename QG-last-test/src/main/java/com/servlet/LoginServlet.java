@@ -30,7 +30,7 @@ public interface LoginServlet {
     public void judgementBanned(HttpServletRequest req, HttpServletResponse resp);
 
     //查找全部用户数据
-    public void selectAllUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ClassNotFoundException;
+    public void selectAllUserIsNoAdministrator(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException, ClassNotFoundException;
 
     //通过传入的用户名查找用户
     public void selectUserByUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;

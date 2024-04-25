@@ -24,7 +24,7 @@ public interface UserData {
     public void close();
 
     //查找全部的用户
-    public ResultSet selectAllUser();
+    public ResultSet selectAllUserIsNoAdministrator();
 
     public int setBlockUser(String uid, String status);
     //通过传入的用户名查找用户信息
@@ -38,4 +38,5 @@ public interface UserData {
     public void commit() throws SQLException;
     //回滚事务
     public void rollback() throws SQLException;
+
 }

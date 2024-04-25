@@ -32,6 +32,24 @@
                 }
             });
         }
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+        }
 
         function UserFund(){
             $.ajax({
@@ -231,6 +249,9 @@
 
         }
         $(function (){
+            setInterval(function() {
+                judgementBanned();
+            }, 1000);
             $("#look_transfer").click(function () {
                 let url = "noTipTransfer.html";
                 location.assign(url);
@@ -270,22 +291,22 @@
                     location.assign(url);
                 }
             });
-            $.ajax({
-                url:"loginServlet",
-                type:"GET",
-                async:true,
-                data_type:'json',
-                data:{"method":"judgementBanned"},
-                success:function (){
-                    //被封禁
-                    alert("用户被封禁");
-                    let url = "operation.html";
-                    location.assign(url);
-                },
-                error:function (){
-                    //没有被封禁
-                }
-            });
+            // $.ajax({
+            //     url:"loginServlet",
+            //     type:"GET",
+            //     async:true,
+            //     data_type:'json',
+            //     data:{"method":"judgementBanned"},
+            //     success:function (){
+            //         //被封禁
+            //         alert("用户被封禁");
+            //         let url = "operation.html";
+            //         location.assign(url);
+            //     },
+            //     error:function (){
+            //         //没有被封禁
+            //     }
+            // });
             $("#options_from").change(function (){
                 let selectedValue = $(this).val();
                 if (selectedValue == "enterprise"){

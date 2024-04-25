@@ -167,8 +167,8 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
-    public ResultSet selectAllUser() {
-        String sql = "select * from user";
+    public ResultSet selectAllUserIsNoAdministrator() {
+        String sql = "select * from user Where is_administrator != 'yes'";
         return jdbc.Select(sql);
     }
 

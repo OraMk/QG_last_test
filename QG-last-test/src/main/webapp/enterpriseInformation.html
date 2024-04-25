@@ -24,8 +24,44 @@
                 element.disabled = false;
             });
         }
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+            //判断企业是否被封禁
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                data_type: 'json',
+                data: {"method": "judgmentEnterpriseBanned"},
+                success: function () {//被封禁
+                    alert("该企业被封禁，禁止访问");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error: function () {//未被封禁
+
+                }
+            });
+        }
+
         let enterprise = null;
         $(function (){
+
             $.ajax({
                 url:"operationServlet",
                 type:"GET",
@@ -128,37 +164,25 @@
                         data:{"method":"judgmentJoin"},
                         success:function (){
                             //不属于该企业
-                            //判断企业是否被封禁
-                            $.ajax({
-                                url: "operationServlet",
-                                type: "GET",
-                                async: true,
-                                data_type: 'json',
-                                data: {"method": "judgmentEnterpriseBanned"},
-                                success: function () {//被封禁
-                                    alert("该企业被封禁，禁止访问");
-                                    let url = "operation.html";
-                                    location.assign(url);
-                                },
-                                error: function () {//未被封禁
-                                    $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
-                                    $("#join").click(function (){
-                                        $.ajax({
-                                            url:"InteractionServlet",
-                                            type:"GET",
-                                            async:true,
-                                            data_type:'json',
-                                            data:{"method":"applyToJoin"},
-                                            success:function (){
-                                                alert("申请成功");
-                                            },
-                                            error:function (){
-                                                alert("申请失败，请稍后再试(请勿重复发送申请)");
-                                            }
-                                        });
+                            setInterval(function () {
+                                judgementBanned();
+                            },1000);
+                            $("#join_div").html("<input type=\"button\" value=\"申请加入企业\" id=\"join\">");
+                            $("#join").click(function (){
+                                $.ajax({
+                                    url:"InteractionServlet",
+                                    type:"GET",
+                                    async:true,
+                                    data_type:'json',
+                                    data:{"method":"applyToJoin"},
+                                    success:function (){
+                                        alert("申请成功");
+                                    },
+                                    error:function (){
+                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                    }
+                                });
 
-                                    });
-                                }
                             });
 
                         },
@@ -325,35 +349,27 @@
 
                                 },
                                 error:function (){//不是企业负责人
-                                    $.ajax({
-                                        url: "operationServlet",
-                                        type: "GET",
-                                        async: true,
-                                        data_type: 'json',
-                                        data: {"method": "judgmentEnterpriseBanned"},
-                                        success: function () {//被封禁
-                                            alert("企业已被封禁，请解封后再访问")
-                                        },
-                                        error: function () {//未被封禁
-                                            $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
-                                            $("#join").click(function (){
-                                                $.ajax({
-                                                    url:"InteractionServlet",
-                                                    type:"GET",
-                                                    async:true,
-                                                    data_type:'json',
-                                                    data:{"method":"deregisterEnterprise"},
-                                                    success:function (){
-                                                        alert("申请成功");
-                                                    },
-                                                    error:function (){
-                                                        alert("申请失败，请稍后再试(请勿重复发送申请)");
-                                                    }
-                                                });
+                                    setInterval(function () {
+                                        judgementBanned();
+                                    },1000);
+                                    $("#join_div").html("<input type=\"button\" value=\"申请成 为负责人\" id=\"join\">");
+                                    $("#join").click(function (){
+                                        $.ajax({
+                                            url:"InteractionServlet",
+                                            type:"GET",
+                                            async:true,
+                                            data_type:'json',
+                                            data:{"method":"deregisterEnterprise"},
+                                            success:function (){
+                                                alert("申请成功");
+                                            },
+                                            error:function (){
+                                                alert("申请失败，请稍后再试(请勿重复发送申请)");
+                                            }
+                                        });
+                                    })
 
-                                            });
-                                        }
-                                    });
+
 
                                 }
                             })

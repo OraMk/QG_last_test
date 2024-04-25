@@ -5,8 +5,9 @@
     <title>查看用户信息</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
-        $(function () {
 
+
+        $(function () {
             $.ajax({
                 url:"loginServlet",
                 type:"GET",
@@ -20,7 +21,7 @@
                         type: "GET",
                         async: true,
                         data_type: 'json',
-                        data: {"method": "selectAllUser"},
+                        data: {"method": "selectAllUserIsNoAdministrator"},
                         success: function (res) {
                             let data = JSON.parse(res);
                             let str = "";

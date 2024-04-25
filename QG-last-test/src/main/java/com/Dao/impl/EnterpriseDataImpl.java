@@ -344,6 +344,27 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Select(sql);
     }
 
+    @Override
+    public int updatetransfer(String preEnterpriseName,String ename) {
+        String sql = "update transfer set enterprise_payer = '"+ename+"' where enterprise_payer = '" +preEnterpriseName+"'";
+        jdbc.Edit(sql);
+        String sql1 = " update transfer set enterprise_payee = '"+ename+"' where enterprise_payee = '" +preEnterpriseName+"'";
+        jdbc.Edit(sql1);
+        return 1;
+    }
+
+    @Override
+    public int updateBlockingApplicationForEname(String preEnterpriseName, String ename) {
+        String sql = "update blocking_application set enterprise = '" +ename+"' where enterprise = '" +preEnterpriseName+ "'";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int updateEnterpriseApplicationForEname(String preEnterpriseName, String ename) {
+        String sql = "update enterprise_application set ename = '" +ename+ "' where ename = '" +preEnterpriseName+ "'";
+        return jdbc.Edit(sql);
+    }
+
 
     @Override
     public ResultSet selectSumAllocationFundsByEid(int eid) {

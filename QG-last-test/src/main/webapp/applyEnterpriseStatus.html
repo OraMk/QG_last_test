@@ -4,7 +4,28 @@
     <meta charset="UTF-8">
     <title>查看申请企业情况</title><script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
     <script type="text/javascript">
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+        }
         $(function () {
+            setInterval(function (){
+                judgementBanned();
+            },1000);
             $.ajax({
                 url: "operationServlet",
                 type: "GET",

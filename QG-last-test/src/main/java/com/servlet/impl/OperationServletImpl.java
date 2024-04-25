@@ -170,10 +170,35 @@ public class OperationServletImpl extends BaseServlet implements OperationServle
 
     @Override
     public void changeEnterpriseInformation(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        enterpriseData.setAffairs();
+        //更改企业账户信息
+        Cookie[] cookies = req.getCookies();
+        String eid = null;
+        for (Cookie c :cookies){
+            if ("eid".equals(c.getName())){
+                eid = c.getValue();
+            }
+        }
+        ResultSet resultSet = enterpriseData.selectEnterpriseByEid(Integer.parseInt(eid));
+        String preEnterpriseName = null;
+        if (resultSet.next()){
+            preEnterpriseName = resultSet.getString("ename");
+        }
         int n = enterpriseData.changeInformationSimple(req,resp);
+        String ename = req.getParameter("ename");
         if (n == 1)
         {//则更改成功
 
+            try {
+                enterpriseData.updatetransfer(preEnterpriseName,ename);
+                enterpriseData.updateBlockingApplicationForEname(preEnterpriseName,ename);
+                enterpriseData.updateEnterpriseApplicationForEname(preEnterpriseName,ename);
+            } catch (Exception e) {
+                enterpriseData.rollback();
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                throw new RuntimeException(e);
+                }
+            enterpriseData.commit();
             resp.setStatus(HttpServletResponse.SC_OK);
         }else{
 

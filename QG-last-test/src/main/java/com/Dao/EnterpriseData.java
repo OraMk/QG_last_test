@@ -78,4 +78,10 @@ public interface EnterpriseData {
 
 
     public ResultSet selectAllEnterpriseByEnterpriseName(String ename);
+
+    public int updatetransfer(String preEnterpriseName,String ename);
+
+    public int updateBlockingApplicationForEname(String preEnterpriseName, String ename);
+
+    public int updateEnterpriseApplicationForEname(String preEnterpriseName, String ename);
 }
