@@ -37,7 +37,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     public void judgementTransferPassword(HttpServletRequest req, HttpServletResponse resp) {
         String payment_password = req.getParameter("payment_password");
         //进行哈希算法处理
-        String inputPaymentPassword =  transferData.encryptProcess(payment_password);
+            String inputPaymentPassword =  transferData.encryptProcess(payment_password);
         //获取用户id
         Cookie[] cookies = req.getCookies();
         //获取cookie
@@ -727,6 +727,30 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
 
         }else {
             transferData.rollback();
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void changePayment(HttpServletRequest req, HttpServletResponse resp) {
+        String password = req.getParameter("payment");
+        Cookie[] cookies = req.getCookies();
+        String username =  null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())){
+                    username = c.getValue();
+                }
+            }
+        }
+        String hashPassword = transferData.encryptProcess(password);
+        int n = transferData.changePayPassword(username,hashPassword);
+        if (n == 1)
+        {
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }

@@ -8,17 +8,20 @@ import java.sql.SQLException;
 
 public interface UserData {
     //登录时候查找
-    public ResultSet selectUser(HttpServletRequest req, HttpServletResponse resp);
+    public ResultSet selectUser(String username,String password);
 
     //注册用户
-    public int add(HttpServletRequest req, HttpServletResponse resp);
+    public int add(String username,String name,String password,String pNumber);
+    //对用户密码进行加密
+    public String encryptProcess(String password);
 
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp);
 
     public ResultSet selectUserByName(HttpServletRequest req, HttpServletResponse resp);
 
     //更改普通信息
-    public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
+    public int changeInformationSimple(String formerly, String username, String password, String pNumber, String name) throws SQLException;
+    ;
     //更改头像
     public int changeAvatar(HttpServletRequest req, HttpServletResponse resp);
     public void close();
@@ -38,5 +41,10 @@ public interface UserData {
     public void commit() throws SQLException;
     //回滚事务
     public void rollback() throws SQLException;
+    //初始化用户的支付密码
+    public int initialPayment(String username);
 
+    public ResultSet selectUserByUsernameAndPhoneNumber(String username, String phoneNumber) throws SQLException;
+
+    public int changePassword(String username, String password);
 }

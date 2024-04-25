@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>更改支付密码</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+        }
+        $(function () {
+            setInterval(function () {
+                judgementBanned();
+            }, 1000);
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                dataType: 'text',
+                data: {"method": "loginUser"},
+                success: function (res) {
+                    $("#div_prePayment").html("原支付密码<input type=\"password\" id=\"prePayment\"><span id=\"s_prePayment\"></span>");
+                    $("#div_payment").html("现支付密码<input type=\"password\" id=\"payment\"><span id=\"s_payment\"></span><br><br>" +
+                        "<center><input type=\"button\" value=\"确认更改\" id='verify'></center>");
+                    let passwordRegExp = /^\d{6}$/;
+                    $("#prePayment").blur(function () {
+                        let prePayment = $(this).val();
+                        if (passwordRegExp.test(prePayment)){
+                            $("#s_prePayment").html("输入合法");
+                            $("#s_prePayment").css("color","green");
+                        }else {
+                            $("#s_prePayment").html("输入不合法，密码为数字纯6位");
+                            $("#s_prePayment").css("color","red");
+                        }
+                    });
+                    $("#payment").blur(function () {
+                        let Payment = $(this).val();
+                        if (passwordRegExp.test(Payment)){
+                            $("#s_payment").html("输入合法");
+                            $("#s_payment").css("color","green");
+                        }else {
+                            $("#s_payment").html("输入不合法，密码为数字纯6位");
+                            $("#s_payment").css("color","red");
+                        }
+                    });
+                    $("#verify").click(function () {
+                        $(this).prop('disabled', true);
+                        if ($("#s_payment").html() == "输入合法" && $("#s_prePayment").html() == "输入合法"){
+                            //判断原密码是否正确
+                            //判断密码是否正确
+                            if (window.confirm("确认要更改吗?"))
+                            {
+                                $.ajax({
+                                    url: "transferServlet",
+                                    type: "GET",
+                                    async: true,
+                                    dataType: 'text',
+                                    data: {"method": "judgementTransferPassword", "payment_password": $("#prePayment").val()},
+                                    success: function () {
+                                        //密码正确
+                                        $.ajax({
+                                            url: "transferServlet",
+                                            type: "GET",
+                                            async: true,
+                                            dataType: 'text',
+                                            data: {
+                                                "method": "changePayment",
+                                                "payment": $("#payment").val()
+                                            },
+                                            success: function () {
+                                                //更改支付密码成功
+                                                alert("更改成功");
+                                                let url = "userInformation.html";
+                                                location.assign(url);
+                                            },
+                                            error: function () {
+                                                //更改支付密码失败
+                                                alert("更改失败，系统繁忙，请稍后再试");
+                                            }
+                                        });
+                                    },
+                                    error: function () {
+                                        //原密码错误
+                                        alert("原密码错误，请重新输入");
+                                    }
+                                });
+                            }
+
+                        }else {
+                            alert("输入不合法，请重新输入");
+                        }
+                        $(this).prop('disabled', false);
+
+                    })
+                },
+                error: function () {
+                    alert("未登录..");
+                    let url = "sign.html";
+                    location.assign(url);
+                }
+            });
+        })
+    </script>
+</head>
+<body>
+<div id="div_prePayment" style="position: absolute;left: 180px;top: 80px;">
+    <!--        转账金额<input type="text" id="Fund"><span id="s_Fund"></span><br><br>-->
+    <!--        <center><input type="button" value="确认发起转账" id="pushTransfer"></center>-->
+</div>
+<div id="div_payment" style="position: absolute;left: 180px;top: 250px;">
+    <!--        请输入支付密码<input type="text"><br>-->
+    <!--        <center><input type="button" value="确认支付"></center>-->
+</div>
+</body>
+</html>

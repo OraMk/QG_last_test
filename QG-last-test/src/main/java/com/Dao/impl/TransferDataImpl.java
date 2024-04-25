@@ -17,8 +17,6 @@ import java.sql.SQLException;
 public class TransferDataImpl implements TransferData {
 
 
-    MessageDigest md ;
-    ResultSet resultSet = null;
     JDBC jdbc = new JDBC();
     Connection connection = jdbc.getConnection();
 
@@ -27,6 +25,7 @@ public class TransferDataImpl implements TransferData {
 
     @Override
     public String encryptProcess(String password) {
+        MessageDigest md ;
         try {
             //指定使用SHA-256哈希算法
             md = MessageDigest.getInstance("SHA-256");
@@ -56,7 +55,7 @@ public class TransferDataImpl implements TransferData {
     @Override
     public String selectPaymentPassword(String username) {
         String sql = "select * from payment_information where username = '" + username + "'";
-        resultSet = jdbc.Select(sql);
+        ResultSet resultSet = jdbc.Select(sql);
         try {
             if (resultSet.next()){
                 return resultSet.getString("payment_password");
@@ -108,7 +107,7 @@ public class TransferDataImpl implements TransferData {
             //查询企业id
              sql = "select * from enterprise where ename = '" + enterprisePayer + "'";
             int eid = 0;
-            resultSet = jdbc.Select(sql);
+           ResultSet resultSet = jdbc.Select(sql);
             try {
                 if (resultSet.next()){
                     eid = resultSet.getInt("eid");
@@ -178,7 +177,7 @@ public class TransferDataImpl implements TransferData {
 
             //设置悲观锁
              sql = "select * from user where username = '" + username + "' for update ";
-            resultSet = jdbc.Select(sql);
+            ResultSet resultSet = jdbc.Select(sql);
             fund = 0;
             if (resultSet.next()){
                 fund = resultSet.getDouble("fund");
@@ -221,7 +220,7 @@ public class TransferDataImpl implements TransferData {
         try {
             //设置悲观锁
             sql = "select * from user where username = '" + userPayer + "' for update ";
-            resultSet = jdbc.Select(sql);
+            ResultSet resultSet = jdbc.Select(sql);
             if (resultSet.next()){
                 fund = resultSet.getDouble("fund");
             }
@@ -259,7 +258,7 @@ public class TransferDataImpl implements TransferData {
 
             //设置悲观锁
             sql = "select * from enterprise where ename = '" +enterprisePayer+ "' for update";
-            resultSet = jdbc.Select(sql);
+            ResultSet resultSet = jdbc.Select(sql);
             if (resultSet.next()){
                 //获取企业总资金
                 total_fund = resultSet.getDouble("Total_fund");
@@ -328,7 +327,7 @@ public class TransferDataImpl implements TransferData {
 
             //设置悲观锁
             sql = "select * from enterprise where ename = '" + enterprisePayee + "' for update ";
-            resultSet = jdbc.Select(sql);
+            ResultSet resultSet = jdbc.Select(sql);
             fund = 0;
             if (resultSet.next()){
                 fund = resultSet.getDouble("Total_fund");
@@ -427,6 +426,12 @@ public class TransferDataImpl implements TransferData {
     @Override
     public int reduceUser(double fund, String username) {
         String sql = "update user set fund = fund - " + fund + " where username = '" + username + "'";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public int changePayPassword(String username, String hashPassword) {
+        String sql = "update payment_information set payment_password = '" +hashPassword+ "' where username = '" +username+ "'";
         return jdbc.Edit(sql);
     }
 

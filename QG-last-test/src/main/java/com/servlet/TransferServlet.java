@@ -54,4 +54,6 @@ public interface TransferServlet {
 
     //企业负责人向企业充值
     public void rechargeForEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+    //更改支付密码
+    public void changePayment(HttpServletRequest req, HttpServletResponse resp);
 }

@@ -39,32 +39,14 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
             {
                 Cookie cookie = new Cookie("username", "");
                 resp.addCookie(cookie);
-//                if (cookies != null)
-//                {
-//                    for (Cookie c: cookies)
-//                    {
-//                        //销毁已存在的cookie保存的用户信息
-//                        if ("username".equals(c.getName())){
-//                            //更改生命周期销毁cookie
-//                            c.setMaxAge(0);
-//                            resp.setStatus(HttpServletResponse.SC_OK);
-//
-//                        }
-//                    }
-//                }else {
-//                    resp.setStatus(HttpServletResponse.SC_OK);
-//                }
             }
             else
             {
-                ResultSet resultSet = userData.selectUser(req,resp);
-
-                int count = 0;
+                String username = req.getParameter("username");
+                String password = req.getParameter("password");
+                String hashPassword = userData.encryptProcess(password);
+                ResultSet resultSet = userData.selectUser(username,hashPassword);
                 if (resultSet.next())
-                {
-                    count++;
-                }
-                if (count == 1)
                 {
                     //通过设置cookie记录用户信息
                     Cookie cookie = new Cookie("username", req.getParameter("username"));
@@ -72,7 +54,6 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
                     resp.addCookie(cookie);
 
                     resp.setStatus(HttpServletResponse.SC_OK);
-
                 }else{
 
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -87,19 +68,35 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
 
     @Override
     public void add(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        String username =  req.getParameter("username");
+        String name = req.getParameter("name");
+        String password =  req.getParameter("password");
+        String pNumber = req.getParameter("phone_number");
+        //对密码进行哈希算法加密
+        String hashPassword = userData.encryptProcess(password);
         try{
-            int n = userData.add(req,resp);
+            userData.setAffair();
+            int n = userData.add(username,name,hashPassword,pNumber);
             if (n == 1)
             {
+                //增添支付密码
+                int count = userData.initialPayment(username);
+                if (count == 1){
+                    userData.commit();
+                    resp.setStatus(HttpServletResponse.SC_OK);
+                }else{
+                    userData.rollback();
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-                resp.setStatus(HttpServletResponse.SC_OK);
+                }
             }else{
+                userData.rollback();
 
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }catch (Exception e)
         {
-
+            userData.rollback();
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             throw new RuntimeException(e);
         }
@@ -189,10 +186,22 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
-        int n = userData.changeInformationSimple(req,resp);
+        Cookie[] cookies = req.getCookies();
+        String formerly = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    formerly = c.getValue();
+
+                }
+            }
+        }
+        String password = req.getParameter("password");
+        String pNumber = req.getParameter("phone_number");
+        String name = req.getParameter("name");
+        int n = userData.changeInformationSimple(formerly,username,password,pNumber,name);
         if (n == 1)
         {//则更改成功
-
             resp.setStatus(HttpServletResponse.SC_OK);
         }else{
 
@@ -303,6 +312,37 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
 
         }
 
+    }
+
+    @Override
+    public void selectUserByPhoneAndUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        String username = req.getParameter("username");
+        String phoneNumber = req.getParameter("phoneNumber");
+        ResultSet resultSet = userData.selectUserByUsernameAndPhoneNumber(username,phoneNumber);
+        if (resultSet.next()){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void changePassword(HttpServletRequest req, HttpServletResponse resp) {
+
+        String username = req.getParameter("username");
+
+        String password = req.getParameter("password");
+        String hashPassword = userData.encryptProcess(password);
+        int n = userData.changePassword(username,hashPassword);
+        if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
     }
 
 

@@ -86,7 +86,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
             if (!(public_mode == null || public_mode == "")){
                 sql.append(", public_mode = '"+ public_mode +"'");
             }if (!(introduce == null || introduce == "")){
-                sql.append(", introduce = '"+ introduce +"'");
+                sql.append(", introduction = '"+ introduce +"'");
             }
             sql.append("where eid = '" + eid +"'");
             n = jdbc.Edit(String.valueOf(sql));

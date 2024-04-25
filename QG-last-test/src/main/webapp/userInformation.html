@@ -25,60 +25,80 @@
         }
 
         $(function (){
-            setInterval(function (){
-            judgementBanned();
-        },1000);
             $.ajax({
-                url:"loginServlet",
-                type:"GET",
-                async:true,
-                dataType:'json',
-                data:{"method":"selectByUsername"},
-                success:function (res){
-                    $("#body").html("<td>"+ res.uid +"</td>\n" +
-                        "            <td>"+ res.username+"</td>\n" +
-                        "            <td>"+ res.name +"</td>\n" +
-                        "            <td>"+ res.pnumber +"</td>\n" +
-                        "            <td>"+ res.fund +"</td>\n" +
-                        "            <td>"+ res.is_administrator+"</td>")
-                    $("#img").html("<img src = "+ res.avatar +" width=\"250px\" />");
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                dataType: 'text',
+                data: {"method": "loginUser"},
+                success: function (res) {
+                    setInterval(function (){
+                        judgementBanned();
+                    },1000);
+                    $.ajax({
+                        url:"loginServlet",
+                        type:"GET",
+                        async:true,
+                        dataType:'json',
+                        data:{"method":"selectByUsername"},
+                        success:function (res){
+                            $("#body").html("<td>"+ res.uid +"</td>\n" +
+                                "            <td>"+ res.username+"</td>\n" +
+                                "            <td>"+ res.name +"</td>\n" +
+                                "            <td>"+ res.pnumber +"</td>\n" +
+                                "            <td>"+ res.fund +"</td>\n" +
+                                "            <td>"+ res.is_administrator+"</td>")
+                            $("#img").html("<img src = "+ res.avatar +" width=\"250px\" />");
 
-                    //更改头像
-                    $("#check_img").click(function (){
-                        // let fileInput = $("#change_img").get(0);
-                        // const file = fileInput.files[0];
-                        // const filePath = URL.createObjectURL(file);
-                        filePath = $("#change_img").val();
-                        $("#img").html("<img src = "+ filePath +" width=\"250px\" />")
-                        $.ajax({
-                            url:"loginServlet",
-                            type:"GET",
-                            data:{"method":"avatarChange","avatar":filePath},
-                            async:true,
-                            success:function (){
+                            //更改头像
+                            $("#check_img").click(function (){
+                                // let fileInput = $("#change_img").get(0);
+                                // const file = fileInput.files[0];
+                                // const filePath = URL.createObjectURL(file);
+                                filePath = $("#change_img").val();
+                                $("#img").html("<img src = "+ filePath +" width=\"250px\" />")
+                                $.ajax({
+                                    url:"loginServlet",
+                                    type:"GET",
+                                    data:{"method":"avatarChange","avatar":filePath},
+                                    async:true,
+                                    success:function (){
 
-                            },
-                            error:function (){
+                                    },
+                                    error:function (){
 
-                            }
-                        })
+                                    }
+                                })
+                            });
+                        },
+                        error: function (err){
+                            alert("未登录");
+
+                        }
+                    })
+                    $("#back").click(function (){
+                        // 返回主界面
+                        let url = "operation.html";
+                        location.assign(url);
                     });
-                },
-                error: function (err){
 
+
+                    $("#change_information").click(function (){
+                        let url = "changeUserInformation.html";
+                        location.assign(url);
+                    });
+                    $("#change_payment").click(function (){
+                        let url = "changePayment.html";
+                        location.assign(url);
+                    })
+                },
+                error: function () {
+                    alert("未登录..");
+                    let url = "sign.html";
+                    location.assign(url);
                 }
-            })
-            $("#back").click(function (){
-                // 返回主界面
-                let url = "operation.html";
-                location.assign(url);
             });
 
-
-            $("#change_information").click(function (){
-                let url = "changeUserInformation.html";
-                location.assign(url);
-            })
         })
     </script>
 </head>
@@ -116,7 +136,9 @@
     </table>
 
 </div>
-    <div style="position: absolute;top: 800px;left: 800px">
+    <div style="position: absolute;top: 800px;left: 600px">
+        <input type="button" id="change_payment" value="修改支付密码" style="width: 200px;height: 40px">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="button" id="change_information" value="修改信息" style="width: 200px;height: 40px">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="button" value="返回" id="back" style="width: 200px;height:40px">

@@ -1,13 +1,14 @@
 package com.Dao.impl;
 
 import com.Dao.UserData;
-import com.pojo.User;
 import com.untils.JDBC;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,10 +22,8 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
-    public ResultSet selectUser(HttpServletRequest req, HttpServletResponse resp) {
+    public ResultSet selectUser(String username,String password) {
 
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
         try {
             String sql = "select * from user where username = ? and password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -38,18 +37,12 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
-    public int add(HttpServletRequest req, HttpServletResponse resp) {
-        String username =  req.getParameter("username");
-        String name = req.getParameter("name");
-        String password =  req.getParameter("password");
-        String avatar = req.getParameter("avatar");
-        //设置默认头像
-        avatar = "https://img.zcool.cn/community/01a3865ab91314a8012062e3c38ff6.png@1280w_1l_2o_100sh.png" ;
-        String pNumber = req.getParameter("phone_number");
+    public int add(String username,String name,String password,String pNumber) {
+
+        String avatar = "https://img.zcool.cn/community/01a3865ab91314a8012062e3c38ff6.png@1280w_1l_2o_100sh.png" ;
         int fund = 0;
         String isAdminstaraor = "no";
         String banned = "no";
-        Connection connection=jdbc.getConnection();
         String sql = "insert into user(username,name,password,avatar,pnumber,fund,is_administrator,u_banned) " +
                 "values('" +username + "','" + name +  "','" + password + "','" +avatar+ "','"+
                 pNumber + "',"+ fund + ",'" +isAdminstaraor + "','" +banned+ "')";
@@ -58,17 +51,46 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
-    public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp) {
-        Cookie[] cookies = req.getCookies();
-        String username = null;
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if ("username".equals(c.getName())) {
-                    username = c.getValue();
+    public String encryptProcess(String password) {
+        MessageDigest md ;
+        try {
+            //指定使用SHA-256哈希算法
+            md = MessageDigest.getInstance("SHA-512");
 
-                }
-            }
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
+        //将密码转化为字符数组
+        byte[] bytePassword = password.getBytes();
+        //进行哈希处理
+        byte[] hashBytePassword = md.digest(bytePassword);
+
+        // 将字节数组转换为十六进制字符串表示
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashBytePassword) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        //返回哈希处理后的字符数组
+        return hexString.toString();
+    }
+
+    @Override
+    public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp) {
+//        Cookie[] cookies = req.getCookies();
+//        String username = null;
+//        if (cookies != null) {
+//            for (Cookie c : cookies) {
+//                if ("username".equals(c.getName())) {
+//                    username = c.getValue();
+//
+//                }
+//            }
+//        }
+        String username = req.getParameter("username");
         try {
             String sql = "select * from user where username = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -104,23 +126,10 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
-    public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp) {
-        Cookie[] cookies = req.getCookies();
-        String formerly = null;
-        if (cookies != null) {
-            for (Cookie c : cookies) {
-                if ("username".equals(c.getName())) {
-                    formerly = c.getValue();
-
-                }
-            }
-        }
-        String username = req.getParameter("username");
-        String password = req.getParameter("password");
-        String pNumber = req.getParameter("phone_number");
-        String name = req.getParameter("name");
-
+    public int changeInformationSimple(String formerly, String username, String password, String pNumber, String name) throws SQLException {
         int n = 0;
+        int pass = 0;
+        String hashPassword = null;
         if (username != null || password != null || pNumber != null || name != null){
             StringBuffer sql = new StringBuffer("update user set username = '" + formerly +"'");
             if (!(username == null || username == "")){
@@ -128,7 +137,9 @@ public class UserDataImpl implements UserData {
             }
             if (!(password ==null || password =="" ))
             {
-                sql.append(", password= '"+ password + "'");
+                pass = 1;
+                hashPassword = encryptProcess(password);
+                sql.append(", password= '?'");
             }
             if (!(name == null || name =="")){
                 sql.append(", name= '"+ name + "'");
@@ -137,7 +148,15 @@ public class UserDataImpl implements UserData {
                 sql.append(", pnumber = '"+ pNumber +"'");
             }
             sql.append("where username = '" + formerly +"'");
-            n = jdbc.Edit(String.valueOf(sql));
+            if (pass == 1){
+                PreparedStatement preparedStatement = connection.prepareStatement(String.valueOf(sql));
+                preparedStatement.setString(1,hashPassword);
+                n = preparedStatement.executeUpdate();
+            }else {
+                n = jdbc.Edit(String.valueOf(sql));
+
+            }
+
         }
         return n;
     }
@@ -206,5 +225,26 @@ public class UserDataImpl implements UserData {
     public void rollback() throws SQLException {
         connection.rollback();
         connection.setAutoCommit(true);
+    }
+
+    @Override
+    public int initialPayment(String username) {
+        String sql = "insert into payment_information(username) values('"+username+"') ";
+        return jdbc.Edit(sql);
+    }
+
+    @Override
+    public ResultSet selectUserByUsernameAndPhoneNumber(String username, String phoneNumber) throws SQLException {
+        String sql = "select * from user where username = ? and pnumber = ?";
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+        preparedStatement.setString(1,username);
+        preparedStatement.setString(2,phoneNumber);
+        return preparedStatement.executeQuery();
+    }
+
+    @Override
+    public int changePassword(String username, String password) {
+        String sql = "update user set password = '" +password+ "' where username = '" +username+ "'";
+        return jdbc.Edit(sql);
     }
 }

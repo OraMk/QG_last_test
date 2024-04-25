@@ -37,5 +37,11 @@ public interface LoginServlet {
 
     //判断指定用户是否被封禁
     public void judgementBannedForUser(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
+
+    //根据手机号和用户名查询用户
+    public void selectUserByPhoneAndUsername(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+
+    //更改用户密码
+    public void changePassword(HttpServletRequest req, HttpServletResponse resp);
 }
 

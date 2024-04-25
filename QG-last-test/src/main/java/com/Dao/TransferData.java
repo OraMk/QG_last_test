@@ -70,4 +70,6 @@ public interface TransferData {
     public int rechargeForEnterprises(double fund, String eid);
     //减少用户资金
     public int reduceUser(double fund, String username);
+
+    public int changePayPassword(String username, String hashPassword);
 }
