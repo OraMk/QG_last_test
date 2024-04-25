@@ -21,29 +21,43 @@
                     let span = $("#error");
                     span.html("");
                     $.ajax({
-                        url:"loginServlet",
-                        type:"GET",
-                        data:{
-                            "username":username,
-                            "password":password,
-                            "name":name,
-                            "phone_number":pNumber,
-                            "method":"add"
-                        },
-                        async:true,
-                        dataType:'text',
-                        success :function ()
-                        {
-                            alert("注册成功!");
-                            $("#login").submit();
-                        },
-                        error : function (){
-                            var span = $("#error");
-                            span.html("注册失败");
-                            span.css("color","red");
-                        }
+                        url: "loginServlet",
+                        type: "GET",
+                        data: {"checkCode":$("#check_code").val(),"method": "checkCode"},
+                        async: true,
+                        dataType: 'text',
+                        success: function (res) {
+                            $.ajax({
+                                url:"loginServlet",
+                                type:"GET",
+                                data:{
+                                    "username":username,
+                                    "password":password,
+                                    "name":name,
+                                    "phone_number":pNumber,
+                                    "method":"add"
+                                },
+                                async:true,
+                                dataType:'text',
+                                success :function ()
+                                {
+                                    alert("注册成功!");
+                                    $("#login").submit();
+                                },
+                                error : function (){
+                                    var span = $("#error");
+                                    span.html("注册失败");
+                                    span.css("color","red");
+                                }
 
+                            });
+                        },
+                        error: function () {
+                            alert("验证码错误，请重试");
+                            $("#verificationCode").attr("src", "loginServlet?method=verificationCode&t=" + new Date().getTime());
+                        }
                     });
+
                 }else{
                     let span = $("#error");
                     span.html("请填入正确的信息");
@@ -142,6 +156,9 @@
 
 
             });
+            $("#verificationCode").click(function () {
+                $(this).attr("src", "loginServlet?method=verificationCode&t=" + new Date().getTime());
+            });
 
             });
 
@@ -180,6 +197,8 @@
             密码<input id="password" type="password" name="password"/><span id="s_password"></span><br>
             确认密码<input type="password" id="repeat_password"/><span id="repeat"></span><br>
             手机号码<input type="text" id="pNumber" /><span id="phone_span"></span><br>
+            验证码<input type="text" id="check_code"><br><br>
+            &nbsp;&nbsp;<img src="loginServlet?method=verificationCode" alt="验证码" id="verificationCode"><br>
             <input type="button" id="formSubmit" value="注册">
 
         </form>

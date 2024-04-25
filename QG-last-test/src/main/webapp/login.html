@@ -25,8 +25,24 @@
                     dataType:'text',
                     success :function (res)
                     {
-                        alert("登录成功!");
-                        $("#login").submit();
+                        //判断验证码是否正确
+
+                        $.ajax({
+                            url: "loginServlet",
+                            type: "GET",
+                            data: {"checkCode":$("#check_code").val(),"method": "checkCode"},
+                            async: true,
+                            dataType: 'text',
+                            success: function (res) {
+                                alert("登录成功!");
+                                $("#login").submit();
+                            },
+                            error: function () {
+                                alert("验证码错误，请重试");
+                                $("#verificationCode").attr("src", "loginServlet?method=verificationCode&t=" + new Date().getTime());
+                            }
+                        });
+
                     },
                     error : function (err){
                         var span = $("#error");
@@ -59,6 +75,9 @@
 
                 })
             });
+            $("#verificationCode").click(function () {
+                $(this).attr("src", "loginServlet?method=verificationCode&t=" + new Date().getTime());
+            });
         })
     </script>
 </head>
@@ -83,7 +102,10 @@
         <form action="operation.html" id="login" method="post">
             账号<input id="username" type="text" name="username" placeholder="QGStudio" ><br>
             密码<input id="password" type="password" name="password"><br><br>
+            验证码<input type="text" id="check_code"><br><br>
+            &nbsp;&nbsp;<img src="loginServlet?method=verificationCode" alt="验证码" id="verificationCode"><br>
             <input type="button" id="formSubmit" value="登录"><br><br>
+
             忘记密码?<a href="retrievePassword.html">找回密码</a>
         </form>
         <span id="error"></span>

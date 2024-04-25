@@ -43,5 +43,9 @@ public interface LoginServlet {
 
     //更改用户密码
     public void changePassword(HttpServletRequest req, HttpServletResponse resp);
+    //生产验证码
+    public void verificationCode(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+    //核对验证码
+    public void checkCode(HttpServletRequest req, HttpServletResponse resp);
 }
 

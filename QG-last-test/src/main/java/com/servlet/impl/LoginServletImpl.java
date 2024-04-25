@@ -12,14 +12,15 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 86178
@@ -337,6 +338,68 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
         String hashPassword = userData.encryptProcess(password);
         int n = userData.changePassword(username,hashPassword);
         if (n == 1){
+            resp.setStatus(HttpServletResponse.SC_OK);
+
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void verificationCode(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int width = 100;
+        int height = 50;
+        //创建对象在内存中图片（验证码图片对象）
+        BufferedImage image = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
+        //画笔对象
+        Graphics g = image.getGraphics();
+        g.setColor(Color.PINK);//设置画笔颜色
+        g.fillRect(0,0,width,height);
+        //画边框
+        g.setColor(Color.BLUE);
+        g.drawRect(0,0,width-1,height-1);
+
+        String str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        //生成随机角标
+        Random ran = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 4 ; i++){
+            int index = ran.nextInt(str.length());
+            //获取字符
+            char ch = str.charAt(index);//随机字符
+            sb.append(ch);
+
+            //写验证码
+            g.drawString(ch+"",width/5*i,height/2);
+        }
+        String checkCode_session = sb.toString();
+        //将验证码存入session
+        req.getSession().setAttribute("checkCode_session",checkCode_session);
+
+        //画干扰线
+        g.setColor(Color.GREEN);
+
+        //随机生成坐标
+        for (int i = 0 ; i < 10 ; i++){
+            int x1 = ran.nextInt(width);
+            int x2 = ran.nextInt(width);
+
+            int y1 = ran.nextInt(height);
+            int y2 = ran.nextInt(height);
+            g.drawLine(x1,y1,x2,y2);
+        }
+
+        //将图片输出到页面展示
+        ImageIO.write(image,"jpg",resp.getOutputStream());
+    }
+
+    @Override
+    public void checkCode(HttpServletRequest req, HttpServletResponse resp) {
+        String checkCode = req.getParameter("checkCode");
+        HttpSession session = req.getSession();
+        String checkCode_session = (String) session.getAttribute("checkCode_session");
+        if (checkCode_session.equalsIgnoreCase(checkCode)){
             resp.setStatus(HttpServletResponse.SC_OK);
 
         }else {
