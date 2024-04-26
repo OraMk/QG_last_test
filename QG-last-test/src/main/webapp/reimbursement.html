@@ -67,50 +67,13 @@
                                             "                <td>" + data[i].username + "</td>\n" +
                                             "                <td>" + data[i].fund + "</td>\n" +
                                             "                <td>" + data[i].date + "</td>\n" +
-                                            "                <td><input type='button' class='download' value='下载文件' id='"+data[i].file+"'></td>\n" +
+                                            "                <td><a href='transferServlet?method=downloadReimbursement&fileName="+data[i].file+"' download='下载文件'>下载</a></td>\n" +
                                             "            </tr>"
 
 
                             }
                             $("#body").html(str);
-                            $(".download").click(function () {
-                                alert("该功能暂未实现");
-                                // let filename = $(this).attr('id');
-                                // $.ajax({
-                                //     url: "transferServlet",
-                                //     type: "GET",
-                                //     async: true,
-                                //     data_type: 'text',
-                                //     data: {"method": "downloadReimbursement","fileName":filename},
-                                //     success: function (response) {
-                                //         // 创建一个隐藏的<a>标签
-                                //         var link = document.createElement('a');
-                                //         link.href = response; // 设置下载链接
-                                //         link.setAttribute('download', ''); // 设置下载属性
-                                //         document.body.appendChild(link);
-                                //         link.click(); // 模拟点击事件下载文件
-                                //         document.body.removeChild(link); // 移除<a>标签
-                                //     },
-                                //     error: function () {
-                                //         alert("下载失败");
-                                //     }
-                                // });
-                                // var xhr = new XMLHttpRequest();
-                                // xhr.open('GET', 'transferServlet?method=downloadReimbursement/fileName='+filename, true);
-                                // xhr.responseType = 'blob'; // 设置响应类型为blob
-                                // xhr.onload = function() {
-                                //     if (xhr.status === 200) {
-                                //         var blob = xhr.response;
-                                //         var fileName = 'downloaded_file.txt'; // 下载的文件名
-                                //         var link = document.createElement('a');
-                                //         link.href = window.URL.createObjectURL(blob);
-                                //         link.download = fileName;
-                                //         link.click();
-                                //     }
-                                // };
-                                // xhr.send();
 
-                            })
                         },
                         error: function () {
 

@@ -836,7 +836,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
                     return;
                 }
                 // 设置保存文件的目录
-                String uploadDir = "D:\\GitHub\\QG_last_test\\QG-last-test\\src\\main\\webapp\\file";
+                String uploadDir = "D:\\GitHub\\QG_last_test\\QG-last-test\\src\\main\\webapp\\file/";
                 System.out.println(uploadDir);
                 File uploadFile = new File(uploadDir+ fileName);
                 try (InputStream fileContent = filePart.getInputStream();
