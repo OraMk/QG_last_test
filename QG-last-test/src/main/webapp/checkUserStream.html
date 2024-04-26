@@ -67,7 +67,7 @@
                                                 "                <td>" + data[i].description + "</td>\n" +
                                                 "                <td>" + data[i].isAccept + "</td>\n" +
                                                 "            </tr>"
-                                        }
+                                    }
 
                                     $("#body").html(str);
 
@@ -194,7 +194,6 @@
                                             data_type:'json',
                                             data:{"method":"editTransferStatus","tid":tid},
                                             success:function (){
-                                                alert("重新发起转账成功");
                                                 $.ajax({
                                                     url:"transferServlet",
                                                     type:"GET",
@@ -202,15 +201,17 @@
                                                     data_type:'json',
                                                     data:{"method":"reduceAmountByTid","tid":tid},
                                                     success:function () {
-
+                                                        alert("重新发起转账成功");
+                                                        let url = "checkUserStream.html";
+                                                        location.assign(url);
                                                     } ,
                                                     error:function () {
-
+                                                        alert("重新发起转账失败");
                                                     }
                                                 });
                                             },
                                             error:function (){
-
+                                                alert("重新发起转账失败");
                                             }
                                         });
 

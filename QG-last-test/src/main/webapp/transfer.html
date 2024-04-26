@@ -210,7 +210,6 @@
                                             dataType:'text',
                                             data:{"method":"judgementTransferPassword","payment_password":$("#password").val()},
                                             success :function () {
-                                                alert("密码正确");
                                                 if (enterprise != null){
                                                     //先发起转账申请
                                                     //再上传文件
@@ -229,16 +228,26 @@
                                                                 var file = fileInput.files[0];
                                                                 var formData = new FormData();
                                                                 formData.append('file', file);
-
+                                                                formData.append('enterprise',enterprise);
+                                                                formData.append('fund',transferFund);
                                                                 var xhr = new XMLHttpRequest();
                                                                 xhr.open('POST', 'transferServlet?method=upload', true);
                                                                 xhr.onreadystatechange = function () {
                                                                     if (xhr.readyState === 4) {
                                                                         if (xhr.status === 200) {
-                                                                            console.log('文件上传成功');
                                                                             // 可以在这里处理上传成功后的逻辑
+                                                                            let url = "operation.html";
+                                                                            location.assign(url);
                                                                         } else {
-                                                                            console.error('文件上传失败');
+                                                                            if (window.confirm("文件上传失败，是否重新上传"))
+                                                                            {
+                                                                                uploadFile();
+                                                                                let url = "operation.html";
+                                                                                location.assign(url);
+                                                                            }else {
+                                                                                let url = "operation.html";
+                                                                                location.assign(url);
+                                                                            }
                                                                         }
                                                                     }
                                                                 };
@@ -246,6 +255,7 @@
                                                                 xhr.send(formData);
                                                             }
                                                             uploadFile();
+
                                                         },
                                                         error:function () {
                                                             alert("转账请求失败，请稍后再试");

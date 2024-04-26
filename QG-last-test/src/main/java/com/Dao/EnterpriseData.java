@@ -84,4 +84,6 @@ public interface EnterpriseData {
     public int updateBlockingApplicationForEname(String preEnterpriseName, String ename);
 
     public int updateEnterpriseApplicationForEname(String preEnterpriseName, String ename);
+    //增添上传文件的信息
+    public int addFileUpload(String username, String enterprise, String fund, String s) throws SQLException;
 }

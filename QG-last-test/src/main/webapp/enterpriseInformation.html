@@ -297,6 +297,11 @@
                                             $("#checkStream").click(function () {
                                                 let url = "checkEnterpriseStream.html";
                                                 location.assign(url);
+                                            });
+                                            $("#div_reimbursement").html("<input type=\"button\" value=\"查看报销文件\" id=\"reimbursement\">");
+                                            $("#reimbursement").click(function () {
+                                                let url = "reimbursement.html";
+                                                location.assign(url);
                                             })
                                             $("#invite").html("<input type=\"text\" id=\"invite_name\">\n" +
                                                 "        <input type=\"button\" value=\"邀请\" id=\"invite_button\">");
@@ -460,6 +465,9 @@
         <input type="button" value="返回" id="back">
     </div>
 <div style="position: absolute; top: 750px; left: 1150px;" id="div_checkStream">
+
+</div>
+<div style="position: absolute; top: 750px; left: 1300px;" id="div_reimbursement ">
 
 </div>
     <div style="position: absolute; top: 750px; left: 900px;" id="quit_div">

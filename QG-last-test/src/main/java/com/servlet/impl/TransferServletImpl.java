@@ -211,12 +211,55 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
     @Override
     public void editTransferStatus(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String tid = req.getParameter("tid");
+        transferData.setAffair();
         int n = transferData.editTransferStatusByTid(tid);
         if (n == 1){
-            resp.setStatus(HttpServletResponse.SC_OK);
+            tid = req.getParameter("tid");
+            ResultSet resultSet = transferData.selectTransferByTid(tid);
+            String user_payer = null;
+            String enterprise_payer = null;
 
+            double amount = 0;
+            try {
+                if (resultSet.next()){
+                    user_payer = resultSet.getString("user_payer");
+                    enterprise_payer = resultSet.getString("enterprise_payer");
+                    amount = resultSet.getDouble("amount");
+
+                }
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            int count = 0;
+            if (!(enterprise_payer == null || "".equals(enterprise_payer))){
+                //减少企业分配资金
+                int number = transferData.reduceEnterpriseAllocatedFunds(user_payer,enterprise_payer,amount);
+                if (number == 1){
+                    //减少企业总资金
+                    count = transferData.reduceEnterpriseFunds(enterprise_payer,amount);
+
+                }else {
+                    transferData.rollback();
+                    resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                    return;
+                }
+            }else {
+                //将用户的资金减少相应的金额
+                count = transferData.reduceFunds(user_payer,enterprise_payer,amount);
+            }
+            if (count == 1){
+                transferData.commit();
+                resp.setStatus(HttpServletResponse.SC_OK);
+
+            }else {
+                transferData.rollback();
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+
+            }
         }else {
-
+            transferData.rollback();
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
@@ -773,23 +816,46 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
 
     @Override
     public void upload(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        //判断上传文件是否为空
+
         try {
             Part filePart = req.getPart("file");
-            String fileName = filePart.getSubmittedFileName();
-            String uploadDir = ""; // 设置保存文件的目录
-            File uploadFile = new File(uploadDir + fileName);
-
-            try (InputStream fileContent = filePart.getInputStream();
-                 FileOutputStream outputStream = new FileOutputStream(uploadFile)) {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = fileContent.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
+            String enterprise = req.getParameter("enterprise");
+            String fund = req.getParameter("fund");
+            Cookie[] cookies = req.getCookies();
+            String username =  null;
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    if ("username".equals(c.getName())){
+                        username = c.getValue();
+                    }
                 }
             }
+            //判断上传文件是否为空
+            if (filePart != null){
+                String fileName = filePart.getSubmittedFileName();
+                if (fileName == null){
+                    return;
+                }
+                // 设置保存文件的目录
+                String uploadDir = "D:\\GitHub\\QG_last_test\\QG-last-test\\upload\\";
+                System.out.println(uploadDir);
+                File uploadFile = new File(uploadDir+ fileName);
+                try (InputStream fileContent = filePart.getInputStream();
+                     FileOutputStream outputStream = new FileOutputStream(uploadFile)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fileContent.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+                }
+                enterpriseData.addFileUpload(username,enterprise,fund,uploadDir + fileName);
 
-            resp.getWriter().write("文件上传成功");
+
+                resp.getWriter().write("文件上传成功");
+            }else {
+                return;
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

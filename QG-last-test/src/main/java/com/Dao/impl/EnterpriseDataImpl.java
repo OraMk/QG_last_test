@@ -365,6 +365,21 @@ public class EnterpriseDataImpl implements EnterpriseData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public int addFileUpload(String username, String enterprise, String fund, String file) throws SQLException {
+        String sql = "select eid from enterprise where ename = '" +enterprise+ "'";
+        ResultSet resultSet1 =jdbc.Select(sql);
+        String eid = null;
+        if (resultSet1.next()){
+            eid = resultSet1.getString("eid");
+        }else {
+            return 0;
+        }
+        String SQL = "insert into file_upload(username,eid,fund,file,date) values('"+username+"',"+eid+","+fund+",'"+file+"',NOW())";
+        return jdbc.Edit(SQL);
+
+    }
+
 
     @Override
     public ResultSet selectSumAllocationFundsByEid(int eid) {
