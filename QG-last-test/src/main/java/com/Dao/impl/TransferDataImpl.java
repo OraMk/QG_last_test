@@ -447,5 +447,11 @@ public class TransferDataImpl implements TransferData {
         return jdbc.Edit(SQL);
     }
 
+    @Override
+    public ResultSet selectFileUploadByEid(String eid) {
+        String sql = "select * from file_upload where eid = " +eid;
+        return jdbc.Select(sql);
+    }
+
 
 }

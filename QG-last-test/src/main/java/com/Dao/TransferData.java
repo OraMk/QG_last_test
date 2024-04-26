@@ -74,4 +74,6 @@ public interface TransferData {
     public int changePayPassword(String username, String hashPassword);
 
     public int reduceEnterpriseAllocatedFunds(String userPayer, String enterprisePayer, double amount) throws SQLException;
+
+    public ResultSet selectFileUploadByEid(String eid);
 }

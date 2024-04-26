@@ -4,6 +4,7 @@ import com.Dao.EnterpriseData;
 import com.Dao.TransferData;
 import com.Dao.impl.EnterpriseDataImpl;
 import com.Dao.impl.TransferDataImpl;
+import com.pojo.FileUpload;
 import com.pojo.Transfer;
 import com.servlet.BaseServlet;
 import com.servlet.TransferServlet;
@@ -11,14 +12,12 @@ import com.untils.JDBC;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import org.apache.commons.io.IOUtils;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -837,7 +836,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
                     return;
                 }
                 // 设置保存文件的目录
-                String uploadDir = "D:\\GitHub\\QG_last_test\\QG-last-test\\upload\\";
+                String uploadDir = "D:\\GitHub\\QG_last_test\\QG-last-test\\src\\main\\webapp\\file";
                 System.out.println(uploadDir);
                 File uploadFile = new File(uploadDir+ fileName);
                 try (InputStream fileContent = filePart.getInputStream();
@@ -848,7 +847,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
                         outputStream.write(buffer, 0, bytesRead);
                     }
                 }
-                enterpriseData.addFileUpload(username,enterprise,fund,uploadDir + fileName);
+                enterpriseData.addFileUpload(username,enterprise,fund,fileName);
 
 
                 resp.getWriter().write("文件上传成功");
@@ -863,6 +862,46 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
         }
     }
 
+    @Override
+    public void selectFileUploadByEid(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException {
+        Cookie[] cookies = req.getCookies();
+        String eid =  null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("eid".equals(c.getName())){
+                    eid = c.getValue();
+                }
+            }
+        }
+        ResultSet resultSet = transferData.selectFileUploadByEid(eid);
+        FileUpload fileUpload = null;
+        List<FileUpload> fileUploadList = new ArrayList<FileUpload>();
+
+        while(resultSet.next()){
+            int id = Integer.parseInt(resultSet.getString("id"));
+            String username = resultSet.getString("username");
+            double fund = resultSet.getDouble("fund");
+            String file = resultSet.getString("file");
+            String date = resultSet.getString("date");
+            fileUpload = new FileUpload(id,username,eid,fund,date,file);
+            fileUploadList.add(fileUpload);
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.writeValue(resp.getWriter(),fileUploadList);
+    }
+
+    @Override
+    public void downloadReimbursement(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        String downloadFileName = req.getParameter("fileName");
+        ServletContext servletContext = getServletContext();
+        String mimeType = servletContext.getMimeType("/file/"+downloadFileName);
+        resp.setContentType(mimeType);
+        String absolutePath = getServletContext().getRealPath("/file/" + downloadFileName);
+        resp.setHeader("Content-disposition","attachment; filename="+downloadFileName);
+        InputStream resourceAsStream = new FileInputStream(absolutePath);
+        OutputStream outputStream = resp.getOutputStream();
+        IOUtils.copy(resourceAsStream,outputStream);
+    }
 
 
 }

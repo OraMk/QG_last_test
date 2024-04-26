@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>查看报销文件</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js" type="text/javascript" charset="UTF-8"></script>
+    <script type="text/javascript">
+        function judgementBanned(){
+            $.ajax({
+                url:"loginServlet",
+                type:"GET",
+                async:true,
+                data_type:'json',
+                data:{"method":"judgementBanned"},
+                success:function (){
+                    //被封禁
+                    alert("用户被封禁");
+                    let url = "operation.html";
+                    location.assign(url);
+                },
+                error:function (){
+                    //没有被封禁
+                }
+            });
+            //判断该企业是否被封禁
+            $.ajax({
+                url: "InteractionServlet",
+                type: "GET",
+                async: true,
+                dataType: 'json',
+                data: {"method": "judgmentEnterpriseBanAlways"},
+                success:function (res) {
+                    //没有被封禁
+                },
+                error:function () {
+                    //被封禁
+                    alert("企业已被封禁");
+                    let url = "enterpriseInformation.html";
+                    location.assign(url);
+                }
+            });
+        }
+        $(function () {
+            setInterval(function () {
+                judgementBanned()
+            }, 1000);
+            let enterprise = null;
+            $.ajax({
+                url: "operationServlet",
+                type: "GET",
+                async: true,
+                dataType: 'text',
+                data: {"method": "loginUser"},
+                success: function (res) {
+                    //判断是否登录
+                    $.ajax({
+                        url: "transferServlet",
+                        type: "GET",
+                        async: true,
+                        data_type: 'text',
+                        data: {"method": "selectFileUploadByEid"},
+                        success: function (res) {
+                            let data = JSON.parse(res);
+                            let str = "";
+                            for (i in data) {
+                                        str += "<tr>\n" +
+                                            "                <td>" + data[i].username + "</td>\n" +
+                                            "                <td>" + data[i].fund + "</td>\n" +
+                                            "                <td>" + data[i].date + "</td>\n" +
+                                            "                <td><input type='button' class='download' value='下载文件' id='"+data[i].file+"'></td>\n" +
+                                            "            </tr>"
+
+
+                            }
+                            $("#body").html(str);
+                            $(".download").click(function () {
+                                alert("该功能暂未实现");
+                                // let filename = $(this).attr('id');
+                                // $.ajax({
+                                //     url: "transferServlet",
+                                //     type: "GET",
+                                //     async: true,
+                                //     data_type: 'text',
+                                //     data: {"method": "downloadReimbursement","fileName":filename},
+                                //     success: function (response) {
+                                //         // 创建一个隐藏的<a>标签
+                                //         var link = document.createElement('a');
+                                //         link.href = response; // 设置下载链接
+                                //         link.setAttribute('download', ''); // 设置下载属性
+                                //         document.body.appendChild(link);
+                                //         link.click(); // 模拟点击事件下载文件
+                                //         document.body.removeChild(link); // 移除<a>标签
+                                //     },
+                                //     error: function () {
+                                //         alert("下载失败");
+                                //     }
+                                // });
+                                // var xhr = new XMLHttpRequest();
+                                // xhr.open('GET', 'transferServlet?method=downloadReimbursement/fileName='+filename, true);
+                                // xhr.responseType = 'blob'; // 设置响应类型为blob
+                                // xhr.onload = function() {
+                                //     if (xhr.status === 200) {
+                                //         var blob = xhr.response;
+                                //         var fileName = 'downloaded_file.txt'; // 下载的文件名
+                                //         var link = document.createElement('a');
+                                //         link.href = window.URL.createObjectURL(blob);
+                                //         link.download = fileName;
+                                //         link.click();
+                                //     }
+                                // };
+                                // xhr.send();
+
+                            })
+                        },
+                        error: function () {
+
+                        }
+                    });
+
+                },
+                error: function () {
+
+                }
+            });
+            $("#back").click(function (){
+                let url = "enterpriseInformation.html";
+                location.assign(url);
+            })
+        });
+    </script>
+
+</head>
+<body>
+<div style="position: absolute;
+            top: 100px;
+            bottom: 0;
+            left: 700px;
+            right: 0;">
+    <input type="button" value="返回" id="back">
+</div>
+<div style="width :800px;
+     position: absolute;
+            top: 180px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;">
+    <form>
+        <table width =100% border="1px">
+            <thead align="center">
+            <tr>
+                <th>用户</th>
+                <th>金额</th>
+                <th>日期</th>
+                <th>文件</th>
+
+            </tr>
+            </thead>
+            <tbody align="center" id="body">
+            </tbody>
+        </table>
+
+
+    </form>
+</div>
+</body>
+</html>

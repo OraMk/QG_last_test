@@ -4,11 +4,11 @@ public class FileUpload {
     private long id;
     private String username;
     private String eid;
-    private String fund;
+    private double fund;
     private String date;
     private String file;
 
-    public FileUpload(long id, String username, String eid, String fund, String date, String file) {
+    public FileUpload(long id, String username, String eid, double fund, String date, String file) {
         this.id = id;
         this.username = username;
         this.eid = eid;
@@ -41,11 +41,11 @@ public class FileUpload {
         this.eid = eid;
     }
 
-    public String getFund() {
+    public double getFund() {
         return fund;
     }
 
-    public void setFund(String fund) {
+    public void setFund(double fund) {
         this.fund = fund;
     }
 

@@ -60,4 +60,9 @@ public interface TransferServlet {
 
     //上传文件
     public void upload(HttpServletRequest req, HttpServletResponse resp) throws IOException;
+
+    //通过企业id获取报销文件
+    public void selectFileUploadByEid(HttpServletRequest req, HttpServletResponse resp) throws SQLException, IOException;
+    //下载报销文件
+    public void downloadReimbursement(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 }
