@@ -317,9 +317,9 @@
 
         }
         $(function (){
-            // setInterval(function() {
-            //     judgementBanned();
-            // }, 1000);
+            setInterval(function() {
+                judgementBanned();
+            }, 1000);
             $("#look_transfer").click(function () {
                 let url = "noTipTransfer.html";
                 location.assign(url);
@@ -349,9 +349,9 @@
                     // });
 
                     userUpdateInterval = UserFund();
-                    // updateInterval = setInterval(function() {
-                    //     UserFund();
-                    // }, 1000);
+                    updateInterval = setInterval(function() {
+                        UserFund();
+                    }, 1000);
                 },
                 error:function (){
                     alert("未登录，请先进行登录");
@@ -438,9 +438,9 @@
                                             // });
                                             clearInterval(updateInterval); // 清除之前的定时器
                                             updateEnterpriseFund(option_enterprise.val());
-                                            // updateInterval = setInterval(function() {
-                                            //     updateEnterpriseFund(option_enterprise.val());
-                                            // }, 1000); // 每隔1秒更新一次
+                                            updateInterval = setInterval(function() {
+                                                updateEnterpriseFund(option_enterprise.val());
+                                            }, 1000); // 每隔1秒更新一次
                                             ShowPayment();
                                         },
                                         error:function (){
