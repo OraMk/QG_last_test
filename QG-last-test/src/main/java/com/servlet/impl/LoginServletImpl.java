@@ -126,7 +126,7 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
 
     @Override
     public void judgment(HttpServletRequest req, HttpServletResponse resp) {
-            ResultSet resultSet = userData.selectUsername(req,resp);
+            ResultSet resultSet = userData.selectUsernameForUser(req,resp);
         try {
             if (resultSet.next())
             {
@@ -402,6 +402,18 @@ public class LoginServletImpl extends BaseServlet implements LoginServlet{
         if (checkCode_session.equalsIgnoreCase(checkCode)){
             resp.setStatus(HttpServletResponse.SC_OK);
 
+        }else {
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+
+        }
+    }
+
+    @Override
+    public void selectPhoneNumber(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        String phoneNumber = req.getParameter("phoneNumber");
+        ResultSet resultSet = userData.selectPhoneNumber(phoneNumber);
+        if (resultSet.next()){
+            resp.setStatus(HttpServletResponse.SC_OK);
         }else {
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 

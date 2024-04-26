@@ -79,6 +79,34 @@ public class UserDataImpl implements UserData {
     }
 
     @Override
+    public ResultSet selectUsernameForUser(HttpServletRequest req, HttpServletResponse resp){
+        Cookie[] cookies = req.getCookies();
+        String username = null;
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                if ("username".equals(c.getName())) {
+                    username = c.getValue();
+                }
+            }
+        }
+        try {
+            String sql = "select * from user where username = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,username);
+            resultSet = preparedStatement.executeQuery();
+            return resultSet;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ResultSet selectPhoneNumber(String phoneNumber) {
+        String sql = "select * from phoneNumber";
+        return jdbc.Select(sql);
+    }
+
+    @Override
     public ResultSet selectUsername(HttpServletRequest req, HttpServletResponse resp) {
 //        Cookie[] cookies = req.getCookies();
 //        String username = null;

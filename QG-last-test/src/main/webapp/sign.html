@@ -131,8 +131,24 @@
                 let phone_RegExP = /^[12]\d{10}$/;
                 let ok = phone_RegExP.test(this.value);
                 if (ok){
-                    s_phone.html("手机号合法");
-                    s_phone.css("color","green");
+                    $.ajax({
+                        url: "loginServlet",
+                        type: "GET",
+                        data: {"phoneNumber": $("#pNumber").val(), "method": "selectPhoneNumber"},
+                        async: true,
+                        dataType: 'text',
+                        success: function () {
+                            //存在
+                            s_phone.html("该手机号已注册")
+                            s_phone.css("color","red");
+                        },
+                        error: function () {
+                            //不存在
+                            s_phone.html("手机号合法");
+                            s_phone.css("color","green");
+                        }
+                    });
+
                 }else {
                     s_phone.html("请输入正确的手机号")
                     s_phone.css("color","red");

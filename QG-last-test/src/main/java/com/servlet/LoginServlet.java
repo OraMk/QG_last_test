@@ -47,5 +47,7 @@ public interface LoginServlet {
     public void verificationCode(HttpServletRequest req, HttpServletResponse resp) throws IOException;
     //核对验证码
     public void checkCode(HttpServletRequest req, HttpServletResponse resp);
+    //查找手机号码是否存在
+    public void selectPhoneNumber(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 }
 

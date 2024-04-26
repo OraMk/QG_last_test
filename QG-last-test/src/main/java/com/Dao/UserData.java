@@ -47,4 +47,8 @@ public interface UserData {
     public ResultSet selectUserByUsernameAndPhoneNumber(String username, String phoneNumber) throws SQLException;
 
     public int changePassword(String username, String password);
+
+    public ResultSet selectUsernameForUser(HttpServletRequest req, HttpServletResponse resp);
+
+    public ResultSet selectPhoneNumber(String phoneNumber);
 }
