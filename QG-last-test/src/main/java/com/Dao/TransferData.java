@@ -72,4 +72,6 @@ public interface TransferData {
     public int reduceUser(double fund, String username);
 
     public int changePayPassword(String username, String hashPassword);
+
+    public int reduceEnterpriseAllocatedFunds(String userPayer, String enterprisePayer, double amount) throws SQLException;
 }

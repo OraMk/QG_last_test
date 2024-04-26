@@ -3,6 +3,7 @@ package com.servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 public interface TransferServlet {
@@ -56,4 +57,7 @@ public interface TransferServlet {
     public void rechargeForEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
     //更改支付密码
     public void changePayment(HttpServletRequest req, HttpServletResponse resp);
+
+    //上传文件
+    public void upload(HttpServletRequest req, HttpServletResponse resp) throws IOException;
 }

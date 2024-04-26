@@ -435,5 +435,17 @@ public class TransferDataImpl implements TransferData {
         return jdbc.Edit(sql);
     }
 
+    @Override
+    public int reduceEnterpriseAllocatedFunds(String userPayer, String enterprisePayer, double amount) throws SQLException {
+        String sql = "select eid from enterprise where ename = '" +enterprisePayer+"' for update";
+        ResultSet resultSet = jdbc.Select(sql);
+        String eid = null;
+        if (resultSet.next()){
+            eid = resultSet.getString("eid");
+        }
+        String SQL = "update relation set Allocation_funds = Allocation_funds -" +amount + "where eid =" + eid + " and username = '" +userPayer+ "'";
+        return jdbc.Edit(SQL);
+    }
+
 
 }

@@ -13,6 +13,9 @@
         let usr_payee = null;
         let transferFund = 0;
         let user_payer = null;
+
+
+
         function updateEnterpriseFund(option_enterprise){
             $.ajax({
                 url: "InteractionServlet",
@@ -23,6 +26,7 @@
                 success:function (res){
                     // let data = JSON.parse(res);
                     $("#enterprise_fund").html("企业分配资金:"+res.Allocation_funds);
+
                     funds = res.Allocation_funds;
                     // alert(funds +" " + enterprise);
                     user_payer = res.username;
@@ -181,8 +185,14 @@
 
                         $("#pushTransfer").click(function () {
                             if ( ($("#s_target").html() == "该用户存在" || $("#s_target").html() == "该企业存在") && $("#s_Fund").html() == "金额合法"  ){
-                                $("#pay_password").html("请输入支付密码<input type=\"password\" id='password'><br>\n" +
-                                    "        <center><input type=\"button\" value=\"确认支付\" id='check_transfer'></center>");
+                                if (enterprise != null){
+                                    $("#pay_password").html("请输入支付密码<input type=\"password\" id='password'><input id='file' type='file'><br>\n" +
+                                        "        <center><input type=\"button\" value=\"确认支付\" id='check_transfer'></center>");
+                                }else {
+                                    $("#pay_password").html("请输入支付密码<input type=\"password\" id='password'><br>\n" +
+                                        "        <center><input type=\"button\" value=\"确认支付\" id='check_transfer'></center>");
+                                }
+
                                 $("#check_transfer").click(function (){
                                     $(this).prop('disabled', true);
 
@@ -190,6 +200,9 @@
                                     let passwordRegExp = /^\d{6}$/;
                                     if (passwordRegExp.test(pay_password)){
                                         //判断密码是否正确
+
+
+
                                         $.ajax({
                                             url:"transferServlet",
                                             type:"GET",
@@ -198,23 +211,68 @@
                                             data:{"method":"judgementTransferPassword","payment_password":$("#password").val()},
                                             success :function () {
                                                 alert("密码正确");
-                                                $.ajax({
-                                                    url:"transferServlet",
-                                                    type:"GET",
-                                                    async:true,
-                                                    dataType:'text',
-                                                    data:{"method":"addTransfer",
-                                                        "enterprise_payer":enterprise,"user_payee":usr_payee,"enterprise_payee":enterprise_payee,
-                                                        "fund":transferFund,"description":$("#description").val()},
-                                                    success:function () {
-                                                        alert("转账请求已发起");
-                                                        let url = "operation.html";
-                                                        location.assign(url);
-                                                    },
-                                                    error:function () {
-                                                        alert("转账请求失败，请稍后再试");
-                                                    }
-                                                })
+                                                if (enterprise != null){
+                                                    //先发起转账申请
+                                                    //再上传文件
+                                                    $.ajax({
+                                                        url:"transferServlet",
+                                                        type:"GET",
+                                                        async:true,
+                                                        dataType:'text',
+                                                        data:{"method":"addTransfer",
+                                                            "enterprise_payer":enterprise,"user_payee":usr_payee,"enterprise_payee":enterprise_payee,
+                                                            "fund":transferFund,"description":$("#description").val()},
+                                                        success:function () {
+                                                            alert("转账请求已发起");
+                                                            function uploadFile() {
+                                                                var fileInput = document.getElementById('file');
+                                                                var file = fileInput.files[0];
+                                                                var formData = new FormData();
+                                                                formData.append('file', file);
+
+                                                                var xhr = new XMLHttpRequest();
+                                                                xhr.open('POST', 'transferServlet?method=upload', true);
+                                                                xhr.onreadystatechange = function () {
+                                                                    if (xhr.readyState === 4) {
+                                                                        if (xhr.status === 200) {
+                                                                            console.log('文件上传成功');
+                                                                            // 可以在这里处理上传成功后的逻辑
+                                                                        } else {
+                                                                            console.error('文件上传失败');
+                                                                        }
+                                                                    }
+                                                                };
+
+                                                                xhr.send(formData);
+                                                            }
+                                                            uploadFile();
+                                                        },
+                                                        error:function () {
+                                                            alert("转账请求失败，请稍后再试");
+                                                        }
+                                                    });
+
+                                                }
+                                                else {
+                                                    $.ajax({
+                                                        url:"transferServlet",
+                                                        type:"GET",
+                                                        async:true,
+                                                        dataType:'text',
+                                                        data:{"method":"addTransfer",
+                                                            "enterprise_payer":enterprise,"user_payee":usr_payee,"enterprise_payee":enterprise_payee,
+                                                            "fund":transferFund,"description":$("#description").val()},
+                                                        success:function () {
+                                                            alert("转账请求已发起");
+                                                            let url = "operation.html";
+                                                            location.assign(url);
+                                                        },
+                                                        error:function () {
+                                                            alert("转账请求失败，请稍后再试");
+                                                        }
+                                                    });
+                                                }
+
                                             },
                                             error:function () {
                                                 alert("密码错误，请重新输入");
@@ -249,9 +307,9 @@
 
         }
         $(function (){
-            setInterval(function() {
-                judgementBanned();
-            }, 1000);
+            // setInterval(function() {
+            //     judgementBanned();
+            // }, 1000);
             $("#look_transfer").click(function () {
                 let url = "noTipTransfer.html";
                 location.assign(url);
@@ -281,9 +339,9 @@
                     // });
 
                     userUpdateInterval = UserFund();
-                    updateInterval = setInterval(function() {
-                        UserFund();
-                    }, 1000);
+                    // updateInterval = setInterval(function() {
+                    //     UserFund();
+                    // }, 1000);
                 },
                 error:function (){
                     alert("未登录，请先进行登录");
@@ -370,9 +428,9 @@
                                             // });
                                             clearInterval(updateInterval); // 清除之前的定时器
                                             updateEnterpriseFund(option_enterprise.val());
-                                            updateInterval = setInterval(function() {
-                                                updateEnterpriseFund(option_enterprise.val());
-                                            }, 1000); // 每隔1秒更新一次
+                                            // updateInterval = setInterval(function() {
+                                            //     updateEnterpriseFund(option_enterprise.val());
+                                            // }, 1000); // 每隔1秒更新一次
                                             ShowPayment();
                                         },
                                         error:function (){

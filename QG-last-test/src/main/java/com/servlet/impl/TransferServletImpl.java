@@ -15,13 +15,17 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(value = "/transferServlet")
+@MultipartConfig
 public class TransferServletImpl extends BaseServlet implements TransferServlet {
 
     TransferData transferData = new TransferDataImpl();
@@ -97,8 +101,17 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
             if (n == 1 ){
                 int count = 0;
                 if (!(enterprise_payer == null || "".equals(enterprise_payer))){
-                    //减少企业总资金
-                    count = transferData.reduceEnterpriseFunds(enterprise_payer,amount);
+                    //减少企业分配资金
+                    int number = transferData.reduceEnterpriseAllocatedFunds(user_payer,enterprise_payer,amount);
+                    if (number == 1){
+                        //减少企业总资金
+                        count = transferData.reduceEnterpriseFunds(enterprise_payer,amount);
+
+                    }else {
+                        transferData.rollback();
+                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
                 }else {
                     //将用户的资金减少相应的金额
                     count = transferData.reduceFunds(user_payer,enterprise_payer,amount);
@@ -109,6 +122,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
 
                 }else{
 
+                    transferData.rollback();
 
                     resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
@@ -116,6 +130,7 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
 
             }else {
 
+                transferData.rollback();
 
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
@@ -755,6 +770,33 @@ public class TransferServletImpl extends BaseServlet implements TransferServlet 
 
         }
     }
+
+    @Override
+    public void upload(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        //判断上传文件是否为空
+        try {
+            Part filePart = req.getPart("file");
+            String fileName = filePart.getSubmittedFileName();
+            String uploadDir = ""; // 设置保存文件的目录
+            File uploadFile = new File(uploadDir + fileName);
+
+            try (InputStream fileContent = filePart.getInputStream();
+                 FileOutputStream outputStream = new FileOutputStream(uploadFile)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = fileContent.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+            }
+
+            resp.getWriter().write("文件上传成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write("文件上传失败");
+        }
+    }
+
 
 
 }
