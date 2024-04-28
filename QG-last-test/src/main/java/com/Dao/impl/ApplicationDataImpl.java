@@ -113,7 +113,7 @@ public class ApplicationDataImpl implements ApplicationData {
             }
         }
 
-        String sql = "delete from relation where username ="+ username +"  and eid = "+ eid ;
+        String sql = "delete from relation where username ='"+ username +"'  and eid = "+ eid ;
         return jdbc.Edit(sql);
 
     }
@@ -143,7 +143,7 @@ public class ApplicationDataImpl implements ApplicationData {
     }
 
     @Override
-    public boolean judgmentApplyLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+    public ResultSet judgmentApplyLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
         String username = null;
         String eid = null;
         cookies = req.getCookies();
@@ -158,12 +158,8 @@ public class ApplicationDataImpl implements ApplicationData {
             }
         }
         String sql = "select * from application where username ='"+ username +"'  and eid = "+ eid +" and description ='申请成为负责人'";
-        resultSet = jdbc.Select(sql);
-        while (resultSet.next()){
-            String isAccept = resultSet.getString("is_accept");
-            if ("pending".equals(isAccept))return true;
-        }
-        return false;
+        ResultSet resultSet = jdbc.Select(sql);
+        return resultSet;
     }
 
     @Override
@@ -187,7 +183,7 @@ public class ApplicationDataImpl implements ApplicationData {
     public ResultSet selectApplicationById(HttpServletRequest req, HttpServletResponse resp) {
         long aId = Integer.parseInt(req.getParameter("aid"));
         //通过id查找目标请求
-        String sql = "select * from application where aid =" + aId;
+        String sql = "select * from application where aid =" + aId + "for update";
         return jdbc.Select(sql);
     }
 

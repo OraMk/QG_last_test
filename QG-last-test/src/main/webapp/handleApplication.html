@@ -76,7 +76,8 @@
                             data: {"method": "agreeApplication","aid":aid},
                             success:function (res){
                                 alert("确认成功")
-                                $("#"+aid).html("yes");
+                                let url = "handleApplication.html";
+                                location.assign(url);
 
                             },
                             error:function (){
@@ -96,7 +97,8 @@
                             data: {"method": "refuseApplication","aid":aid},
                             success:function (res){
                                 alert("受理成功")
-                                $("#"+aid).html("no");
+                                let url = "handleApplication.html";
+                                location.assign(url);
 
                             },
                             error:function (){

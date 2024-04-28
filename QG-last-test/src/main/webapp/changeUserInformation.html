@@ -22,23 +22,23 @@
                     //没有被封禁
                 }
             });
-            //判断该企业是否被封禁
-            $.ajax({
-                url: "InteractionServlet",
-                type: "GET",
-                async: true,
-                dataType: 'json',
-                data: {"method": "judgmentEnterpriseBanAlways"},
-                success:function (res) {
-                    //没有被封禁
-                },
-                error:function () {
-                    //被封禁
-                    alert("企业已被封禁");
-                    let url = "enterpriseInformation.html";
-                    location.assign(url);
-                }
-            });
+            // //判断该企业是否被封禁
+            // $.ajax({
+            //     url: "InteractionServlet",
+            //     type: "GET",
+            //     async: true,
+            //     dataType: 'json',
+            //     data: {"method": "judgmentEnterpriseBanAlways"},
+            //     success:function (res) {
+            //         //没有被封禁
+            //     },
+            //     error:function () {
+            //         //被封禁
+            //         alert("企业已被封禁");
+            //         let url = "enterpriseInformation.html";
+            //         location.assign(url);
+            //     }
+            // });
         }
         $(function (){
             setInterval(function (){

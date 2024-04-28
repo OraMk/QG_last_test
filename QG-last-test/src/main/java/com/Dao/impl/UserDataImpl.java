@@ -102,7 +102,8 @@ public class UserDataImpl implements UserData {
 
     @Override
     public ResultSet selectPhoneNumber(String phoneNumber) {
-        String sql = "select * from phoneNumber";
+        String sql = "select * from user where pnumber = '"+phoneNumber+"'";
+//        String sql = "select * from phoneNumber";
         return jdbc.Select(sql);
     }
 

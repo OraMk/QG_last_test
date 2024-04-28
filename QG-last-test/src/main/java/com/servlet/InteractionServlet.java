@@ -30,10 +30,10 @@ public interface InteractionServlet {
     public void refuseApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //同意加入企业
-    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp,String username,String eid) throws SQLException;
 
     //同意成为企业负责人
-    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp,String username,String eid) throws SQLException;
 
 
     //拉用户进入企业

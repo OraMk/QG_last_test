@@ -18,7 +18,7 @@ public interface ApplicationData {
     //添加成为企业负责人的申请
     public int addApplicationLeader(HttpServletRequest req, HttpServletResponse resp);
     //判断是否已经申请过成为企业负责人
-    public boolean judgmentApplyLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
+    public ResultSet judgmentApplyLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException;
 
     //查询属于该企业的请求
     public ResultSet displayApplication(HttpServletRequest req, HttpServletResponse resp);

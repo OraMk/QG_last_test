@@ -111,20 +111,27 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
     @Override
     public void applyToLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
-        boolean isApply = false;
+        String isApply = null;
+        String username = null;
+        String eid = null;
+        ResultSet resultSet = null;
         try {//先查询是否有重复的未受理的请求，以防产生多次请求
-            isApply = applicationData.judgmentApplyLeader(req,resp);
+            resultSet = applicationData.judgmentApplyLeader(req,resp);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        if (isApply == false){
-            int n =  applicationData.addApplicationLeader(req, resp);
+        if (resultSet.next()){
+            isApply = resultSet.getString("is_accept");
+            username = resultSet.getString("username");
+            eid = resultSet.getString("eid");
+        }
+        if (!"pending".equals(isApply)){
+            int n =  applicationData.addApplicationLeader(req,resp);
             if (n == 1){
                 //数据添加成功
-
                 resp.setStatus(HttpServletResponse.SC_OK);
             }else {
-                ;
+
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
             }
         }else {
@@ -143,12 +150,11 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
                 if (resultSet.next()){
                     if ("yes".equals(resultSet.getString("isleader")))
                     {//是负责人
-
                         resp.setStatus(HttpServletResponse.SC_OK);
 
                     }
                     else {//不是负责人
-                        resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
                     }
                 }
@@ -221,32 +227,47 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
 
     @Override
     public void agreeApplication(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
+        applicationData.setAffair();
         ResultSet resultSet = applicationData.selectApplicationById(req,resp);
         String description = null;
 //        long aid = 0;
+        String eid = null;
+        String username = null;
         try {
             if (resultSet.next()){
                 description = resultSet.getString("description");
 //                aid = resultSet.getLong("aid");
+                eid = resultSet.getString("eid");
+                username = resultSet.getString("username");
             }
         } catch (SQLException e) {
+            applicationData.rollback();
             throw new RuntimeException(e);
         }
-        if ("申请加入企业".equals(description)){
-            agreeJoinEnterprise(req,resp);
+        if ("pending".equals(resultSet.getString("is_accept")))
+        {
+            if ("申请加入企业".equals(description)){
+                agreeJoinEnterprise(req,resp,username,eid);
 
-        } else if ("申请成为负责人".equals(description)) {
-            updateEnterpriseLeader(req,resp);
-        }
-        int n = applicationData.agreeApplication(req,resp);
-        if (n == 1){
+            } else if ("申请成为负责人".equals(description)) {
+                updateEnterpriseLeader(req,resp,username,eid);
+            }
+            int n = applicationData.agreeApplication(req,resp);
+            if (n == 1){
+                applicationData.commit();
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }else {
+                applicationData.rollback();
+                resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
-            resp.setStatus(HttpServletResponse.SC_OK);
+            }
         }else {
+            applicationData.rollback();
 
             resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
 
         }
+
 
     }
 
@@ -265,8 +286,8 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
-        int n = enterpriseData.joinEnterprise(req, resp);
+    public void agreeJoinEnterprise(HttpServletRequest req, HttpServletResponse resp,String username,String eid) throws SQLException {
+        int n = enterpriseData.joinEnterprise(username,eid);
         if (n == 1){
 
             resp.setStatus(HttpServletResponse.SC_OK);
@@ -278,8 +299,8 @@ public class InteractionServletImpl extends BaseServlet implements InteractionSe
     }
 
     @Override
-    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp) throws SQLException {
-        int n = enterpriseData.joinLeader(req,resp);
+    public void updateEnterpriseLeader(HttpServletRequest req, HttpServletResponse resp,String username,String eid) throws SQLException {
+        int n = enterpriseData.joinLeader(username,eid);
         if (n == 1){
 
             resp.setStatus(HttpServletResponse.SC_OK);

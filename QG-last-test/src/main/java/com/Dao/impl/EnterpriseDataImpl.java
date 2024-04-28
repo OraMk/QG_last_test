@@ -17,7 +17,7 @@ import java.sql.SQLException;
  */
 public class EnterpriseDataImpl implements EnterpriseData {
     JDBC jdbc = new JDBC();
-    ResultSet resultSet= null;
+
     Connection connection=jdbc.getConnection();
     ApplicationData applicationData = new ApplicationDataImpl();
 
@@ -27,7 +27,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
     @Override
     public ResultSet selectAllInPublic(HttpServletRequest req, HttpServletResponse resp) {
         String sql = "select * from enterprise where public_mode = 'public'";
-        resultSet = jdbc.Select(sql);
+        ResultSet resultSet = jdbc.Select(sql);
         return resultSet;
     }
 
@@ -44,7 +44,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
             }
         }
         String sql = "select * from enterprise where eid = " + id;
-        resultSet = jdbc.Select(sql);
+        ResultSet resultSet = jdbc.Select(sql);
         return  resultSet;
     }
 
@@ -95,35 +95,15 @@ public class EnterpriseDataImpl implements EnterpriseData {
     }
 
     @Override
-    public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet =  applicationData.selectApplicationById(req,resp);
-        String username = null;
-        int eid = 0;
-        try {
-            if (resultSet.next()){
-                username = resultSet.getString("username");
-                eid = resultSet.getInt("eid");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public int joinEnterprise(String username, String eid) {
+
         String sql = "insert into relation(username,eid,isleader,Allocation_funds) values('"+username+"',"+eid+",'no',0)";
         return jdbc.Edit(sql);
     }
 
     @Override
-    public int joinLeader(HttpServletRequest req, HttpServletResponse resp) {
-        resultSet =  applicationData.selectApplicationById(req,resp);
-        String username = null;
-        int eid = 0;
-        try {
-            if (resultSet.next()){
-                username = resultSet.getString("username");
-                eid = resultSet.getInt("eid");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public int joinLeader(String username, String eid) {
+
         String sql = "update relation set isLeader = 'yes' where eid = " + eid +" and username = '" + username + "'";
         return jdbc.Edit(sql);
     }
@@ -155,7 +135,7 @@ public class EnterpriseDataImpl implements EnterpriseData {
             }
         }
         String sql = "select * from relation where username = '" + username + "'";
-        resultSet = jdbc.Select(sql);
+        ResultSet resultSet = jdbc.Select(sql);
         int[] eid = new int[100];
         int i = 0;
         try {
@@ -211,13 +191,13 @@ public class EnterpriseDataImpl implements EnterpriseData {
         }
 
         String sql = "select * from relation where username ='"+ username +"'  and eid = "+ eid ;
-        resultSet =  jdbc.Select(sql);
+        ResultSet resultSet =  jdbc.Select(sql);
         return resultSet;
     }
 
     @Override
     public ResultSet selectAllocationFundsByEid(int eid) {
-        String sql = "select * from relation where eid = " + eid + " for update";
+        String sql = "select * from relation where eid = " + eid ;
         return jdbc.Select(sql);
     }
 

@@ -262,7 +262,6 @@
                                                             data_type: 'text',
                                                             data: {"method": "checkRemainingFunds"},
                                                             success:function (res){
-                                                                alert(parseFloat(res));
                                                                 if (parseFloat(res) > 0){
                                                                     alert("请将企业剩余资金分配完毕再注销")
                                                                 }else {
@@ -372,7 +371,7 @@
                                                     type:"GET",
                                                     async:true,
                                                     data_type:'json',
-                                                    data:{"method":"deregisterEnterprise"},
+                                                    data:{"method":"applyToLeader"},
                                                     success:function (){
                                                         alert("申请成功");
                                                     },

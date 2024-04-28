@@ -14,9 +14,9 @@ public interface EnterpriseData {
     //更改企业信息
     public int changeInformationSimple(HttpServletRequest req, HttpServletResponse resp);
     //加入企业
-    public int joinEnterprise(HttpServletRequest req, HttpServletResponse resp);
+    public int joinEnterprise(String username, String eid);
     //成为负责人
-    public int joinLeader(HttpServletRequest req, HttpServletResponse resp);
+    public int joinLeader(String username, String eid);
 
     //通过企业名称查找企业
     public ResultSet selectByEnterpriseName(HttpServletRequest req, HttpServletResponse resp);
