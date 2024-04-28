@@ -183,7 +183,7 @@ public class ApplicationDataImpl implements ApplicationData {
     public ResultSet selectApplicationById(HttpServletRequest req, HttpServletResponse resp) {
         long aId = Integer.parseInt(req.getParameter("aid"));
         //通过id查找目标请求
-        String sql = "select * from application where aid =" + aId + "for update";
+        String sql = "select * from application where aid =" + aId + " for update";
         return jdbc.Select(sql);
     }
 
